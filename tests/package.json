@@ -1,0 +1,15 @@
+{
+  "name": "wj-config-tests",
+  "version": "1.0.0",
+  "description": "Unit testing for the wj-config package.",
+  "main": "main.js",
+  "scripts": {
+    "test": "mocha **/*.test.js"
+  },
+  "author": "José Pablo Ramírez Vargas <webJose@gmail.com>",
+  "license": "ISC",
+  "devDependencies": {
+    "chai": "^4.3.6",
+    "mocha": "^10.0.0"
+  }
+}

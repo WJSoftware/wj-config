@@ -1,0 +1,9 @@
+{
+    "appTitle": "Dev Title",
+    "ws": {
+        "gateway": {
+            "host": "localhost",
+            "scheme": "http"
+        }
+    }
+}

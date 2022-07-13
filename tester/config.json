@@ -1,0 +1,30 @@
+{
+    "appTitle": "My application",
+    "appVersion": "v1.0.0",
+    "ws": {
+        "gateway": {
+            "host": "my-gateway-svc",
+            "scheme": "https",
+            "rootPath": "/api/v1",
+            "sayHello": "/sayhello?name={name}?emotion={emotion}",
+            "ldap": {
+                "rootPath": "/ldap",
+                "users": {
+                    "rootPath": "/users",
+                    "getUser": "/{userId}",
+                    "getUserGroups": "/{userId}/groups"
+                }
+            }
+        },
+        "mifes": {
+            "mifeA": {
+                "rootPath": "/a",
+                "manifest": "/asset-manifest.json"
+            },
+            "mifeB": {
+                "rootPath": "/b",
+                "manifest": "/asset-manifest.json"
+            }
+        }
+    }
+}
