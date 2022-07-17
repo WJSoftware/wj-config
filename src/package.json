@@ -30,8 +30,5 @@
         "url": "https://github.com/WJSoftware/wj-config/issues"
     },
     "license": "MIT-open-group",
-    "homepage": "https://github.com/WJSoftware/wj-config#readme",
-    "scripts": {
-        "test": "mocha ../tests/**/*.test.js"
-    }
+    "homepage": "https://github.com/WJSoftware/wj-config#readme"
 }
