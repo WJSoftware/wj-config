@@ -82,7 +82,7 @@ const makeWsUrlFunctions = (ws, parent) => {
                 return this.buildUrl(value, routeValues);
             };
         }
-        else if (sc) {
+        else if (sc && helpers.isObject(value)) {
             // Object value.
             makeWsUrlFunctions(value, ws);
         }
