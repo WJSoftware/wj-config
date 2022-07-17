@@ -12,6 +12,13 @@
 			"problemMatcher": [],
 			"label": "npm: test - tests",
 			"detail": "mocha **/*.test.js"
+		},
+		{
+			"label": "Publish NPM",
+			"detail": "Publishes the wj-config NPM package.  You must be able",
+			"type": "shell",
+			"command": "${workspaceFolder}\\publish-npm.ps1",
+			"problemMatcher": []
 		}
 	]
 }

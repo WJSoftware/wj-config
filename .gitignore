@@ -106,3 +106,7 @@ dist
 # Visual Studio code
 .vscode/*
 !.vscode/tasks.json
+
+# Project-specific.
+# Copy of the README file created for deployment.
+src/README.md
