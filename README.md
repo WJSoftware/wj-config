@@ -10,6 +10,9 @@ This package provides a module that, when imported, provides a configuration fun
 configuration mechanism with the configuration data.  At its simplest, it requires one object whose properties contain 
 the different configuration values for your application.  In practical terms, it should be a loaded JSON file.
 
+This package has no package dependencies.  It is written fully in JavaScript and is meant for modern JavaScript 
+support, meaning recent NodeJS and recent browsers.
+
 ## Features
 
 In a nutshell, this configuration package will:
@@ -17,8 +20,8 @@ In a nutshell, this configuration package will:
 + Merge 2 JSON sources as one, just like ASP.net configuration loads `appsettings.json` and `appsettings.<environment>.json`.
 + Optionally (and enabled by default) will create a third JSON source from environment variables that start with a set 
 prefix and that follow the same convention that ASP.net uses:  Hierarchy levels are separated by double underscores.
-+ After the above sources are merged, a special property (name configurable, but by default is `ws`) will be parsed 
-and its contents will undergo a transformation to easily build URL's from the information contained within.
++ After the above sources are merged, a special property (the name is configurable, but by default is `ws`) will be 
+parsed and its contents will undergo a transformation to easily build URL's from the information contained within.
 + Provide an environment object with the current environment name and helpful `isXXX()` functions to quickly create 
 conditionals based on the current environment, just like .Net's `IHostEnvironment` interface.
 
@@ -26,12 +29,18 @@ conditionals based on the current environment, just like .Net's `IHostEnvironmen
 
 First, install the NPM package in your project.
 
-2Do:  Add installation sample.
+```bat
+npm install wj-config
+```
 
 Now add one master JSON configuration file.  Name it as you wish; we encourage you to use `config.json`.  Add your 
-configuration values in any form you like.  Especially in **React** applications, we configure a lot of backend URL's 
-for all of the application functionality.  Dedicate one or more sections of the document to them.  By default, this 
-configuration system uses the `ws` property.  Example:
+configuration values arranged any way you want:  You may add the properties directly to the main object, or you may 
+create properties that are objects that hold the actual properties you care about.  This is encouraged to "section" 
+your configuration values by grouping them logically.
+
+Especially in **React** applications, we configure a lot of backend URL's for all of the application's functionality, 
+so dedicate one or more sections of the JSON document to them.  By default, this configuration system assumes that the 
+URL's will be stored in the `ws` property.  Example:
 
 ```json
 {
@@ -87,7 +96,7 @@ const loadJsonFile = fileName => {
 const envName = process.env.NODE_ENV;
 const mainConfig = loadJsonFile('./config.json');
 const envConfig = loadJsonFile(`./config.${envName}.json`);
-const config = wjConfig({ main: mainConfig, override: envConfig }, envName);
+const config = wjConfig([mainConfig,  envConfig], envName);
 
 module.exports = config;
 ```
@@ -103,7 +112,7 @@ import devConfig from './config.Development.json';
 import preProdConfig from './config.PreProduction.json';
 import prodConfig from './config.Production.json';
 
-// We recommend setting REACT_APP_ENVIRONMENT as a property of an env object, that in turn is is property in the 
+// We recommend setting REACT_APP_ENVIRONMENT as a property of an env object, that in turn is a property in the 
 // window object and not use the .env REACT system at all.  The .env system is like C's macros that disapper once the 
 // React app is built.  Read to the end of this Readme to see how this should be done.
 const envName = window.env.REACT_APP_ENVIRONMENT;
@@ -122,7 +131,7 @@ switch (envName) {
     default:
         throw new Error(`Unrecognized environment name "${envName}".`);
 }
-const config = wjConfig({ main: mainConfig, override: envConfig }, envName);
+const config = wjConfig([mainConfig,  envConfig], envName);
 
 export default config;
 ```
@@ -134,7 +143,7 @@ contain the properties your JSON defines as well as an `environment` property wi
 2. One `isXXX()` function for each environment name provided during initialization (not shown in the examples above, 
 so the library used the default names *Development*, *PreProduction* and *Production*).
 
-**IMPORTANT**:  Because of this, `environment` is the only reserved keyword that  cannot be used in your configuration 
+**IMPORTANT**:  Because of this, `environment` is the only reserved keyword that cannot be used in your configuration 
 JSON files at the root level.  It can be used as property name in sub levels, though.
 
 ## URL Configuration
@@ -161,10 +170,11 @@ root path that is appended to all previous root paths.
 
 Ok, but how can the developer obtain the complete URL?  Thanks to this library, this is actually trivial:  Every 
 "leaf" property in the various sub-objects under the `ws` object are converted to functions that return the fully 
-built URL.  For example, the `single` property in the path `ws.gateway.catalogue` is converted to a function:
+built URL.  For example, the `single` property in the path `ws.gateway.catalogue` in the quickstart example is 
+converted to a function:
 
 ```js
-import config from './config';
+import config from './config';  // This would be YOUR config.js module.
 
 const singleCatalogueUrl = config.ws.gateway.catalogue.single(); // Just like that.
 console.log(singleCatalogueUrl); // Shows /api/v1/cat/{catId}
@@ -191,11 +201,11 @@ const singleCatalogueUrl = config.ws.gateway.catalogue.single(name => {
 });
 // Or using a function when you know is just one replaceable value:
 const singleCatalogueUrl = config.ws.gateway.catalogue.single(n => catalogueId);
-console.log(singleCatalogueUrl); // Shows /api/v1/cat/123
+console.log(singleCatalogueUrl); // Shows /api/v1/cat/123 for all the presented variants above.
 ```
 
 Personally, for single replacements the 3rd version is the one that appeals the most to me, and for multiple 
-replacements the 1st one appeals the most to me, but feel free to choose whichever form you prefer.
+replacements the 1st one appeals the most to me, but feel free to choose whichever form you prefer or need.
 
 At this point you have probably realized the excellent potential of this feature, but most people don't realize the 
 most amazing consequence of using this feature:  The position of the replaceable route values do not affect your code!
@@ -211,7 +221,7 @@ create dynamic URL's with the same mechanism.
 
 Every non-leaf object in a web services path in your configuration is granted the `buildUrl()` function that works 
 exactly the same as the leaf functions but also accepts a path.  Using the same configuration example as before, we 
-have the following `buildUrl()` functions:
+have the following `buildUrl()` functions for immediate use:
 
 ```js
 const dynGw = config.ws.gateway.buildUrl('/some/path/dynamically/obtained');
@@ -223,7 +233,7 @@ console.log(dynCat); // Shows /api/v1/cat/123/statistics?format=short
 ### Reserved Names for Web Services
 
 All this URL magic comes with special properties that can be set to fully customize the created URL's.  These names 
-cannot be used as leaf properties, as you may have already guessed.
+cannot be used as properties for anything else than the below-stated purposes, as you may have already guessed.
 
 | Property | Data Type | Sample Value | Description |
 | - | - | - | - |
@@ -232,7 +242,7 @@ cannot be used as leaf properties, as you may have already guessed.
 | `scheme` | String | 'https' | The scheme used to connect to the host.  When not specified, it is `http`. |
 | `rootPath` | String | '/api' |  Optional root path that is applied downstream to all URL creation down the sub hierarchy. |
 
-To make it perfectly clear, here is the quickstart example evolved to use hosts and web socket scheme.
+To make it perfectly clear, here is the quickstart example evolved to use hosts and the web socket and https schemes.
 
 ```json
 {
@@ -279,8 +289,8 @@ Now the above will get you the URL's:
 + https://localhost:1122/api/v1/cat/{catId}
 + wss://localhost:1122/ws/support/chat?userId={userId}
 
-**IMPORTANT**:  The `host`, `port` and `scheme` values cannot be changed once set, and this is why a new sub hierarchy 
-is created for the web socket URL's.
+**IMPORTANT**:  The `host`, `port` and `scheme` values cannot be changed down the hierarchy once set, and this is why 
+a new sub hierarchy is created for the web socket URL's.
 
 ### Configuration
 
@@ -315,7 +325,7 @@ If nothing is passed as options, the above default options will be in effect.
 using an environment-specific JSON object.  If you, say, only want to set `includeEnv` to `false`, then just pass that:
 
 ```js
-const config = wjConfig({ main: mainConfig, override: envConfig }, envName, { includeEnv: false });
+const config = wjConfig([mainConfig,  envConfig], envName, { includeEnv: false });
 ```
 
 The above will not override other default property values.
@@ -327,6 +337,8 @@ you wish to store the URL's configuration in a different property, then set the 
 property.
 
 Do include your list of environment names in the `envNames` property as they shape up the `environment` property object.
+
+**Important**:  The environment name you provide must be in the list of environment names or an error will be thrown.
 
 ###  Environment Object
 
@@ -350,7 +362,8 @@ would look like for the quickstart example:
 
 A React application is a collection of static content.  All of the Javascript in the `/src` folder is bundled and 
 minified when `npm run build` is executed.  Furthermore, the .env configuration system is also applied, replacing 
-every **process.env.REACT_APP_XXX** instance with its configured value (read more @ [Create React App web](https://create-react-app.dev/docs/adding-custom-environment-variables/)).
+every **process.env.REACT_APP_XXX** instance with its configured value 
+(read more @ [Create React App web](https://create-react-app.dev/docs/adding-custom-environment-variables/)).
 
 Because the .env configuration system is so simple, it is quite a challenge to configure dozens or hundreds of values 
 using this system, which is commonly the case, especially in microservices/micro frontends.
@@ -387,7 +400,7 @@ Environment variables can be used to provide configuration data whenever said da
 control systems.
 
 To illustrate this, imagine we need the username and password of a system account in our **NodeJS** HTTP server.  The 
-following would be the wrong way to store the password in the JSON config file:
+following would be the *wrong* way to store the password in the JSON config file:
 
 ```json
 {
@@ -418,15 +431,15 @@ Those used to ASP.net Configuration will find this behavior incredibly familiar.
 
 For an environment variable to successfully contribute to the configuration, it must comply with 2 rules:
 
-1. Start with the configured prefix as explained above using the `envPrefix` property.
-2. Use double underscore (__) to separate the hierarchy levels until the leaf value is reached.
+1. Start with the configured prefix as explained above using the `envPrefix` property of the options object.
+2. Use double underscore (__) to separate the hierarchy levels until the leaf property is reached.
 
 In the example above, the environment variable's name starts with `OPT_`, the default prefix.  It then specifies the 
 first hierarchy name, `myRemoteSystem`, and finally ends with the leaf property name, `password`.  Note that deeper 
 hierarchies can be specified by adding more hierarchy names separated by double underscores.
 
-**IMPORTANT**:  Because Javascript is a case-sensitive object, the environment variable names must match the property 
-names' case exactly.
+**IMPORTANT**:  Because Javascript is a case-sensitive language, the environment variable names must match the 
+property names' case exactly.
 
 ### Environment Variable Value Conversion
 
@@ -438,4 +451,3 @@ variable value as a Boolean, integer, or floating point number.  The algorithm w
 hexadecimal notation (0xABC).
 3. Try to convert the value to a floating point number.
 4. If no parsing succeeds, then the value is kept as a string value.
-
