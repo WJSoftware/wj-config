@@ -6,7 +6,7 @@ const makeWsUrlFunctions = require('./makeWsUrlFunctions');
 
 const defaultOptions = {
     includeEnv: true,
-    env: (process ?? window)?.env,
+    env: null,
     envPrefix: 'OPT_',
     envNames: [
         'Development',
@@ -16,14 +16,14 @@ const defaultOptions = {
     wsPropertyNames: ['ws']
 };
 
-const config = (envConfigs, env, options) => {
+const wjConfig = (envConfigs, env, options) => {
     options = merge(defaultOptions, options);
     const envConfigsIsFn = helpers.isFunction(envConfigs);
     const envConfigsIsArr = helpers.isArray(envConfigs);
     let finalConfig = envConfigsIsFn ? envConfigs() : (envConfigsIsArr ? envConfigs[0] : envConfigs.main);
     let envConfig = envConfigsIsFn ? envConfigs(env) : (envConfigsIsArr ? envConfigs[1] : envConfigs.override);
     finalConfig = merge(finalConfig, envConfig);
-    if (options.includeEnv) {
+    if (options.includeEnv && options.env) {
         envConfig = require('./wj-env-config')(options.env, options.envPrefix);
         finalConfig = merge(finalConfig, envConfig);
     }
@@ -34,4 +34,4 @@ const config = (envConfigs, env, options) => {
     return finalConfig;
 };
 
-module.exports = config;
+module.exports = wjConfig;

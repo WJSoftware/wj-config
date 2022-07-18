@@ -11,7 +11,7 @@ configuration mechanism with the configuration data.  At its simplest, it requir
 the different configuration values for your application.  In practical terms, it should be a loaded JSON file.
 
 This package has no package dependencies.  It is written fully in JavaScript and is meant for modern JavaScript 
-support, meaning recent NodeJS and recent browsers.
+support, meaning recent **NodeJS** and recent browsers.
 
 ## Features
 
@@ -24,6 +24,10 @@ prefix and that follow the same convention that ASP.net uses:  Hierarchy levels 
 parsed and its contents will undergo a transformation to easily build URL's from the information contained within.
 + Provide an environment object with the current environment name and helpful `isXXX()` functions to quickly create 
 conditionals based on the current environment, just like .Net's `IHostEnvironment` interface.
+
+**NOTE**:  The source of environment variables is not set in the package because it cannot be safely set to either 
+`process.env` or `window.env` and expect it to work for all installations.  For environment variables to work, the 
+source of environment variables must be passed in the options.  See the section about the options below.
 
 ## Quickstart
 
@@ -96,7 +100,8 @@ const loadJsonFile = fileName => {
 const envName = process.env.NODE_ENV;
 const mainConfig = loadJsonFile('./config.json');
 const envConfig = loadJsonFile(`./config.${envName}.json`);
-const config = wjConfig([mainConfig,  envConfig], envName);
+// Pass process.env in an options object if you want to include environment variables.
+const config = wjConfig([mainConfig,  envConfig], envName, { env: process.env });
 
 module.exports = config;
 ```
@@ -294,13 +299,13 @@ a new sub hierarchy is created for the web socket URL's.
 
 ### Configuration
 
-In reality, the configuration initialization function accepts as third argument an options object.  This options 
-object, in its default state looks like this:
+In reality, the configuration initialization function accepts as third argument an options object, as seen in the 
+**NodeJS** version of the Quickstart above.  This options object, in its default state looks like this:
 
 ```js
 const defaultOptions = {
     includeEnv: true,
-    env: (process ?? window)?.env,
+    env: null,
     envPrefix: 'OPT_',
     envNames: [
         'Development',
@@ -330,7 +335,9 @@ const config = wjConfig([mainConfig,  envConfig], envName, { includeEnv: false }
 
 The above will not override other default property values.
 
-To disable the inclusion of environment variables as contributors to configuration values, set `includeEnv` to false.
+To disable the inclusion of environment variables as contributors to configuration values, set `includeEnv` to false, 
+and if you want this feature you must pass an object containing the environment variables.  For **NodeJS** this would 
+be `process.env`, and usually for React/browser applications this is not used, but it certainly could be.
 
 To disable the URL construction feature everywhere, provide an empty array for the `wsPropertyNames` property.  If 
 you wish to store the URL's configuration in a different property, then set the name or names in a new array on this 
@@ -381,7 +388,7 @@ window.env = { REACT_APP_ENVIRONMENT: 'Development' };
 This JS file needs to be added to the index page using a script tag:
 
 ```html
-<script src="config.js" type="text/javascript"></script>
+<script src="%PUBLIC_URL%/config.js" type="text/javascript"></script>
 ```
 
 (Please pardon my HTML if it is somehow incorrect.  Hopefully you get the idea.)
