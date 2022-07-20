@@ -1,5 +1,7 @@
 # wj-config
 
+[![NPM](https://nodei.co/npm/wj-config.png)](https://nodei.co/npm/wj-config/)
+
 > Javascript configuration module for NodeJS and React that works like ASP.net configuration where 2 JSON's are merged 
 > and environment variables can contribute/overwrite values by following a naming convention.
 
@@ -28,6 +30,20 @@ conditionals based on the current environment, just like .Net's `IHostEnvironmen
 **NOTE**:  The source of environment variables is not set in the package because it cannot be safely set to either 
 `process.env` or `window.env` and expect it to work for all installations.  For environment variables to work, the 
 source of environment variables must be passed in the options.  See the section about the options below.
+
+## Examples
+
+There are working examples of use in GitHub [here](https://github.com/WJSoftware/wj-config/tree/main/examples).  Feel 
+free to explore them and to contribute.
+
+| Technology | wj-config Version | Technology Version |
+| - | - | - |
+| ReactJS | v1.0.2 | ReactJS v18.2.0 |
+| NodeJS Express | v1.0.2 | Express v4.16.1 |
+
+The repository contains the necessary `launch.json` file to run each of the examples in Visual Studio Code.
+
+For React examples, remember to first run `npm start` before start debugging it.
 
 ## Quickstart
 
@@ -93,13 +109,22 @@ the 2 JSON files and initialize the library.
 const wjConfig = require('wj-config');
 const fs = require('fs');
 
-const loadJsonFile = fileName => {
-    const data = fs.readFileSync(fileName, 'utf-8');
-    return JSON.parse(data);
+const loadJsonFile = (fileName, isRequired) => {
+    const fileExists = fs.existsSync(fileName);
+    if (fileExists) {
+        const data = fs.readFileSync(fileName);
+        return JSON.parse(data);
+    }
+    else if (isRequired) {
+        throw new Error(`Configuration file ${fileName} is required but was not found.`);
+    }
+    // Return an empty object.
+    return {};
 };
+
 const envName = process.env.NODE_ENV;
-const mainConfig = loadJsonFile('./config.json');
-const envConfig = loadJsonFile(`./config.${envName}.json`);
+const mainConfig = loadJsonFile('./config/config.json', true);
+const envConfig = loadJsonFile(`./config/config.${envName}.json`, false);
 // Pass process.env in an options object if you want to include environment variables.
 const config = wjConfig([mainConfig,  envConfig], envName, { env: process.env });
 

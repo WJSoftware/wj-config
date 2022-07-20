@@ -69,7 +69,6 @@ typings/
 .yarn-integrity
 
 # dotenv environment variables file
-.env
 .env.test
 
 # parcel-bundler cache (https://parceljs.org/)
@@ -106,6 +105,7 @@ dist
 # Visual Studio code
 .vscode/*
 !.vscode/tasks.json
+!.vscode/launch.json
 
 # Project-specific.
 # Copy of the README file created for deployment.
