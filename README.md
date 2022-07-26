@@ -5,7 +5,7 @@
 > Javascript configuration module for NodeJS and React that works like ASP.net configuration where 2 JSON's are merged 
 > and environment variables can contribute/overwrite values by following a naming convention.
 
-**Version 2 is under planning!  See the end of this Readme for information.**
+> Version 2 is under planning!  See the end of this Readme for information.
 
 Welcome to **wj-config**.  This is a Javascript library that can be used for almost any type of project, including but 
 not limited to, **NodeJS** and **React** applications.
@@ -44,8 +44,6 @@ free to explore them and to contribute.
 | NodeJS Express | v1.0.2 | Express v4.16.1 |
 
 The repository contains the necessary `launch.json` file to run each of the examples in Visual Studio Code.
-
-For React examples, remember to first run `npm start` before start debugging it.
 
 ## Quickstart
 
@@ -497,7 +495,8 @@ hexadecimal notation (0xABC).
 3. Try to convert the value to a floating point number.
 4. If no parsing succeeds, then the value is kept as a string value.
 
-## Version 2 Plans
+---
+# Version 2 Plans
 
 > This is all preliminary and subject to change.
 
@@ -535,7 +534,7 @@ const config = wjConfig()
     .build();
 ```
 
-### Advantages
+## Advantages
 
 + The developer can easily enforce an order of priority for the various possible configuration sources.
 + Configuration objects are no longer required; easily can `wj-config` be set to work with say, just environment 

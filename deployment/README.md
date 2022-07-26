@@ -62,7 +62,8 @@ variable holding the application's environment name is `APP_ENVIRONMENT`.
 
 ## Running Locally
 
-This can be used locally when running the **React** application locally using Visual Studio Code.  Simply add the 
-environment variables to the `.env` file (or any of the related files).  These will end up as part of `process.env` 
-because locally, **React** applications created using the *Create React App* tool run in a **NodeJS** HTTP server, so 
-when run *locally* (this usually means the `Development` environment), pass `process.env` as source 
+This is not meant to be used locally (in the developer's local machine).  Instead use the `.env` series of files (see 
+about this @ the [dotenv project home](https://github.com/motdotla/dotenv)) to define environment variables that are 
+then accessible through `process.env`.  The 
+[ReactJS example's README](https://github.com/WJSoftware/wj-config/tree/main/examples/react%20v18.2.0/v1.0.2) provided 
+in this repository explains this in detail.
