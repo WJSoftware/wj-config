@@ -1,0 +1,30 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "chrome",
+            "request": "launch",
+            "name": "Launch React Example v18.2.0 - v1.0.2",
+            "url": "http://localhost:3001",
+            "webRoot": "${workspaceFolder}/examples/react/v18.2.0/v1.0.2",
+            "preLaunchTask": "npm: start - examples/react v18.2.0/v1.0.2"
+        },
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "Launch Express Example v4.16.1 - v1.0.2",
+            "skipFiles": [
+                "<node_internals>/**"
+            ],
+            "cwd": "${workspaceFolder}/examples/express/v4.16.1/v1.0.2",
+            "program": "${workspaceFolder}/examples/express/v4.16.1/v1.0.2/bin/www",
+            "env": {
+                "NODE_ENV": "Development"
+            },
+            "console": "integratedTerminal"
+        }
+    ]
+}

@@ -1,0 +1,32 @@
+{
+    "appSettings": {
+        "id": "wj-config-ui",
+        "title": "React with WJ-Config",
+        "projectName": "wj-config by WJ Software",
+        "projectHome": "https://github.com/WJSoftware/wj-config"
+    },
+    "ws": {
+        "options": {
+            "mockaroo": {
+                "key": "a53dac10"
+            }
+        },
+        "mockaroo": {
+            "host": "my.api.mockaroo.com",
+            "scheme": "https",
+            "person": {
+                "all": "/persons.json"
+            }
+        },
+        "flags": {
+            "host": "countryflagsapi.com",
+            "scheme": "https",
+            "flag": "/svg/{countryCode}"
+        },
+        "countries": {
+            "host": "restcountries.com",
+            "scheme": "https",
+            "search": "/v3.1/alpha?codes={codes}"
+        }
+    }
+}

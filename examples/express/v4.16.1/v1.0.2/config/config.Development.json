@@ -1,0 +1,8 @@
+{
+    "appSettings": {
+        "port": 3002
+    },
+    "logging": {
+        "minLevel": "debug"
+    }
+}
