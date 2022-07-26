@@ -1,6 +1,6 @@
 'use strict';
 const helpers = require('./helpers');
-const environment = require('./wj-environment');
+const Environment = require('./wj-environment');
 const merge = require('./merge');
 const makeWsUrlFunctions = require('./makeWsUrlFunctions');
 
@@ -30,8 +30,10 @@ const wjConfig = (envConfigs, env, options) => {
     if (options.wsPropertyNames && helpers.isArray(options.wsPropertyNames)) {
         options.wsPropertyNames.forEach(name => makeWsUrlFunctions(finalConfig[name]));
     }
-    finalConfig.environment = environment(env, options.envNames);
+    finalConfig.environment = new Environment(env, options.envNames);
     return finalConfig;
 };
+
+wjConfig.Environment = Environment;
 
 module.exports = wjConfig;

@@ -42,6 +42,7 @@ free to explore them and to contribute.
 | - | - | - |
 | ReactJS | v1.0.2 | ReactJS v18.2.0 |
 | NodeJS Express | v1.0.2 | Express v4.16.1 |
+| ReactJS | v1.1.0 | ReactJS v18.2.0 |
 
 The repository contains the necessary `launch.json` file to run each of the examples in Visual Studio Code.
 
@@ -137,32 +138,21 @@ module.exports = config;
 import wjConfig from 'wj-config';
 // In the browser we cannot load files at will unless we obtain from an HTTP call, but modules do not support async 
 // loading, so the easiest is to just load all environment JSON files in different variables.
-import mainConfig from './config.json';
-import devConfig from './config.Development.json';
-import preProdConfig from './config.PreProduction.json';
-import prodConfig from './config.Production.json';
+import mainConfig from './config/config.json';
+import devConfig from './config/config.Development.json';
+import preProdConfig from './config/config.PreProduction.json';
+import prodConfig from './config/config.Production.json';
 
-// We recommend setting REACT_APP_ENVIRONMENT as a property of an env object, that in turn is a property in the 
-// window object and not use the .env REACT system at all.  The .env system is like C's macros that disapper once the 
-// React app is built.  Read to the end of this Readme to see how this should be done.
-const envName = window.env.REACT_APP_ENVIRONMENT;
-let envConfig = null;
-//Use a simple switch case to obtain the appropriate override config.
-switch (envName) {
-    case 'Development':
-        envConfig = devConfig;
-        break;
-    case 'PreProduction':
-        envConfig = preProdConfig;
-        break;
-    case 'Production':
-        envConfig = prodConfig;
-        break;
-    default:
-        throw new Error(`Unrecognized environment name "${envName}".`);
-}
-const config = wjConfig([mainConfig,  envConfig], envName);
-
+// We recommend setting REACT_ENVIRONMENT as a property of an env object, that in turn is a property in the window 
+// object and not use the .env REACT system at all.  The .env system is like C's macros that disapper once the React 
+// app is built.  Read to the end of this Readme to see how this should be done.
+const envName = window.env.REACT_ENVIRONMENT;
+// NEW IN V1.1.0:  The environment functionality can be obtained ahead of time.
+const environment = new wjConfig.Environment(envName);
+const envConfig = environment.isDevelopment() ? devConfig : (environment.isPreProduction() ? preProdConfig : prodConfig);
+const config = wjConfig([mainConfig, envConfig], envName);
+// Go open the browser's console and see how the configuration object ended up looking like.
+console.log('Config: %o', config);
 export default config;
 ```
 
@@ -240,7 +230,7 @@ replacements the 1st one appeals the most to me, but feel free to choose whichev
 At this point you have probably realized the excellent potential of this feature, but most people don't realize the 
 most amazing consequence of using this feature:  The position of the replaceable route values do not affect your code!
 
-For example, you could define the URL `/api/vi/users?id={id}&format={format}` and later on decide that the ID will be 
+For example, you could define the URL `/api/vi/users?format={format}&id={id}` and later on decide that the ID will be 
 part of the URL and not the query string, modifying it to `/api/v1/users/{id}?format={format}` and your function call 
 does not have to change at all.  Your code does not care about the position of replaceable route values.
 
@@ -375,20 +365,43 @@ Do include your list of environment names in the `envNames` property as they sha
 ###  Environment Object
 
 As mentioned already in several other places, the configuration object is granted an `environment` property whose 
-value is an object with the `value` property, and as many `isXXX()` functions as there are environments.  Assuming the 
-names on the default configuration, the object will have `isDevelopment()`, `isPreProduction()` and `isProduction()`.
+value is an object with the `value` property, a `names` property that contains the list of defined environments and as 
+many `isXXX()` functions as there are environments.  Assuming the names on the default configuration, the object will 
+have `isDevelopment()`, `isPreProduction()` and `isProduction()`.
 
-The functions return a Boolean response based on the stored value in `value`.  This is an example of how this object 
-would look like for the quickstart example:
+The `isXXX()` functions return a Boolean response based on the stored value in `value`.  This is an example of how 
+this object would look like for the quickstart example:
 
 ```js
 {
     value: 'Development',
+    names: ['Development', 'PreProduction', 'Production'],
     isDevelopment: function() { ... },
     isPreProduction: function() { ... },
     isProduction: function() { ... }
 }
 ```
+> New in **v1.1.0**
+
+The environment object can also be produced by itself before producing the final configuration object with the 
+`wj-config` function.  This is useful especially in **ReactJS** (and probably other browser technologies) in order to 
+make some decisions inside the `config.js` module.  See the Quickstart example above for a practical use of this.
+
+```js
+import wjConfig from 'wj-config';
+
+const envName = window.env.REACT_ENVIRONMENT;
+//Optionally also pass the environment names.
+const environment = new wjConfig.Environment(envName /* , ['MyDev', 'MyTest', 'MyProd'] */);
+// Now use it as you see fit.
+if (environment.isDevelopment()) {
+    // Do stuff.
+}
+```
+
+As you probably guessed, this is only useful for the times where the configuration object is not yet available.  Once 
+the configuration object is created, it comes with the `environment` property and it is therefore a futile exercise 
+to create it separately.
 
 ## React-Specific Notes
 
@@ -430,7 +443,7 @@ and for this specific purpose, this project has the
 does exactly this.
 
 **WORD OF CAUTION**:  Using a Pod template in Kubernetes is usually better than using the Dockerfile's `ENV` 
-instruction because then the image is only good for a specific environment.
+instruction because then the image is not tied to a specific environment.
 
 This last alternative may be better than **ConfigMap**s because it enables the use of Kubernetes **Secrets**.
 
@@ -546,3 +559,5 @@ variables.
 + The `environment` object is optional, freeing this name for custom use, if desired.
 + The `environment` object, if included, can be stored in the optionally provided property name.
 + URL function creation is optional, not wasting processor time if none are needed or desired.
++ If an environment object is created ahead of time, it can be given to the config builder in order to preserve a bit 
+more of that processing power.

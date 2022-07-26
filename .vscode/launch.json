@@ -13,6 +13,14 @@
             "preLaunchTask": "npm: start - examples/react v18.2.0/v1.0.2"
         },
         {
+            "type": "chrome",
+            "request": "launch",
+            "name": "Launch React Example v18.2.0 - v1.1.0",
+            "url": "http://localhost:3003",
+            "webRoot": "${workspaceFolder}/examples/react/v18.2.0/v1.1.0",
+            "preLaunchTask": "npm: start - examples/react v18.2.0/v1.1.0"
+        },
+        {
             "type": "node",
             "request": "launch",
             "name": "Launch Express Example v4.16.1 - v1.0.2",
