@@ -150,11 +150,7 @@ const envName = window.env.REACT_ENVIRONMENT;
 // NEW IN V1.1.0:  The environment functionality can be obtained ahead of time.
 const environment = new wjConfig.Environment(envName);
 const envConfig = environment.isDevelopment() ? devConfig : (environment.isPreProduction() ? preProdConfig : prodConfig);
-const env = environment.isDevelopment() ? process.env : window.env;
-const config = wjConfig([mainConfig, envConfig], envName, {
-    env: env,
-    envPrefix: 'REACT_APP_'
-});
+const config = wjConfig([mainConfig, envConfig], envName);
 // Go open the browser's console and see how the configuration object ended up looking like.
 console.log('Config: %o', config);
 export default config;
