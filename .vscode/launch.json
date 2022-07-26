@@ -9,7 +9,8 @@
             "request": "launch",
             "name": "Launch React Example v18.2.0 - v1.0.2",
             "url": "http://localhost:3001",
-            "webRoot": "${workspaceFolder}/examples/react/v18.2.0/v1.0.2"
+            "webRoot": "${workspaceFolder}/examples/react/v18.2.0/v1.0.2",
+            "preLaunchTask": "npm: start - examples/react v18.2.0/v1.0.2"
         },
         {
             "type": "node",

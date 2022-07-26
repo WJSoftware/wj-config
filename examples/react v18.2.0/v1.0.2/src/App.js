@@ -10,6 +10,7 @@ function App() {
         <img src={logo} className="App-logo" alt="logo" />
         <h1>{config.appSettings.title}</h1>
         {config.environment.isProduction() || <h5>{config.environment.value} environment</h5>}
+        {config.gateway.host}
         <p>
           Edit <code>src/App.js</code> and save to reload.
         </p>

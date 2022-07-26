@@ -43,7 +43,7 @@ const PersonsTable = props => {
                 <td>{p.first_name}</td>
                 <td>{p.last_name}</td>
                 <td>{p.email}</td>
-                <td><img className="flag" src={config.ws.flags.flag(() => p.country_code)} />&nbsp;{countries[p.country_code]} ({p.country_code})</td>
+                <td><img className="flag" src={config.ws.flags.flag(() => p.country_code)} title={countries[p.country_code]} alt={countries[p.country_code]} />&nbsp;{countries[p.country_code]} ({p.country_code})</td>
             </tr>)}
         </tbody>
     </table>
