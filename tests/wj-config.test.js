@@ -65,6 +65,13 @@ describe('wj-config', () => {
         // Assert.
         should.exist(config.environment);
     });
+    it('Should expose an instance of Environment through the environment property.', () => {
+        // Act.
+        const config = wjConfig(emptyJsons, testEnv);
+
+        // Assert.
+        config.environment.should.instanceOf(wjConfig.Environment);
+    });
     it('Should save the passed environment name in the environment.value property.', () => {
         // Act.
         const config = wjConfig(emptyJsons, testEnv);
@@ -115,5 +122,5 @@ describe('wj-config', () => {
 
         // Assert.
         should.exist(env);
-    })
+    });
 });
