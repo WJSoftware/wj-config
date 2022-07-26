@@ -1,5 +1,5 @@
 require('chai').should();
-const environment = require('../src/wj-environment');
+const Environment = require('../src/wj-environment');
 const helpers = require('../src/helpers');
 
 const testEnvNames = [
@@ -9,12 +9,22 @@ const testEnvNames = [
 ];
 
 describe('wj-environment', () => {
+    it('Should throw an error if the Environment function is not called as a constructor.', () => {
+        // Arrange.
+        const envName = 'Dev';
+
+        // Act.
+        const act = () => Environment(envName, testEnvNames);
+
+        // Assert.
+        act.should.throw(Error);
+    });
     const testErrorFn = (envNames) => {
         // Arrange.
         const envName = 'Dev';
 
         // Act.
-        const act = () => environment(envName, envNames);
+        const act = () => new Environment(envName, envNames);
 
         // Assert.
         act.should.throw(Error);
@@ -28,7 +38,7 @@ describe('wj-environment', () => {
         const envName = 'Dev';
 
         // Act.
-        const env = environment(envName, testEnvNames);
+        const env = new Environment(envName, testEnvNames);
 
         // Assert.
         env.value.should.equal(envName);
@@ -38,7 +48,7 @@ describe('wj-environment', () => {
         const envName = 'Dev';
 
         // Act.
-        const env = environment(envName, testEnvNames);
+        const env = new Environment(envName, testEnvNames);
 
         // Assert.
         env.names.should.have.same.members(testEnvNames);
@@ -48,7 +58,7 @@ describe('wj-environment', () => {
         const envName = 'Dev';
 
         // Act.
-        const env = environment(envName, testEnvNames);
+        const env = new Environment(envName, testEnvNames);
 
         // Assert.
         const foundFns = [];
@@ -65,7 +75,7 @@ describe('wj-environment', () => {
         const envName = 'MyDev';
 
         // Act.
-        const act = () => environment(envName, testEnvNames);
+        const act = () => new Environment(envName, testEnvNames);
 
         // Assert.
         act.should.throw(Error);

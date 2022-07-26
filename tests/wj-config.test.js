@@ -1,5 +1,4 @@
 const should = require('chai').should();
-const helpers = require('../src/helpers');
 const wjConfig = require('../src/wj-config');
 
 const testEnv = 'Development';
@@ -102,4 +101,19 @@ describe('wj-config', () => {
         should.exist(config.ws.buildUrl);
         config.ws.url1.should.be.a('function');
     });
+    it('Should expose the Environment constructor as a property.', () => {
+        // Act.
+        const Environment = wjConfig.Environment;
+
+        // Assert.
+        should.exist(Environment);
+        Environment.should.be.a('function');
+    });
+    it('Should allow the creation of the Environment object using its exported Environment property.', () => {
+        // Act.
+        const env = new wjConfig.Environment('Dev', ['Dev']);
+
+        // Assert.
+        should.exist(env);
+    })
 });

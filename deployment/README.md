@@ -40,6 +40,10 @@ We would have made sure that `index.html` would include the script with:
 
 ```html
 <script src="config.js" type="text/javascript"></script>
+<!--
+    Or for React:
+-->
+<script src="%PUBLIC_URL%/config.js" type="text/javascript"></script>
 ```
 
 Which should complete the needful:  To define `window.env` as an object that contains the application's pertinent 
