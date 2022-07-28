@@ -1,4 +1,3 @@
-
 [CmdletBinding()]
 Param(
     [Parameter(Mandatory, Position = 0)]
@@ -15,17 +14,18 @@ function Format-JsText {
     $Text.Replace("\", "\\").Replace("'", "\'")
 }
 
-# Version: 1.0.0
-Write-Host "window.env = {"
-[int] $counter = 0
+# Version: 1.0.1
+Write-Output "window.env = {"
 if ($EnvName -eq "") {
     $EnvName = "APP_ENVIRONMENT"
 }
+[string] $prevLine = ""
 Get-ChildItem env: | Where-Object { $_.Key.startsWith($Prefix) -Or $_.Key -eq $EnvName } | ForEach-Object {
-    if ($counter++ -ne 0) {
-        Write-Host ","
+    if ($prevLine -ne "") {
+        $prevLine += ","
+        Write-Output $prevLine
     }
-    Write-Host "    $($_.Key): '$(Format-JsText $_.Value)'" -NoNewline
+    $prevLine = "    $($_.Key): '$(Format-JsText $_.Value)'"
 }
-Write-Host
-Write-Host "};"
+Write-Output $prevLine
+Write-Output "};"

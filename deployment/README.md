@@ -36,6 +36,13 @@ cpenv.sh OPT_ APP_ENVIRONMENT>/usr/shared/nginx/html/config.js
 nginx -g "daemon off;"
 ```
 
+If using Powershell, you could redirect with `>`, but if that is troublesome because of the encoding, try doing it 
+like this:
+
+```powershell
+.\cpenv.ps1 OPT_ APP_ENVIRONMENT | Set-Content .\config.js -Encoding UTF8 # Or whatever encoding you want/need.
+```
+
 We would have made sure that `index.html` would include the script with:
 
 ```html
@@ -70,4 +77,4 @@ This is not meant to be used locally (in the developer's local machine).  Instea
 about this @ the [dotenv project home](https://github.com/motdotla/dotenv)) to define environment variables that are 
 then accessible through `process.env`.  The 
 [ReactJS example's README](https://github.com/WJSoftware/wj-config/tree/main/examples/react%20v18.2.0/v1.0.2) provided 
-in this repository explains this in detail.
+in this repository explains this in more detail.
