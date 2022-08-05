@@ -110,3 +110,5 @@ dist
 # Project-specific.
 # Copy of the README file created for deployment.
 src/README.md
+# TypeScript output
+src/out

@@ -1,0 +1,29 @@
+import type { ICoreConfig, IDataSource } from "wj-config";
+import DataSource from "./DataSource.js";
+import { isConfig } from "./helpers.js";
+
+/**
+ * Configuration data source class that injects a pre-build JavaScript object into the configuration build chain.
+ */
+export class ObjectDataSource extends DataSource implements IDataSource {
+    /**
+     * The object to inject.
+     */
+    private _obj: ICoreConfig;
+
+    /**
+     * Initializes a new instance of this class.
+     * @param obj Data object to inject into the configuration build chain.
+     */
+    constructor(obj: ICoreConfig) {
+        super('Object Data Source');
+        if (!isConfig(obj)) {
+            throw new Error('The provided object is not suitable as configuration data source.');
+        }
+        this._obj = obj;
+    }
+
+    getObject(): Promise<ICoreConfig> {
+        return Promise.resolve(this._obj);
+    };
+}

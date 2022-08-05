@@ -5,6 +5,21 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "name": "Launch NodeJS Example v18.2.0 - v2.0.0",
+            "cwd": "${workspaceFolder}/examples/NodeJS/v2.0.0",
+            "program": "${workspaceFolder}/examples/NodeJS/v2.0.0/index.js",
+            "request": "launch",
+            "skipFiles": [
+                "<node_internals>/**"
+            ],
+            "env": {
+                "NODE_ENV": "PreProduction",
+                "OPT_app__title": "Title set by Environment"
+            },
+            "type": "node",
+            "console": "integratedTerminal"
+        },
+        {
             "type": "chrome",
             "request": "launch",
             "name": "Launch React Example v18.2.0 - v1.0.2",

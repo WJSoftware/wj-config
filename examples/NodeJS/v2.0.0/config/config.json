@@ -1,0 +1,21 @@
+{
+    "app": {
+        "title": "NodeJS v18.2.0 with wj-config v2.0.0",
+        "version": "1.0.0"
+    },
+    "ws": {
+        "opts": {
+            "key": "a53dac10"
+        },
+        "persons": {
+            "host": "my.api.mockaroo.com",
+            "scheme": "https",
+            "all": "/persons.json"
+        },
+        "countries": {
+            "host": "restcountries.com",
+            "scheme": "https",
+            "search": "/v3.1/alpha?codes={codes}"
+        }
+    }
+}
