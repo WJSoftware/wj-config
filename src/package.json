@@ -1,7 +1,7 @@
 {
     "name": "wj-config",
-    "version": "2.0.0",
-    "main": "main.js",
+    "version": "2.0.0-beta.0",
+    "main": "index.js",
     "type": "module",
     "description": "Javascript configuration module for NodeJS and React that works like ASP.net configuration where 2 JSON's are merged and environment variables can contribute/overwrite values by following a naming convention.",
     "author": "José Pablo Ramírez Vargas <webJose@gmail.com>",
@@ -35,7 +35,7 @@
     "devDependencies": {
         "typescript": "^4.7.4"
     },
-    "typings": "types.d.mts",
+    "types": "wj-config.d.ts",
     "scripts": {
         "build": "npx tsc"
     }

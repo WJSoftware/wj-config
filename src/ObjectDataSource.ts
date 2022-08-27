@@ -1,5 +1,5 @@
 import type { ICoreConfig, IDataSource } from "wj-config";
-import DataSource from "./DataSource.js";
+import { DataSource } from "./DataSource.js";
 import { isConfig } from "./helpers.js";
 
 /**
@@ -16,7 +16,7 @@ export class ObjectDataSource extends DataSource implements IDataSource {
      * @param obj Data object to inject into the configuration build chain.
      */
     constructor(obj: ICoreConfig) {
-        super('Object Data Source');
+        super('Object');
         if (!isConfig(obj)) {
             throw new Error('The provided object is not suitable as configuration data source.');
         }

@@ -5,10 +5,17 @@ const noop = (x?: any) => '';
 
 type RouteValuesFunction = (name: string) => string
 type RouteValues = RouteValuesFunction | { [x: string]: string }
+type QueryString = (() => string | ICoreConfig) | string | ICoreConfig
 
 const rootPathFn = '_rootPath';
 
-function buildUrlImpl(this: IWsPath, path: string, routeValues: RouteValues, routeRegex: RegExp) {
+function buildUrlImpl(
+    this: IWsPath,
+    path: string,
+    routeValues?: RouteValues,
+    routeRegex?: RegExp,
+    queryString?: QueryString
+) {
     let routeValuesFn: RouteValuesFunction | undefined = undefined;
     let index = 0;
     if (routeValues) {
@@ -25,8 +32,37 @@ function buildUrlImpl(this: IWsPath, path: string, routeValues: RouteValues, rou
     const rp = (this[rootPathFn] ?? noop)();
     let url = `${rp}${(path ?? '')}`;
     // Replace any replaceable route values.
-    if (routeRegex.test(url) && routeValuesFn) {
-        url = url.replace(routeRegex, (m, g1) => (routeValuesFn ?? noop)(g1));
+    if (routeRegex && routeRegex.test(url) && routeValuesFn) {
+        url = url.replace(routeRegex, (m, g1) => encodeURIComponent((routeValuesFn ?? noop)(g1)));
+    }
+    // Add query string values, if provided.
+    if (queryString) {
+        const qmPos = url.indexOf('?');
+        if (qmPos < 0) {
+            url += '?'
+        } else if (url.length - qmPos - 1) {
+            url += '&'
+        }
+        let qsValue: string | ICoreConfig | undefined;
+        if (typeof queryString === 'function') {
+            qsValue = queryString();
+        }
+        else {
+            qsValue = queryString;
+        }
+        if (typeof qsValue === 'string') {
+            // Prepared query string.  Just add to the url.
+            url += qsValue
+        }
+        else {
+            let qs = '';
+            forEachProperty(qsValue, (key, value) => {
+                qs += `${key}=${encodeURIComponent(value)}&`
+            });
+            if (qs.length > 0) {
+                url += qs.substring(0, qs.length - 1)
+            }
+        }
     }
     return url;
 }
@@ -85,15 +121,15 @@ function makeWsUrlFunctions(ws: IWsParent | ICoreConfig, routeValuesRegExp: RegE
     }
     if (canBuildUrl) {
         // Add the buildUrl function.
-        ws.buildUrl = function (path: string, routeValues: RouteValues) {
-            return buildUrlImpl.bind((ws as IWsPath))(path, routeValues, routeValuesRegExp);
+        ws.buildUrl = function (path: string, routeValues?: RouteValues, queryString?: QueryString) {
+            return buildUrlImpl.bind((ws as IWsPath))(path, routeValues, routeValuesRegExp, queryString);
         };
     }
     // For every non-object property in the object, make it a function.
     // Properties that have an object are recursively configured.
     forEachProperty(ws, (key, value) => {
         const sc = shouldConvert(key);
-        if (sc && canBuildUrl && !isConfig(value)) {
+        if (sc && canBuildUrl && typeof value === 'string') {
             ws[key] = function (routeValues: RouteValues) {
                 return ((this as IWsPath).buildUrl ?? noop)(value, routeValues);
             };

@@ -13,6 +13,6 @@ const buildDictionary = (key: string, value: ConfigurationValue): ICoreConfig =>
 export default class SingleValueDataSource extends DictionaryDataSource {
     constructor(path: string, value: ConfigurationValue, hierarchySeparator: string = ':') {
         super(buildDictionary(path, value), hierarchySeparator);
-        this.name = `Single Value Data Source: ${path}`;
+        this.name = `Single Value: ${path}`;
     }
 }

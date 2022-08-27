@@ -1,0 +1,8 @@
+{
+    "appSettings": {
+        "port": 3005
+    },
+    "logging": {
+        "minLevel": "verbose"
+    }
+}

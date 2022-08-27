@@ -1,5 +1,5 @@
-import wjConfig, { Environment } from "./main.js";
-import type { IDefaultEnvConfig, IDefaultEnvironment, IEnvConfig } from "./types.mjs";
+import type { IDefaultEnvConfig, IDefaultEnvironment } from "wj-config";
+import wjConfig, { Environment } from "./index.js";
 
 const env: IDefaultEnvironment = new Environment('Development') as IDefaultEnvironment;
 const config: IDefaultEnvConfig = await wjConfig().includeEnvironment(env).build() as IDefaultEnvConfig;

@@ -1,6 +1,6 @@
 import type { IDataSourceInfo } from "wj-config";
 
-export default class DataSource {
+export class DataSource {
     name: string;
     index?: number;
     private _traceObject?: IDataSourceInfo;

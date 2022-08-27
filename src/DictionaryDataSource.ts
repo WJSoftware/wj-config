@@ -1,5 +1,5 @@
 import type { ConfigurationValue, ICoreConfig, IDataSource, Predicate } from "wj-config";
-import DataSource from "./DataSource.js";
+import { DataSource } from "./DataSource.js";
 import { attemptParse, forEachProperty, isConfig } from "./helpers.js";
 
 const processKey = (key: string, hierarchySeparator: string, prefix?: string) => {
@@ -61,7 +61,7 @@ export default class DictionaryDataSource extends DataSource implements IDataSou
     private _prefixOrPredicate?: string | Predicate<string>;
 
     constructor(dictionary: ICoreConfig, hierarchySeparator?: string, prefixOrPredicate?: string | Predicate<string>) {
-        super('Dictionary Data Source');
+        super('Dictionary');
         this._dictionary = dictionary;
         this._hierarchySeparator = hierarchySeparator;
         this._prefixOrPredicate = prefixOrPredicate;

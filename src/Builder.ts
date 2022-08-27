@@ -1,11 +1,14 @@
-import type { IBuilder, IConfig, ICoreConfig, IDataSource, IEnvironment, Predicate } from "wj-config"
+import type { ConfigurationValue, IBuilder, IConfig, ICoreConfig, IDataSource, IEnvironment, Predicate, ProcessFetchResponse } from "wj-config";
 import DictionaryDataSource from "./DictionaryDataSource.js"
 import { Environment } from "./Environment.js"
 import EnvironmentDataSource from "./EnvironmentDataSource.js"
+import FetchedConfigDataSource from "./FetchedConfigDataSource.js";
 import { isConfig } from "./helpers.js"
+import JsonDataSource from "./JsonDataSource.js";
 import makeWsUrlFunctions from "./makeWsUrlFunctions.js"
 import merge from "./Merge.js"
 import { ObjectDataSource } from "./ObjectDataSource.js"
+import SingleValueDataSource from "./SingleValueDataSource.js";
 
 interface IEnvironmentSource {
     name?: string,
@@ -26,7 +29,7 @@ export default class Builder implements IBuilder {
     /**
      * Collection of data sources added to the builder.
      */
-    private _dataSources: Array<IDataSource> = [];
+    private _dataSources: IDataSource[] = [];
 
     /**
      * Environment source.
@@ -37,11 +40,6 @@ export default class Builder implements IBuilder {
      * URL data used to create URL functions out of specific property values in the resulting configuration object.
      */
     private _urlData?: IUrlData;
-
-    /**
-     * Boolean value that indicates if the configuration values need to create a trace.
-     */
-    private _traceValueSource: boolean = false;
 
     /**
      * Flag to determine if the last call in the builder was the addition of a data source.
@@ -65,6 +63,18 @@ export default class Builder implements IBuilder {
 
     addEnvironment(env: ICoreConfig, prefix: string = 'OPT_'): IBuilder {
         return this.add(new EnvironmentDataSource(env, prefix));
+    }
+
+    addFetchedConfig(input: URL | RequestInfo, required: boolean = true, init?: RequestInit, procesFn?: ProcessFetchResponse): IBuilder {
+        return this.add(new FetchedConfigDataSource(input, required, init, procesFn));
+    }
+
+    addJson(json: string, jsonParser?: JSON, reviver?: (this: any, key: string, value: any) => any) {
+        return this.add(new JsonDataSource(json, jsonParser, reviver));
+    }
+
+    addSingleValue(path: string, value: ConfigurationValue, hierarchySeparator?: string): IBuilder {
+        return this.add(new SingleValueDataSource(path, value, hierarchySeparator));
     }
 
     name(name: string): IBuilder {
@@ -94,11 +104,6 @@ export default class Builder implements IBuilder {
         return this;
     }
 
-    includeValueTrace() {
-        this._traceValueSource = true;
-        return this;
-    }
-
     createUrlFunctions(wsPropertyNames?: string[], routeValuesRegExp?: RegExp): IBuilder {
         this._lastCallWasDsAdd = false;
         this._urlData = {
@@ -108,14 +113,14 @@ export default class Builder implements IBuilder {
         return this;
     }
 
-    async build(): Promise<IConfig> {
+    async build(traceValueSources: boolean = false): Promise<IConfig> {
         this._lastCallWasDsAdd = false;
         const dsTasks: Promise<ICoreConfig>[] = [];
         this._dataSources.forEach(ds => {
             dsTasks.push(ds.getObject());
         });
         const sources = await Promise.all(dsTasks);
-        const wjConfig = merge(sources, this._traceValueSource ? this._dataSources : undefined);
+        const wjConfig = merge(sources, traceValueSources ? this._dataSources : undefined);
         if (this._envSource) {
             const envPropertyName = this._envSource.name ?? 'environment';
             if (wjConfig[envPropertyName] !== undefined) {

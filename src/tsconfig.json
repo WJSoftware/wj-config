@@ -93,7 +93,7 @@
     "skipLibCheck": true /* Skip type checking all .d.ts files. */
   },
   "include": [
-    "**/*.ts",
-    "types.d.mts"
+    "*.ts",
+    "index.d.ts"
   ]
 }
