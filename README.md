@@ -195,7 +195,24 @@ module.exports = (async function () {
 
 ### React
 
+> **IMPORTANT**:  Eject or use the `@craco/craco` package and configure webpack to allow top-level awaits.  Details in 
+> the [React section](#react-specific-notes).
+
 ```js
+import wjConfig, { Environment } from 'wj-config';
+import mainConfig from './config.json'; // One may import data like this, or fetch it.
+
+const env = new Environment(window.env.REACT_ENVIRONMENT);
+const config = wjConfig()
+    .addObject(mainConfig)
+    .name('Main Configuration')
+    .addFetchedConfig(`./config.${env.value}.json`, false)
+    .addEnvironment(env.isDevelopment() ? process.env : window.env, 'REACT_APP_')
+    .includeEnvironment(env)
+    .createUrlFunctions(env.isDevelopment())
+    .build();
+
+export default await config;
 ```
 
 At this point, your `config.js` module is ready to be imported or required anywhere in your project and it will 
@@ -562,6 +579,22 @@ does exactly this.
 instruction because then the image is not tied to a specific environment.
 
 This last alternative may be better than **ConfigMap**s because it enables the use of Kubernetes **Secrets**.
+
+### How to Use Top-Level Await in React
+
+All major browsers now support the top-level await feature as seen in the [can I use website](https://caniuse.com/?search=top%20level%20await).
+
+The problem is that current React applications created with **Create React App** do not enable this feature for its 
+webpack configuration.
+
+There are two possible solutions that I know of:
+
+1. Eject.  That's right.  Simply run `npm eject` so the webpack configuration is readily available for modification.
+2. Install `@craco/craco` from the NPM global repository.  For modern React applications using `react-scripts` v5.x 
+install v7 (currently in alpha as I write this document).
+
+The example provided in this repository uses the second option.  It is a super-simple thing to do and is done in a 
+matter of 3 minutes.
 
 ## Using Environment Variables as Configuration Source
 

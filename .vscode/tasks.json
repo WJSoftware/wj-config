@@ -67,6 +67,30 @@
 			],
 			"label": "npm: start - examples/react v18.2.0/v1.1.0",
 			"detail": "react-scripts start"
+		},
+		{
+			"type": "npm",
+			"script": "start",
+			"path": "examples/react v18.2.0/v2.0.0",
+			"isBackground": true,
+			"problemMatcher": [
+				{
+					"pattern": [
+						{
+							"regexp": "^([^\\\\s].*)\\\\((\\\\d+,\\\\d+)\\\\):\\\\s*(.*)$",
+							"file": 1,
+							"location": 2,
+							"message": 3
+						}
+					],
+					"background": {
+						"beginsPattern": ".",
+						"endsPattern": "^webpack compiled"
+					}
+				}
+			],
+			"label": "npm: start - examples/react v18.2.0/v2.0.0",
+			"detail": "react-scripts start"
 		}
 	]
 }

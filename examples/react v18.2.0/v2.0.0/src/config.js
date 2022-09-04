@@ -8,6 +8,7 @@ const config = wjConfig()
     .addFetchedConfig(`./config.${env.value}.json`, false)
     .addEnvironment(env.isDevelopment() ? process.env : window.env, 'REACT_APP_')
     .includeEnvironment(env)
+    .createUrlFunctions(env.isDevelopment())
     .build();
 
 export default await config;
