@@ -10,10 +10,9 @@ Welcome to **wj-config**.  This is a Javascript library that can be used for alm
 not limited to, **NodeJS** and **React** applications.
 
 This package provides a module that, when imported, provides a configuration function that when evaluated creates a 
-build object where data sources and other configurations are specified.  At its simplest, it requires one object whose 
-properties contain the different configuration values for your application.  In practical terms, it should be a loaded 
-JSON file, but could generally speaking it could be any data source (definition and list 
-[here](#all-available-data-sources)).
+builder object where data sources and other configurations are specified.  At its simplest, it requires one object 
+whose properties contain the different configuration values for your application.  In practical terms, it should be a 
+loaded JSON file, but generally speaking it could be any data source (definition and list [here](#all-available-data-sources)).
 
 This package has no package dependencies.  It is written fully in TypeScript and is meant for modern JavaScript 
 support, meaning recent **NodeJS** and recent browsers.  To be more technical:  It is a package transpiled to ES 
@@ -33,7 +32,7 @@ Quickstart).
 that ASP.net uses:  Hierarchy levels are separated by double underscores.  The prefix is configurable.
 + Other JSON data sources such as dictionaries and single value data sources.
 + The ability to create special functions from data that is meant to be used to construct URL's.  The created 
-functions provide route replacement values, query string generation and URL encoding.
+functions provide route replacement values, query string generation and URL encoding of replacement values.
 + An environment object with the current environment name and helpful `isXXX()` functions to quickly create 
 conditionals based on the current environment, just like .Net's `IHostEnvironment` interface.
 + Configuration value tracing:  If needed for troubleshooting or debugging, the configuration builder will also create 
@@ -46,13 +45,14 @@ free to explore them and to contribute.
 
 | Technology | wj-config Version | Technology Version |
 | - | - | - |
-| ReactJS | v1.0.2 | ReactJS v18.1.0 |
+| ReactJS | v1.0.2 | ReactJS v18.2.0 |
 | NodeJS Express | v1.0.2 | Express v4.16.1 |
-| ReactJS | v1.1.0 | ReactJS v18.1.0 |
+| ReactJS | v1.1.0 | ReactJS v18.2.0 |
 | NodeJS CommonJS | v2.0.0 | v18.1.0 |
 | NodeJS ES Modules | v2.0.0 | v18.1.0 |
+| ReactJS | v2.0.0 | v18.2.0 |
 
-The repository contains the necessary `launch.json` file to run each of the examples in Visual Studio Code.
+The repository contains the necessary `launch.json` file to run each of the examples in *Visual Studio Code*.
 
 ## Quickstart
 
@@ -145,7 +145,7 @@ const env = new Environment(process.env.NODE_ENV);
 
 const config = wjConfig()
     .addObject(mainConfig)
-    .name('Main Configuration') // Give data sources a meaningful name that appears in value traces.
+    .name('Main Configuration') // Give data sources a meaningful name for value tracing purposes.
     .addObject(loadJsonFile(`./config.${env.value}.json`))
     .name(`${env.name} Configuration`)
     .addEnvironment(process.env) // Adds a data source that reads the environment variables in process.env.
@@ -183,7 +183,7 @@ module.exports = (async function () {
     const env = new Environment(process.env.NODE_ENV);
     return wjConfig()
         .addObject(loadJsonFile('./config.json', true))
-        .name('Main Configuration') // Give data sources a meaningful name that appears in value traces.
+        .name('Main Configuration') // Give data sources a meaningful name for value tracing purposes.
         .addObject(loadJsonFile(`./config.${env.value}.json`))
         .name('Env Configuration')
         .addEnvironment(process.env) // Adds a data source that reads the environment variables in process.env.
@@ -205,12 +205,12 @@ import mainConfig from './config.json'; // One may import data like this, or fet
 const env = new Environment(window.env.REACT_ENVIRONMENT);
 const config = wjConfig()
     .addObject(mainConfig)
-    .name('Main Configuration')
-    .addFetchedConfig(`./config.${env.value}.json`, false)
-    .addEnvironment(env.isDevelopment() ? process.env : window.env, 'REACT_APP_')
-    .includeEnvironment(env)
-    .createUrlFunctions(env.isDevelopment())
-    .build();
+    .name('Main Configuration') // Give data sources a meaningful name for value tracing purposes.
+    .addFetchedConfig(`./config.${env.value}.json`, false) // Fetch the JSON from the /public folder.
+    .addEnvironment(env.isDevelopment() ? process.env : window.env, 'REACT_APP_') // Adds a data source that reads the environment variables in process.env.
+    .includeEnvironment(env) // So the final configuration object has the environment property.
+    .createUrlFunctions() // So the final configuration object will contain URL builder functions.
+    .build(env.isDevelopment()); // Only trace configuration values in the Development environment.
 
 export default await config;
 ```
@@ -227,7 +227,7 @@ so the library used the default names *Development*, *PreProduction* and *Produc
 
 ## URL Configuration
 
-> Since v1.0.0
+> Since **v1.0.0**
 
 As mentioned above, this package has a special feature, which makes it unique and is probably the most amazing feature 
 of them all:  It creates functions for configured URL's.  But what does this mean?  Let's review the 
@@ -248,11 +248,12 @@ The URL mechanism built in this library aims towards minimizing the amount of da
 easy per-environment overrides.  For example, one host specification can be made to apply to all the 3 configured 
 URL's above.  You can probably guess that this is also true for common pieces of paths, specified in the `rootPath` 
 properties.  Yes, properties in plural form.  Each level may provide a new root path that is appended to all previous 
-root paths.
+root paths.  It so stands that if the host needs to be overwritten for a specific environment, it is just as easy as 
+overwriting it once in an environment-specific data source (such as a JSON file).
 
 Ok, but how can the developer obtain the complete URL?  Thanks to this library, this is actually trivial:  Every 
-"leaf" property *whose value is of type string* (new in v2.0.0) in the various sub-objects under the `ws` object are 
-converted to functions that return the fully built URL.  For example, the `single` property in the path 
+"leaf" property *whose value is of type string* (new in **v2.0.0**) in the various sub-objects under the `ws` object 
+are converted to functions that return the fully built URL.  For example, the `single` property in the path 
 `ws.gateway.catalogue` in the [Quickstart](#quickstart) example is converted to a function:
 
 ```js
@@ -297,7 +298,7 @@ does not have to change at all.  Your code does not care about the position of r
 
 ### About the Replaceable Values
 
-> Since v2.0.0
+> Since **v2.0.0**
 
 By default, a replaceable value is defined as `{<name goes here>}`.  This is defined by a regular expression defined 
 in the library itself.  This is, however, just a default regular expression.  When calling the `createUrlFunctions()` 
@@ -318,7 +319,7 @@ url, so be sure not to match the port specification itself.
 
 #### Dynamic Query Strings
 
-> Since v2.0.0
+> Since **v2.0.0**
 
 The URL building functions generated by this mechanism accepts another argument to cover the cases where a query 
 string may be optional and therefore cannot be set ahead of time in the configuration JSON/data sources.
@@ -326,9 +327,9 @@ string may be optional and therefore cannot be set ahead of time in the configur
 This argument can be:
 
 + A string or a function that returns a string.  In this case it is assumed the string is an already-built query 
-string and therefore no processing is done on it.  It is attached to the end of the URL.  The string must not 
-include the `?` or a starting `&` as these are included by the URL building function.  Just return the joined key 
-and value pairs.  Example: `abc=def&xyz=123`.  This option does *NOT* provide URL encoding.
+string and therefore no encoding is done on it.  It is attached to the end of the URL.  The string must not include 
+the `?` or a starting `&` as these are included by the URL building function.  Just return the joined key 
+and value pairs.  Example: `abc=def&xyz=123`.
 + An object or a function that returns an object.  In this case the object is treated as a dictionary whose keys are 
 the query string keys, and the values are, well, the values.  The values are URL encoded for you.
 
@@ -342,7 +343,7 @@ const singleCatalogueUrl = config.ws.gateway.catalogue.single(n => catalogueId, 
 const singleCatalogueUrl = config.ws.gateway.catalogue.single(n => catalogueId, () => 'format=full');
 // Using a dictionary object.
 const singleCatalogueUrl = config.ws.gateway.catalogue.single(n => catalogueId, { format: 'full' });
-// Using a function that returns an object.
+// Using a function that returns a dictionary object.
 const singleCatalogueUrl = config.ws.gateway.catalogue.single(n => catalogueId, () => { format: 'full' });
 console.log(singleCatalogueUrl); // Shows /api/v1/cat/123?format=full for all the presented variants above.
 ```
@@ -365,12 +366,12 @@ you could define the following JSON and also apply more query string pairs with 
 ```js
 const searchKey = getSearchKeySomehow(); //let's say its value will be 'abc def'
 const quickSearch = config.ws.gateway.catalogue.quickSearch(null, { search: searchKey });
-console.log(quickSearch); // Shows /api/v1/cat/?maxRecords=100&search=abc%20def
+console.log(quickSearch); // Shows /api/v1/cat/?maxRecords=100&search=abc%20def <-- URL Encoded!
 ```
 
 ### Dynamic URL's
 
-> Since v1.0.0
+> Since **v1.0.0**
 
 As if all of the above weren't enough to convince you this is the best configuration package available, you may also 
 create fully dynamic URL's with the same mechanism.
@@ -458,15 +459,15 @@ a new sub hierarchy is created for the web socket URL's.
 
 ### A Note on What "Leaf" Properties Are
 
-> Since v1.0.0
+> Since **v1.0.0**
 
 Before version 2, a property was a leaf object subject to conversion to a URL building function if it had a parent 
 (defined by the presence of the `host` or `rootPath` properties) up in the hierarchy, its value was not an 
 object and its name did not start with an underscore (_) or was one of the reserved property names.
 
-> Since v2.0.0
+> Since **v2.0.0**
 
-Now from version 2 onwards, the definition of a leaf property requires that the value be of type `string`.  This 
+Now from version 2 onwards, the definition of a leaf property also requires that the value be of type `string`.  This 
 allows for non-string configuration values down the URL hierarchy for things like timeouts.  Now you could do:
 
 ```json
@@ -491,6 +492,8 @@ because their values are not of type `string`.
 
 ###  Environment Object
 
+> Since **v1.0.0**
+
 As mentioned already in several other places, the configuration object is granted an `environment` property whose 
 value is an object with the `value` property, a `names` property that contains the list of defined environments and as 
 many `isXXX()` functions as there are environments.  Assuming the names on the default configuration, the object will 
@@ -510,10 +513,9 @@ this object would look like for the [Quickstart](#quickstart) example:
 ```
 > Since **v1.1.0**
 
-The environment object can also be produced by itself before producing the final configuration object with the 
-`wj-config` function.  This is useful because it allows the developer to make some decisions inside the `config.js` 
-module based on the current environment value.  See the [Quickstart](#quickstart) example above for a practical use of 
-this.
+The environment object can also be produced by itself before producing the final configuration object.  This is useful 
+because it allows the developer to make some decisions inside the `config.js` module based on the current environment 
+value.  See the [Quickstart](#quickstart) example above for a practical use of this.
 
 ```js
 import { Environment } from 'wj-config';
@@ -531,7 +533,7 @@ As you probably guessed, this is only useful for the times where the configurati
 the configuration object is created, it comes in the `environment` property and it is therefore a futile exercise to 
 create it separately.
 
-> Since v2.0.0
+> Since **v2.0.0**
 
 In version 2 onwards, the environment object is not added by default, and a call to the builder's `includeEnvironment()` 
 function must be added in order to include this property.
@@ -590,15 +592,16 @@ webpack configuration.
 There are two possible solutions that I know of:
 
 1. Eject.  That's right.  Simply run `npm eject` so the webpack configuration is readily available for modification.
-2. Install `@craco/craco` from the NPM global repository.  For modern React applications using `react-scripts` v5.x 
-install v7 (currently in alpha as I write this document).
+2. Install `@craco/craco` from the [NPM global repository](https://www.npmjs.com/package/@craco/craco).  For modern 
+React applications using `react-scripts` package v5.x install [version 7](https://www.npmjs.com/package/@craco/craco/v/7.0.0-alpha.7) 
+(currently in alpha as I write this document).
 
 The example provided in this repository uses the second option.  It is a super-simple thing to do and is done in a 
 matter of 3 minutes.
 
 ## Using Environment Variables as Configuration Source
 
-> Since v1.0.0
+> Since **v1.0.0**
 
 If you are careful enough, you do not want to store sensitive information in configuration files, such as passwords of 
 system accounts and the like.
@@ -662,13 +665,13 @@ hexadecimal notation (0xABC).
 
 ## All Available Data Sources
 
-> Since v2.0.0
+> Since **v2.0.0**
 
 This is the complete list of readily available data sources in this package.
 
 | Data Source Class | Builder Function | Description |
 | - | - | - |
-| `DictionaryDataSource` | `addDictionary()` | Add the properties of a flat dictionary into the configuration hierarchy.  The property names traverse the hierarchy using a colon (:) as hierarchy separator.  An optional prefix may be specified too. |
+| `DictionaryDataSource` | `addDictionary()` | Adds the properties of a flat dictionary into the configuration hierarchy.  The property names traverse the hierarchy using a colon (:) as hierarchy separator.  An optional prefix may be specified too. |
 | `EnvironmentDataSource` | `addEnvironment()` | Adds the given object as a dictionary whose prefix is mandatory and its hierarchy separator is double underscore (__). |
 | `FetchedConfigDataSource` | `addFetchedConfig()` | Fetches data using `fetch()` and adds its result as configuration source.  The result of the call must of course be a JSON object. |
 | `JsonDataSource` | `addJson()` | Adds the provided JSON string as source of configuration data.  The advantage here is that the JSON parser can be specified.  It could be the famous `JSON5` parser, for example.|
@@ -734,7 +737,7 @@ export class MyDataSource extends DataSource {
 
 ## Value Tracing
 
-> Since v2.0.0
+> Since **v2.0.0**
 
 If so desired or needed, every leaf property value in the final configuration object can be traced to its data source 
 by enabling value tracing when calling the builder's `build()` function.  This is also shown in the 
@@ -768,11 +771,11 @@ builder.  It is much simpler to understand and remember.
 7. The `environment` object is optional, freeing this name for custom use, if desired.
 8. The `environment` object, if included, can be stored in the optionally provided property name, also freeing the 
 name for custom use.
-9. URL function creation is optional, not wasting processor time if none are needed or desired.
+9. URL function creation is optional, not wasting processor time if none are needed or desired, crazy as that sounds.
 10. If an environment object is created ahead of time, it can be given to the builder in order to preserve a bit more 
 of that processing power.
 11. The URL building functions now URL-encode all values.
 12. The URL building functions now accept a query string-specific argument for dynamic query string building, 
 something not found at all in v1.
 13. Debug your configuration easily:  Every value in the final configuration object can be traced to its data source.
-14. Because data sources work asynchronously, fetching configuration data is an option now.
+14. Because data sources work asynchronously, fetching configuration data from a server is an option now.
