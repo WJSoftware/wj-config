@@ -108,7 +108,5 @@ dist
 !.vscode/launch.json
 
 # Project-specific.
-# Copy of the README file created for deployment.
-src/README.md
 # TypeScript output
 out/

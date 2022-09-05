@@ -187,7 +187,7 @@ module.exports = (async function () {
         .addObject(loadJsonFile('./config.json', true))
         .name('Main Configuration') // Give data sources a meaningful name for value tracing purposes.
         .addObject(loadJsonFile(`./config.${env.value}.json`))
-        .name('Env Configuration')
+        .name(`${env.name} Configuration`)
         .addEnvironment(process.env) // Adds a data source that reads the environment variables in process.env.
         .includeEnvironment(env) // So the final configuration object has the environment property.
         .createUrlFunctions() // So the final configuration object will contain URL builder functions.
@@ -209,6 +209,7 @@ const config = wjConfig()
     .addObject(mainConfig)
     .name('Main Configuration') // Give data sources a meaningful name for value tracing purposes.
     .addFetchedConfig(`./config.${env.value}.json`, false) // Fetch the JSON from the /public folder.
+    .name(`${env.name} Configuration`)
     .addEnvironment(env.isDevelopment() ? process.env : window.env, 'REACT_APP_') // Adds a data source that reads the environment variables in process.env.
     .includeEnvironment(env) // So the final configuration object has the environment property.
     .createUrlFunctions() // So the final configuration object will contain URL builder functions.
@@ -319,7 +320,7 @@ const config = wjConfig()
 As you probably infer by the comment in the sample code, the regular expression is applied to the fully constructed 
 url, so be sure not to match the port specification itself.
 
-#### Dynamic Query Strings
+### Dynamic Query Strings
 
 > Since **v2.0.0**
 
@@ -493,7 +494,7 @@ timeouts.  Now you could do:
 Before v2, the timeout properties in the above JSON would have been converted to URL functions.  Now they are not 
 because their values are not of type `string`.
 
-###  Environment Object
+##  Environment Object
 
 > Since **v1.0.0**
 
@@ -680,6 +681,8 @@ This is the complete list of readily available data sources in this package.
 | `JsonDataSource` | `addJson()` | Adds the provided JSON string as source of configuration data.  The advantage here is that the JSON parser can be specified.  It could be the famous `JSON5` parser, for example.|
 | `ObjectDataSource` | `addObject()` | Adds the specified object as source of configuration data. |
 | `SingleValueDataSource` | `addSingleValue()` | Adds the specified key and value as source of configuration data.  Useful to import automatically created values from CI/CD or similar. |
+
+### Creating New Data Sources
 
 There is also a public `add()` function in the configuration builder.  It accepts any object that implements the 
 `IDataSource` interface, defined like this:
