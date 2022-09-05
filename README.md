@@ -2,7 +2,7 @@
 
 [![NPM](https://nodei.co/npm/wj-config.png)](https://nodei.co/npm/wj-config/)
 
-> Javascript configuration module for **NodeJS** and browser frameworks like **React** that works like ASP.net 
+> Javascript configuration module for **NodeJS** and browser frameworks such as **React** that works like ASP.net 
 > configuration where data sources are specified (usually JSON files) and environment variables can 
 > contribute/overwrite values by following a naming convention.
 
@@ -43,14 +43,16 @@ a full trace of all configuration values in the `_trace` property of the resulti
 There are working examples of use in GitHub [here](https://github.com/WJSoftware/wj-config/tree/main/examples).  Feel 
 free to explore them and to contribute.
 
-| Technology | wj-config Version | Technology Version |
-| - | - | - |
-| ReactJS | v1.0.2 | ReactJS v18.2.0 |
-| NodeJS Express | v1.0.2 | Express v4.16.1 |
-| ReactJS | v1.1.0 | ReactJS v18.2.0 |
-| NodeJS CommonJS | v2.0.0 | v18.1.0 |
-| NodeJS ES Modules | v2.0.0 | v18.1.0 |
-| ReactJS | v2.0.0 | v18.2.0 |
+| Technology | wj-config Version | Technology Version | Development Port |
+| - | - | - | - |
+| ReactJS | v1.0.2 | ReactJS v18.2.0 | 3001 |
+| NodeJS Express | v1.0.2 | Express v4.16.1 | 3002 |
+| ReactJS | v1.1.0 | ReactJS v18.2.0 | 3003 |
+| NodeJS Console (CommonJS) | v2.0.0 | v18.1.0 |
+| NodeJS Console (ES Modules) | v2.0.0 | v18.1.0 |
+| NodeJS Express (CommonJS) | v2.0.0 | Express v4.16.1 | 3004 |
+| NodeJS Express (ES Modules) | v2.0.0 | Express v4.18.1 | 3005 |
+| ReactJS | v2.0.0 | v18.2.0 | 3006 |
 
 The repository contains the necessary `launch.json` file to run each of the examples in *Visual Studio Code*.
 
@@ -248,8 +250,8 @@ The URL mechanism built in this library aims towards minimizing the amount of da
 easy per-environment overrides.  For example, one host specification can be made to apply to all the 3 configured 
 URL's above.  You can probably guess that this is also true for common pieces of paths, specified in the `rootPath` 
 properties.  Yes, properties in plural form.  Each level may provide a new root path that is appended to all previous 
-root paths.  It so stands that if the host needs to be overwritten for a specific environment, it is just as easy as 
-overwriting it once in an environment-specific data source (such as a JSON file).
+root paths.  It so stands that if the host needs to be overridden for a specific environment, it is just as easy as 
+overriding it once in an environment-specific data source (such as a JSON file).
 
 Ok, but how can the developer obtain the complete URL?  Thanks to this library, this is actually trivial:  Every 
 "leaf" property *whose value is of type string* (new in **v2.0.0**) in the various sub-objects under the `ws` object 
@@ -294,7 +296,7 @@ most amazing consequence of using this feature:  The position of the replaceable
 
 For example, you could define the URL `/api/vi/users?format={format}&id={id}` and later on decide that the ID will be 
 part of the URL and not the query string, modifying it to `/api/v1/users/{id}?format={format}` and your function call 
-does not have to change at all.  Your code does not care about the position of replaceable route values.
+does not have to change at all!  Your code does not care about the position of replaceable route values.
 
 ### About the Replaceable Values
 
@@ -461,14 +463,15 @@ a new sub hierarchy is created for the web socket URL's.
 
 > Since **v1.0.0**
 
-Before version 2, a property was a leaf object subject to conversion to a URL building function if it had a parent 
-(defined by the presence of the `host` or `rootPath` properties) up in the hierarchy, its value was not an 
-object and its name did not start with an underscore (_) or was one of the reserved property names.
+Before version 2, a property was a leaf property subject to conversion to a URL building function if it had a parent 
+(defined by the presence of the `host` or `rootPath` properties) up in the hierarchy and its name did not start with 
+an underscore (_) or was one of the reserved property names.
 
 > Since **v2.0.0**
 
-Now from version 2 onwards, the definition of a leaf property also requires that the value be of type `string`.  This 
-allows for non-string configuration values down the URL hierarchy for things like timeouts.  Now you could do:
+Now from version 2 onwards, the definition of a leaf property subject to function conversion also requires that the 
+value be of type `string`.  This allows for non-string configuration values down the URL hierarchy for things like 
+timeouts.  Now you could do:
 
 ```json
 {
@@ -587,7 +590,7 @@ This last alternative may be better than **ConfigMap**s because it enables the u
 All major browsers now support the top-level await feature as seen in the [can I use website](https://caniuse.com/?search=top%20level%20await).
 
 The problem is that current React applications created with **Create React App** do not enable this feature for its 
-webpack configuration.
+webpack configuration, (and this may change in the future, so be on the lookout).
 
 There are two possible solutions that I know of:
 
