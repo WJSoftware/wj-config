@@ -1,16 +1,20 @@
 <#
 .SYNOPSIS
-Publishes wj-config to the public NPM registry.
+Compiles wj-config.
 
 .DESCRIPTION
-Automates all of the necessary steps to compile and publish the wj-config package:
+Automates all of the necessary steps to compile and optionally publish the wj-config package:
 
 1. Increments the package version according to what is specified.
 2. Compiles the TypeScript source code and outputs it to .\out.
 3. Copies the wj-config.d.ts definition file.
 4. Copies the package.json file.
 5. Prepares the npmjs.org readme file by joining PublishNote.md and README.md.
-6. Performs actual publishing to the NPM public registry.
+6. If the Publish switch is specified, performs actual publishing to the NPM public registry.
+
+NOTE:  If the Publish switch is not specified, then npm publish is run in dry-mode, just to show the potential result of publishing.
+
+Use the Verbose switch to turn on all messages.
 
 .PARAMETER VerUpgrade
 Specify a version change.  See the documentation for the command 'npm version' for detailed information.
@@ -18,8 +22,8 @@ Specify a version change.  See the documentation for the command 'npm version' f
 .PARAMETER PreId
 Specify the pre-release ID to use.  Common examples would be 'alpha', 'beta' or 'rc'.  See the documentation for the command 'npm version' for detailed information.
 
-.PARAMETER NoPublish
-Runs all necessary logic to publish the wj-config NPM package except actually publishing it.  Useful to examine the end results.  Note that 'npm publish' will be run in dry mode.
+.PARAMETER Publish
+.  Useful to examine the end results.  Note that 'npm publish' will be run in dry mode.
 
 #>
 [CmdletBinding(SupportsShouldProcess = $true)]
@@ -30,10 +34,10 @@ param (
     [Parameter(Mandatory = $false)]
     [string] $PreId,
     [Parameter(Mandatory = $false)]
-    [switch] $NoPublish
+    [switch] $Publish
 )
 begin {
-    $InformationPreference = 'Continue'
+    $ErrorActionPreference = 'Stop'
     [string] $path = Resolve-Path .\src\package.json
     if ($VerUpgrade -ne '') {
         if ($PSCmdlet.ShouldProcess($path, "Package version increment: $VerUpgrade")) {
@@ -43,7 +47,7 @@ begin {
         }
     }
     else {
-        Write-Information "Version upgrade was not specified.  The package's version will not be modified."
+        Write-Verbose "Version upgrade was not specified.  The package's version will not be modified."
     }
     $path = Resolve-Path .\
     Remove-Item -Path .\out -Recurse
@@ -55,15 +59,15 @@ begin {
     Copy-Item .\PublishNote.md .\out\README.md -Force
     Get-Content .\README.md | Add-Content .\out\README.md -Encoding UTF8
     $path = Resolve-Path .\
-    if ($NoPublish) {
-        Write-Information "Publishing was turned off.  No publishing will take place, but will run npm publish in dry run mode."
+    if (!$Publish) {
+        Write-Output "Running npm publish in dry run mode."
         npm publish .\out\ --dry-run
     }
     elseif ($PSCmdlet.ShouldProcess($path, "Publish NPM package")) {
         npm publish .\out\
     }
     elseif ($WhatIfPreference) {
-        Write-Information "NOTE: Running npm publish in dry run mode using sample data for illustration purposes only."
+        Write-Verbose "NOTE: Running npm publish in dry run mode using sample data for illustration purposes only."
         if (-not (Test-Path .\out)) {
             New-Item -Path .\out -ItemType Directory -WhatIf:$false
         }

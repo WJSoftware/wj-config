@@ -241,13 +241,17 @@ declare module 'wj-config' {
         isProduction: EnvironmentTest
     }
 
+    export type RouteValuesFunction = (name: string) => string
+    export type RouteValues = RouteValuesFunction | { [x: string]: string }
+    export type QueryString = (() => string | ICoreConfig) | string | ICoreConfig
+
     /**
      * Defines the capabilities exposed by non-leaf nodes in a webservices hierarchy.
      */
     export interface IWsPath extends ICoreConfig {
         rootPath?: string;
         _rootPath: () => string;
-        buildUrl: (url: string, replaceValues: RouteValues) => string;
+        buildUrl: (url: string, replaceValues?: RouteValues, queryString?: QueryString) => string;
     }
 
     /**

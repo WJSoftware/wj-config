@@ -10,6 +10,6 @@
   "license": "ISC",
   "type": "commonjs",
   "dependencies": {
-    "wj-config": "2.0.0-beta.0"
+    "wj-config": "^2.0.0-beta.0"
   }
 }

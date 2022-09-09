@@ -13,3 +13,5 @@ const config = wjConfig()
     .build(env.isDevelopment());
 
 export default await config;
+
+console.log('Config: %o', config);

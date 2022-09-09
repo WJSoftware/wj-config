@@ -1,11 +1,7 @@
-import type { ICoreConfig, IWsParent, IWsPath } from "wj-config";
+import type { ICoreConfig, IWsParent, IWsPath, QueryString, RouteValues, RouteValuesFunction } from "wj-config";
 import { forEachProperty, isArray, isFunction, isConfig } from "./helpers.js";
 
 const noop = (x?: any) => '';
-
-type RouteValuesFunction = (name: string) => string
-type RouteValues = RouteValuesFunction | { [x: string]: string }
-type QueryString = (() => string | ICoreConfig) | string | ICoreConfig
 
 const rootPathFn = '_rootPath';
 
@@ -130,8 +126,8 @@ function makeWsUrlFunctions(ws: IWsParent | ICoreConfig, routeValuesRegExp: RegE
     forEachProperty(ws, (key, value) => {
         const sc = shouldConvert(key);
         if (sc && canBuildUrl && typeof value === 'string') {
-            ws[key] = function (routeValues: RouteValues) {
-                return ((this as IWsPath).buildUrl ?? noop)(value, routeValues);
+            ws[key] = function (routeValues?: RouteValues, queryString?: QueryString) {
+                return ((this as IWsPath).buildUrl ?? noop)(value, routeValues, queryString);
             };
         }
         else if (sc && isConfig(value)) {

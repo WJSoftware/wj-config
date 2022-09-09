@@ -452,10 +452,12 @@ and *https* schemes.
 
 Now the above will get you the URL's:
 
-+ https://localhost:1122/api/v1/login
-+ https://localhost:1122/api/v1/cat
-+ https://localhost:1122/api/v1/cat/{catId}
-+ wss://localhost:1122/ws/support/chat?userId={userId}
+```javascript
+config.ws.gateway.login(); // https://localhost:1122/api/v1/login
+config.ws.gateway.catalogue.getAll(); // https://localhost:1122/api/v1/cat
+config.ws.gateway.catalogue.single(); // https://localhost:1122/api/v1/cat/{catId}
+config.ws.gwSockets.support.chat(); // wss://localhost:1122/ws/support/chat?userId={userId}
+```
 
 **IMPORTANT**:  The `host`, `port` and `scheme` values cannot be changed down the hierarchy once set, and this is why 
 a new sub hierarchy is created for the web socket URL's.

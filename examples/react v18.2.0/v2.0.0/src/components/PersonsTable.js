@@ -8,7 +8,18 @@ const PersonsTable = props => {
     const [countries, setCountries] = useState({});
     useEffect(() => {
         const fetchPersons = async () => {
-            const response = await fetch(config.ws.mockaroo.person.all(), {
+            let additionalSpecifiers = undefined;
+            if (props.minBday) {
+                const minBday = props.minBday.substring(5, 7) + '/' + props.minBday.substring(8, 10) + '/' + props.minBday.substring(0, 4);
+                additionalSpecifiers = {
+                    min_bday: minBday
+                };
+                console.log('Received min bday: %s', props.minBday);
+                console.log('Refactored min bday: %s', minBday);
+            }
+            const personsUrl = config.ws.mockaroo.person.all({ numRecords: props.personCount }, additionalSpecifiers);
+            console.log('Persons URL: %s', personsUrl);
+            const response = await fetch(personsUrl, {
                 headers: {
                     'x-api-key': config.ws.options.mockaroo.key
                 }
@@ -25,7 +36,7 @@ const PersonsTable = props => {
             setCountries(await countryService(countryCodes));
         };
         fetchPersons().catch(console.error);
-    }, []);
+    }, [props.personCount, props.minBday]);
 
     return <table className="persons">
         <thead>
@@ -34,6 +45,7 @@ const PersonsTable = props => {
                 <th>First Name</th>
                 <th>Last Name</th>
                 <th>Email</th>
+                <th>Birth Date</th>
                 <th>Country</th>
             </tr>
         </thead>
@@ -43,6 +55,7 @@ const PersonsTable = props => {
                 <td>{p.first_name}</td>
                 <td>{p.last_name}</td>
                 <td>{p.email}</td>
+                <td>{p.birth_date}</td>
                 <td><img className="flag" src={config.ws.flags.flag(() => p.country_code)} title={countries[p.country_code]} alt={countries[p.country_code]} />&nbsp;{countries[p.country_code]} ({p.country_code})</td>
             </tr>)}
         </tbody>
