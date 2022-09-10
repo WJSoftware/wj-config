@@ -34,3 +34,24 @@ table.persons>tbody>tr>td:last-child {
 table.persons img.flag {
     width: 2em;
 }
+span.loader {
+    display: inline-block;
+    margin-left: auto;
+    margin-right: auto;
+    background-color: darkcyan;
+    color: skyblue;
+    font-weight: bold;
+    padding: 2px 12px;
+    border-radius: 7px;
+}
+
+span.loader-inline {
+    font-size: smaller;
+}
+
+span.loader-large {
+    margin: 2em 2em;
+    color: yellow;
+    font-size: x-large;
+    padding: 1em 2em;
+}

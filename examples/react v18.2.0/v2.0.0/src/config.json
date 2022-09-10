@@ -3,7 +3,11 @@
         "id": "wj-config-ui",
         "title": "React with WJ-Config",
         "projectName": "wj-config by WJ Software",
-        "projectHome": "https://github.com/WJSoftware/wj-config"
+        "projectHome": "https://github.com/WJSoftware/wj-config",
+        "inputDelay": 500,
+        "dramaticPause": 3000,
+        "mockarooText": "Mockaroo, your data-mocking site",
+        "mockarooUrl": "https://www.mockaroo.com/"
     },
     "personApi": {
         "initialPersonCount": 100,

@@ -1,43 +1,82 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, Suspense, Fragment } from "react";
 import config from '../config';
-import './PersonsTable.css';
 import countryService from "../services/country-service";
+import { suspenderWrapper } from '../utils';
+import ExhaustedFreeData from "./ExhaustedFreeData";
+import './PersonsTable.css';
 
-const PersonsTable = props => {
-    const [persons, setPersons] = useState([]);
-    const [countries, setCountries] = useState({});
-    useEffect(() => {
-        const fetchPersons = async () => {
-            let additionalSpecifiers = undefined;
-            if (props.minBday) {
-                const minBday = props.minBday.substring(5, 7) + '/' + props.minBday.substring(8, 10) + '/' + props.minBday.substring(0, 4);
-                additionalSpecifiers = {
-                    min_bday: minBday
-                };
-                console.log('Received min bday: %s', props.minBday);
-                console.log('Refactored min bday: %s', minBday);
-            }
-            const personsUrl = config.ws.mockaroo.person.all({ numRecords: props.personCount }, additionalSpecifiers);
-            console.log('Persons URL: %s', personsUrl);
-            const response = await fetch(personsUrl, {
-                headers: {
-                    'x-api-key': config.ws.options.mockaroo.key
-                }
-            });
-            const data = await response.json();
-            setPersons(data);
-            // Obtain a unique list of country codes.
-            const countryCodes = [];
-            data.forEach(p => {
-                if (!countryCodes.includes(p.country_code)) {
-                    countryCodes.push(p.country_code);
-                }
-            });
-            setCountries(await countryService(countryCodes));
+const fetchPersons = async (personCount, minBday) => {
+    let additionalSpecifiers = undefined;
+    if (minBday) {
+        minBday = minBday.substring(5, 7) + '/' + minBday.substring(8, 10) + '/' + minBday.substring(0, 4);
+        additionalSpecifiers = {
+            min_bday: minBday
         };
-        fetchPersons().catch(console.error);
-    }, [props.personCount, props.minBday]);
+        console.log('Received min bday: %s', minBday);
+        console.log('Refactored min bday: %s', minBday);
+    }
+    const personsUrl = config.ws.mockaroo.person.all({ numRecords: personCount }, additionalSpecifiers);
+    console.log('Persons URL: %s', personsUrl);
+    const response = await fetch(personsUrl, {
+        headers: {
+            'x-api-key': config.ws.options.mockaroo.key
+        }
+    });
+    let data = await response.json();
+    return Array.isArray(data) ? data : [data];
+};
 
+const fetchCountries = (persons) => {
+    const countryCodes = [];
+    persons.forEach(p => {
+        if (!countryCodes.includes(p.country_code)) {
+            countryCodes.push(p.country_code);
+        }
+    });
+    return countryService(countryCodes);
+}
+
+let startingResolver = null;
+let startingPromise = new Promise(rslv => {
+    startingResolver = rslv;
+});
+let readPersons = suspenderWrapper(startingPromise);
+let readCountries = null;
+
+const CountryInfo = props => {
+    const countries = readCountries();
+    return <Fragment>
+        <img className="flag" src={config.ws.flags.flag(() => props.countryCode)} title={countries[props.countryCode]} alt={countries[props.countryCode]} />
+        &nbsp;
+        {countries[props.countryCode]} ({props.countryCode})
+    </Fragment>
+};
+
+const CorePersonsTable = props => {
+    const persons = readPersons();
+    if (!persons) {
+        return <span>No persons</span>
+    }
+    // See if the Mockaroo free key is exhausted.
+    if (persons.length === 1) {
+        const firstElem = persons[0];
+        if (firstElem.error && firstElem.error.startsWith('Free accounts are limited to 200 requests per day')) {
+            return <ExhaustedFreeData />
+        }
+    }
+    if (!readCountries) {
+        const countriesPromise = fetchCountries(persons);
+        readCountries = suspenderWrapper(
+            countriesPromise
+                .then(ctries => {
+                    return new Promise(rslv => {
+                        setTimeout(() => {
+                            rslv(ctries);
+                        }, config.appSettings.dramaticPause);
+                    })
+                })
+        );
+    }
     return <table className="persons">
         <thead>
             <tr>
@@ -56,10 +95,43 @@ const PersonsTable = props => {
                 <td>{p.last_name}</td>
                 <td>{p.email}</td>
                 <td>{p.birth_date}</td>
-                <td><img className="flag" src={config.ws.flags.flag(() => p.country_code)} title={countries[p.country_code]} alt={countries[p.country_code]} />&nbsp;{countries[p.country_code]} ({p.country_code})</td>
+                <td>
+                    <Suspense fallback={<span className="loader loader-inline">Loading countries...</span>}>
+                        <CountryInfo countryCode={p.country_code} />
+                    </Suspense>
+                </td>
             </tr>)}
         </tbody>
     </table>
+}
+
+const PersonsTable = ({ personCount, minBday }) => {
+    const [updateCount, setUpdateCount] = useState(0);
+    useEffect(() => {
+        console.log('Running useEffect in PersonsTable.');
+        let personsPromise = fetchPersons(personCount, minBday);
+        if (startingPromise) {
+            personsPromise = personsPromise.then(persons => {
+                startingResolver(persons);
+            });
+            startingPromise = null;
+        }
+        readPersons = suspenderWrapper(
+            personsPromise
+                .then(ctries => {
+                    return new Promise(rslv => {
+                        setTimeout(() => {
+                            rslv(ctries);
+                        }, config.appSettings.dramaticPause);
+                    })
+                })
+        );
+        readCountries = null;
+        setUpdateCount(updateCount + 1);
+    }, [personCount, minBday]);
+    return <Suspense fallback={<span className="loader loader-large">Loading persons...</span>}>
+        <CorePersonsTable />
+    </Suspense>
 }
 
 export default PersonsTable;
