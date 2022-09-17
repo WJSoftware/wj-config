@@ -104,10 +104,22 @@ export default class Builder implements IBuilder {
         return this;
     }
 
-    createUrlFunctions(wsPropertyNames?: string[], routeValuesRegExp?: RegExp): IBuilder {
+    createUrlFunctions(wsPropertyNames?: string | string[], routeValuesRegExp?: RegExp): IBuilder {
         this._lastCallWasDsAdd = false;
+        let propNames = null;
+        if (typeof wsPropertyNames === 'string') {
+            if (wsPropertyNames !== '') {
+                propNames = [wsPropertyNames];
+            }
+        }
+        else if (wsPropertyNames && wsPropertyNames.length > 0) {
+            propNames = wsPropertyNames
+        }
+        else {
+            propNames = Builder.defaultWsPropertyNames;
+        }
         this._urlData = {
-            wsPropertyNames: wsPropertyNames && wsPropertyNames.length > 0 ? wsPropertyNames : Builder.defaultWsPropertyNames,
+            wsPropertyNames: propNames as string[],
             routeValuesRegExp: routeValuesRegExp ?? /\{(\w+)\}/g
         };
         return this;

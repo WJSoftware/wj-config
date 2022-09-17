@@ -1,6 +1,6 @@
 {
     "name": "wj-config",
-    "version": "2.0.0-beta.1",
+    "version": "2.0.0-beta.2",
     "main": "index.js",
     "type": "module",
     "description": "Javascript configuration module for NodeJS and browser frameworks such as React that works like ASP.net configuration where data sources are specified (usually JSON files) and environment variables can contribute/overwrite values by following a naming convention.",
@@ -38,5 +38,8 @@
     "types": "wj-config.d.ts",
     "scripts": {
         "build": "npx tsc"
+    },
+    "engines": {
+        "node": ">=16.9.0"
     }
 }

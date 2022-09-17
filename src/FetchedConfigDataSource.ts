@@ -11,15 +11,41 @@ export default class FetchedConfigDataSource extends DataSource {
         this._input = input;
         this._required = required;
         this._init = init;
-        this._processFn = processFn ?? ((response) => response.json());
+        this._processFn = processFn ?? (async (response) => {
+            try {
+                return await response.json();
+            }
+            catch (err) {
+                if (!required) {
+                    return {};
+                }
+                else {
+                    throw err;
+                }
+            }
+        });
     }
 
     async getObject(): Promise<ICoreConfig> {
-        let response: Response;
-        response = await fetch(this._input, this._init);
+        const response = await fetch(this._input, this._init);
         let data: ICoreConfig = {};
-        if ((response.status === 204 || !response.ok || !(data = await this._processFn(response))) && this._required) {
-            throw new Error(`${this.name}: Configuration data from this source is required but the fetch operation yielded no data.`);
+        if (this._required) {
+            if (response.status === 204) {
+                throw new Error(`${this.name}: Configuration data from this source is required but the fetch operation yielded no data.`);
+            }
+            else if (!response.ok) {
+                throw new Error(`${this.name}: Configuration data from this source is required but the fetch operation yielded a non-OK response: ${response.status} (${response.statusText}).`);
+            }
+        }
+        try {
+            data = await this._processFn(response);
+        }
+        catch (err) {
+            if (this._required) {
+                // Strange.  While navigating to the TS definition I clearly see that the cause property is of type unknown,
+                // but tsc actually throws an error saying it is of type Error | undefined, so casting as Error.
+                throw new Error(`${this.name}: An error occurred while processing the fetched response.`, { cause: err as Error });
+            }
         }
         return data;
     }

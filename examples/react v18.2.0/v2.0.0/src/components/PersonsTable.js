@@ -15,11 +15,11 @@ const fetchPersons = async (personCount, minBday) => {
         console.log('Received min bday: %s', minBday);
         console.log('Refactored min bday: %s', minBday);
     }
-    const personsUrl = config.ws.mockaroo.person.all({ numRecords: personCount }, additionalSpecifiers);
+    const personsUrl = config.api.mockaroo.person.all({ numRecords: personCount }, additionalSpecifiers);
     console.log('Persons URL: %s', personsUrl);
     const response = await fetch(personsUrl, {
         headers: {
-            'x-api-key': config.ws.options.mockaroo.key
+            'x-api-key': config.api.options.mockaroo.key
         }
     });
     let data = await response.json();
@@ -46,7 +46,7 @@ let readCountries = null;
 const CountryInfo = props => {
     const countries = readCountries();
     return <Fragment>
-        <img className="flag" src={config.ws.flags.flag(() => props.countryCode)} title={countries[props.countryCode]} alt={countries[props.countryCode]} />
+        <img className="flag" src={config.api.flags.flag(() => props.countryCode)} title={countries[props.countryCode]} alt={countries[props.countryCode]} />
         &nbsp;
         {countries[props.countryCode]} ({props.countryCode})
     </Fragment>

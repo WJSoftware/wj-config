@@ -15,7 +15,7 @@
         "personCountStep": 10,
         "defaultMinBday": "2000-01-01"
     },
-    "ws": {
+    "api": {
         "options": {
             "mockaroo": {
                 "key": "a53dac10"

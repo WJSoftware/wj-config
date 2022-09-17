@@ -149,7 +149,7 @@ const config = wjConfig()
     .addObject(mainConfig)
     .name('Main Configuration') // Give data sources a meaningful name for value tracing purposes.
     .addObject(loadJsonFile(`./config.${env.value}.json`))
-    .name(`${env.name} Configuration`)
+    .name(`${env.value} Configuration`)
     .addEnvironment(process.env) // Adds a data source that reads the environment variables in process.env.
     .includeEnvironment(env) // So the final configuration object has the environment property.
     .createUrlFunctions() // So the final configuration object will contain URL builder functions.
@@ -187,7 +187,7 @@ module.exports = (async function () {
         .addObject(loadJsonFile('./config.json', true))
         .name('Main Configuration') // Give data sources a meaningful name for value tracing purposes.
         .addObject(loadJsonFile(`./config.${env.value}.json`))
-        .name(`${env.name} Configuration`)
+        .name(`${env.value} Configuration`)
         .addEnvironment(process.env) // Adds a data source that reads the environment variables in process.env.
         .includeEnvironment(env) // So the final configuration object has the environment property.
         .createUrlFunctions() // So the final configuration object will contain URL builder functions.
@@ -209,7 +209,7 @@ const config = wjConfig()
     .addObject(mainConfig)
     .name('Main Configuration') // Give data sources a meaningful name for value tracing purposes.
     .addFetchedConfig(`./config.${env.value}.json`, false) // Fetch the JSON from the /public folder.
-    .name(`${env.name} Configuration`)
+    .name(`${env.value} Configuration`)
     .addEnvironment(env.isDevelopment() ? process.env : window.env, 'REACT_APP_') // Adds a data source that reads the environment variables in process.env.
     .includeEnvironment(env) // So the final configuration object has the environment property.
     .createUrlFunctions() // So the final configuration object will contain URL builder functions.

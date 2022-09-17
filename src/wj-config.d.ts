@@ -190,12 +190,12 @@ declare module 'wj-config' {
          * Creates URL functions in the final configuration object for URL's defined according to the wj-config standard.
          * @param wsPropertyNames Optional list of property names whose values are expected to be objects that contain 
          * host, port, scheme or root path data at some point in their child hierarchy.  If not provided, then the default 
-         * list will be used.
+         * list will be used.  It can also be a single string, which is the same as a 1-element array.
          * @param routeValueRegExp Optional regular expression used to identify replaceable route values.  If this is not 
          * provided, then the default regular expression will match route values of the form {<route value name>}, such as 
          * {code} or {id}.
          */
-        createUrlFunctions(wsPropertyNames?: string[], routeValueRegExp?: RegExp): IBuilder;
+        createUrlFunctions(wsPropertyNames?: string | string[], routeValueRegExp?: RegExp): IBuilder;
 
         /**
          * Asynchronously builds the final configuration object.
