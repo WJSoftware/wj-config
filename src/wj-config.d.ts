@@ -210,15 +210,22 @@ declare module 'wj-config' {
      */
     export interface IEnvironment {
         /**
-         * The current environment name.
+         * The current environment (represented by an environment definition).
          */
-        readonly value: string;
+        readonly current: IEnvironmentDefinition;
 
         /**
-         * The list of known environment names.
+         * The list of known environments (represented by a list of environment definitions).
          */
-        readonly names: string[];
-        [x: string | 'value' | 'names']: EnvironmentTest | string | string[]
+        readonly all: IEnvironmentDefinition[];
+
+        /**
+         * Tests the current environment definition for the presence of the specified traits.  It will return true 
+         * only if all specified traits are present; othewise it will return false.
+         * @param traits The environment traits expected to be found in the current environment definition.
+         */
+        hasTraits(traits: Traits): boolean;
+        [x: string | 'current' | 'all' | 'hasTraits']: EnvironmentTest | IEnvironmentDefinition | IEnvironmentDefinition[] | ((Traits) => boolean)
     }
 
     /**
@@ -269,5 +276,13 @@ declare module 'wj-config' {
         readonly names: string[];
         [x: string]: (() => boolean) | string | string[];
         constructor(value: string, names?: string[]);
+    }
+
+    export type Trait = number | string;
+    export type Traits = number | string[];
+
+    export interface IEnvironmentDefinition {
+        name: string,
+        traits: Traits
     }
 }
