@@ -1,3 +1,32 @@
 div.control {
     margin-top: 1em;
+    display: table;
+        margin-left: auto;
+        margin-right: auto;
+        border-collapse: separate;
+        border-spacing: 1em;
+    }
+    
+    div.control>div {
+        vertical-align: top;
+        display: table-cell;
+        margin-right: 1em;
+    }
+    
+    div.control>div.section {
+        --main-color: #1b4b58;
+        --text-color: white;
+        border: solid 0.15em var(--main-color);
+        border-radius: 0.75em;
+        padding: 0.1em 0.5em;
+        margin-top: 0;
+    }
+    
+    div.control div.section>label>h5 {
+        margin: 0.5em 1.5em;
+        font-size: smaller;
+        background-color: var(--main-color);
+        color: var(--text-color);
+        padding: 0.2em 1em;
+        border-radius: 0.5em;
 }

@@ -1,6 +1,7 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import config from "../config";
 import './PersonApiCfg.css';
+import PillSelector from "./PillSelector";
 
 let personCountTimer = null;
 let minBdayTimer = null;
@@ -11,13 +12,10 @@ const PersonApiCfg = (props) => {
     const personCountHandler = (ev) => {
         setPersonCount(ev.target.value);
         if (personCountTimer) {
-            console.log('Clearing timer %s.', personCountTimer);
             clearTimeout(personCountTimer);
         }
         personCountTimer = setTimeout(() => {
-            console.log('Value: %i', ev.target.value);
             props.onPersonCountChanged(ev.target.value);
-            console.log('Done.');
             personCountTimer = null;
         }, config.appSettings.inputDelay);
     };
@@ -31,21 +29,60 @@ const PersonApiCfg = (props) => {
             minBdayTimer = null;
         }, config.appSettings.inputDelay);
     }
+    const items = [
+        {
+            id: 1,
+            value: 100,
+            name: '100'
+        },
+        {
+            id: 2,
+            value: 200,
+            name: '200'
+        },
+        {
+            id: 3,
+            value: 300,
+            name: '300'
+        },
+        {
+            id: 4,
+            value: 400,
+            name: '400'
+        },
+        {
+            id: 5,
+            value: 500,
+            name: '500'
+        }
+    ];
+    const onPillSelectionChange = item => {
+        console.log('onPillSelectionChange.  Item: %o', item);
+        setPersonCount(item.value);
+        props.onPersonCountChanged(item.value);
+    };
     return <div className="control">
-        <label>Person count: <input
-            type="number"
-            min="10"
-            max={config.personApi.maxPersonCount}
-            value={personCount}
-            step={config.personApi.personCountStep}
-            onChange={personCountHandler}
-        /></label>
-        &nbsp;
-        <label>Minimum birth date: <input
-            type="date"
-            min={config.personApi.defaultMinBday}
-            onChange={minBdayHandler}
-        /></label>
+        <PillSelector title="Person Count" items={items} selectedIndex={0} onSelectionChange={onPillSelectionChange}>
+            <label>Other: <input
+                type="number"
+                min="10"
+                max={config.personApi.maxPersonCount}
+                value={personCount}
+                step={config.personApi.personCountStep}
+                onChange={personCountHandler}
+                size="3"
+            /></label>
+        </PillSelector>
+        <div className="section">
+            <label>
+                <h5>Minimum Birth Date</h5>
+                <input
+                    type="date"
+                    min={config.personApi.defaultMinBday}
+                    onChange={minBdayHandler}
+                />
+            </label>
+        </div>
     </div>
 }
 
