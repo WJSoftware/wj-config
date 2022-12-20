@@ -2,23 +2,13 @@ import type { EnvironmentTest, IEnvironment, IEnvironmentDefinition, Traits } fr
 import { InvalidEnvNameError } from "./EnvConfigError.js";
 import { EnvironmentDefinition } from "./EnvironmentDefinition.js";
 
-function ensureEnvDefinition(env: string | IEnvironmentDefinition | (string | IEnvironmentDefinition)[]): IEnvironmentDefinition | IEnvironmentDefinition[] {
+function ensureEnvDefinition(env: string | IEnvironmentDefinition): IEnvironmentDefinition {
     if (typeof env === 'string') {
         return new EnvironmentDefinition(env);
     }
-    else if (!Array.isArray(env)) {
-        return env;
-    }
-    const result: IEnvironmentDefinition[] = [];
-    env.forEach(e => {
-        result.push(ensureEnvDefinition(e) as IEnvironmentDefinition);
-    });
-    return result;
+    return env;
 }
 
-/**
- * Environment class used to provide environment information throw the configuration object.
- */
 export class Environment implements IEnvironment {
     /**
      * Default list of environment names.
@@ -26,30 +16,20 @@ export class Environment implements IEnvironment {
     static defaultNames: string[] = ['Development', 'PreProduction', 'Production'];
 
     readonly current: IEnvironmentDefinition;
-    readonly all: IEnvironmentDefinition[];
-    [x: string | 'current' | 'all' | 'hasTraits']: EnvironmentTest | IEnvironmentDefinition | IEnvironmentDefinition[] | ((traits: Traits) => boolean)
+    readonly all: string[];
+    [x: string | 'current' | 'all' | 'hasTraits' | 'hasAnyTrait']: EnvironmentTest | IEnvironmentDefinition | string[] | ((traits: Traits) => boolean)
 
-    /**
-     * Initializes a new instance of this class.
-     * @param value The current environment name.
-     * @param names The list of known environment names.
-     */
-    constructor(value: string | IEnvironmentDefinition, names?: (string | IEnvironmentDefinition)[]) {
-        this.all = ensureEnvDefinition(names ?? Environment.defaultNames) as IEnvironmentDefinition[];
-        const currName = typeof value === 'string' ? value : value.name;
-        let currEnv = null;
-        this.all.forEach((envDef) => {
-            (this as unknown as { [x: string]: () => boolean })[`is${envDef.name}`] = function () { return (this as unknown as Environment).current.name === envDef.name; };
-            if (envDef.name === currName) {
-                currEnv = envDef;
-            }
+    constructor(currentEnvironment: string | IEnvironmentDefinition, possibleEnvironments?: string[]) {
+        this.all = possibleEnvironments ?? Environment.defaultNames;
+        this.current = ensureEnvDefinition(currentEnvironment);
+        let validCurrentEnvironment = false;
+        this.all.forEach((envName) => {
+            (this as unknown as { [x: string]: () => boolean })[`is${envName}`] = function () { return (this as unknown as Environment).current.name === envName; };
+            validCurrentEnvironment = validCurrentEnvironment || this.current.name === envName;
         });
-        // Throw if the current environment value was not found.
-        if (!currEnv) {
-            throw new InvalidEnvNameError(currName);
-        }
-        else {
-            this.current = currEnv;
+        // Throw if the current environment name was not found among the possible environment names..
+        if (!validCurrentEnvironment) {
+            throw new InvalidEnvNameError(this.current.name);
         }
     }
 
@@ -66,5 +46,21 @@ export class Environment implements IEnvironment {
             return hasBitwiseTraits(traits);
         }
         return hasStringTraits(traits);
+    }
+
+    hasAnyTrait(traits: Traits): boolean {
+        const hasAnyBitwiseTrait = (t: number) => ((this.current.traits as number) & t) > 0;
+        const hasAnyStringTrait = (t: string[]) => {
+            for (let x of t) {
+                if ((this.current.traits as string[]).includes(x)) {
+                    return true;
+                }
+            }
+            return false;
+        };
+        if (typeof traits === "number") {
+            return hasAnyBitwiseTrait(traits);
+        }
+        return hasAnyStringTrait(traits);
     }
 }

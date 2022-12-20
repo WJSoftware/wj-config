@@ -14,7 +14,7 @@ declare module 'wj-config' {
     /**
      * Possible values in a configuration object.
      */
-    export type ConfigurationValue = string | number | Date | boolean | IEnvironment | IDefaultEnvironment | undefined | null | Function | ICoreConfig | IDataSourceInfo;
+    export type ConfigurationValue = string | number | Date | boolean | IEnvironment | IDefaultEnvironment | undefined | null | Function | ICoreConfig | IDataSourceInfo | IDataSourceInfo[];
 
     /**
      * Type alias that describes the data type of interim or final configuration objects.
@@ -86,16 +86,25 @@ declare module 'wj-config' {
      */
     export interface IBuilder {
         /**
-         * Adds the provided data source to the collection of data sources that will be used to build the configuration 
-         * object.
+         * Adds the provided data source to the collection of data sources that will be used to build the 
+         * configuration object.
          * @param dataSource The data source to include.
          */
         add(dataSource: IDataSource): IBuilder;
         /**
-         * Adds the specified object to the collection of data sources that will be used to build the configuration object.
+         * Adds the specified object to the collection of data sources that will be used to build the configuration 
+         * object.
          * @param obj Data object to include as part of the final configuration data.
          */
         addObject(obj: IConfig): IBuilder;
+
+        /**
+         * Adds the object returned by the provided function to the collection of data sources that will be used to 
+         * build the configuration object.
+         * @param fn Function to execute in order to obtain the configuration data.  Its return value may be the 
+         * configuration data itself or a promise to it.
+         */
+        addComputed(fn: ComputedConfigFunction): IBuilder;
 
         /**
          * Adds the specified dictionary to the collection of data sources that will be used to build the configuration 
@@ -171,6 +180,43 @@ declare module 'wj-config' {
         name(name: string): IBuilder;
 
         /**
+         * Makes the last-added data source conditionally inclusive.
+         * @param predicate Predicate function that is run whenever the build function runs.  If the predicate returns 
+         * true, then the data source will be included; if it returns false, then the data source is skipped.
+         * @param dataSourceName Optional data source name.  Provided to simplify the build chain and is merely a 
+         * shortcut to include a call to the name() function.  Equivalent to when().name().
+         */
+        when(predicate: Predicate<IEnvironment | undefined>, dataSourceName?: string): IBuilder;
+
+        /**
+         * Makes the last-added data source conditionally included only if the current environment possesses all of 
+         * the listed traits.
+         * @param traits The traits the current environment must have for the data source to be added.
+         * @param dataSourceName Optional data source name.  Provided to simplify the build chain and is merely a 
+         * shortcut to include a call to the name() function.  Equivalent to whenAllTraits().name().
+         */
+        whenAllTraits(traits: Traits, dataSourceName?: string): IBuilder;
+
+        /**
+         * Makes the last-added data source conditionally included if the current environment possesses any of the 
+         * listed traits.  Only one coincidence is necessary.
+         * @param traits The list of possible traits the current environment may have in order for the data source to 
+         * be included.
+         * @param dataSourceName Optional data source name.  Provided to simplify the build chain and is merely a 
+         * shortcut to include a call to the name() function.  Equivalent to whenAnyTrait().name().
+         */
+        whenAnyTrait(traits: Traits, dataSourceName?: string): IBuilder;
+
+        /**
+         * Makes the last-added data source conditionally included if the current environment's name is equal to the 
+         * provided environment name.
+         * @param envName The environment name to use to conditionally include the last-added data source.
+         * @param dataSourceName Optional data source name.  Provided to simplify the build chain and is 
+         * merely a shortcut to include a call to the name() function.
+         */
+        forEnvironment(envName: string, dataSourceName?: string): IBuilder;
+
+        /**
         * Adds the provided environment object as a property of the final configuration object.
         * @param env Previously created environment object.
         * @param propertyName Optional property name for the environment object.
@@ -203,6 +249,9 @@ declare module 'wj-config' {
         build(traceValueSources: boolean = false): Promise<IConfig>;
     }
 
+    /**
+     * Function type that allows environment objects to declare testing functions, such as isProduction().
+     */
     export type EnvironmentTest = () => boolean;
 
     /**
@@ -217,7 +266,7 @@ declare module 'wj-config' {
         /**
          * The list of known environments (represented by a list of environment definitions).
          */
-        readonly all: IEnvironmentDefinition[];
+        readonly all: string[];
 
         /**
          * Tests the current environment definition for the presence of the specified traits.  It will return true 
@@ -225,7 +274,16 @@ declare module 'wj-config' {
          * @param traits The environment traits expected to be found in the current environment definition.
          */
         hasTraits(traits: Traits): boolean;
-        [x: string | 'current' | 'all' | 'hasTraits']: EnvironmentTest | IEnvironmentDefinition | IEnvironmentDefinition[] | ((Traits) => boolean)
+
+        /**
+         * Tests the current environment definition for the presence of any of the specified traits.  It will return 
+         * true if any of the specified traits is present.  If none of the specified traits are present, then the 
+         * return value will be false.
+         * @param traits The environments traits of which at least on of them is expected to be found in the current 
+         * environment definition.
+         */
+        hasAnyTrait(traits: Traits): boolean;
+        [x: string | 'current' | 'all' | 'hasTraits' | 'hasAnyTrait']: EnvironmentTest | IEnvironmentDefinition | string[] | ((traits: Traits) => boolean)
     }
 
     /**
@@ -248,8 +306,19 @@ declare module 'wj-config' {
         isProduction: EnvironmentTest
     }
 
+    /**
+     * Type of function used as route values when calling a URL-building function.
+     */
     export type RouteValuesFunction = (name: string) => string
+
+    /**
+     * Type that describes the possible ways of passing route values when calling a URL-building function.
+     */
     export type RouteValues = RouteValuesFunction | { [x: string]: string }
+
+    /**
+     * Type that describes the possible ways of specifing a query string when calling a URL-building function.
+     */
     export type QueryString = (() => string | ICoreConfig) | string | ICoreConfig
 
     /**
@@ -271,18 +340,52 @@ declare module 'wj-config' {
         scheme?: string;
     }
 
+    /**
+     * Environment class used to provide environment information throw the configuration object.
+     */
     export class Environment {
-        readonly value: string;
-        readonly names: string[];
+        /**
+         * Current environment.
+         */
+        readonly current: IEnvironmentDefinition;
+
+        /**
+         * List of all defined environments.
+         */
+        readonly all: string[];
         [x: string]: (() => boolean) | string | string[];
-        constructor(value: string, names?: string[]);
+
+        /**
+         * Initializes a new instance of this class.
+         * @param currentEnvironment The current environment name or the current environment as an 
+         * IEnvironmentDefinition object.
+         * @param possibleEnvironments The list of all possible environment names.  It is used to create the 
+         * environment test functions and to validate that the current environment is part of this list, minimizing 
+         * the possibility of a mispelled name.
+         */
+        constructor(currentEnvironment: string | IEnvironmentDefinition, possibleEnvironments?: string[]);
     }
 
+    /**
+     * Type that defines the acceptable trait types for a single trait.  It is encouraged to use number-based traits.
+     */
     export type Trait = number | string;
+
+    /**
+     * Type that defines the acceptable trait types for multiple traits.  It is encouraged to use number-based traits.
+     */
     export type Traits = number | string[];
 
+    /**
+     * Defines the capabilities required from objects used as environment definitions.
+     */
     export interface IEnvironmentDefinition {
         name: string,
         traits: Traits
     }
+
+    /**
+     * Type that defines the accepted function signature for computed data sources.
+     */
+    export type ComputedConfigFunction = () => (ICoreConfig | Promise<ICoreConfig>);
 }
