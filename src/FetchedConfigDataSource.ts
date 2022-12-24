@@ -12,17 +12,7 @@ export default class FetchedConfigDataSource extends DataSource {
         this._required = required;
         this._init = init;
         this._processFn = processFn ?? (async (response) => {
-            try {
-                return await response.json();
-            }
-            catch (err) {
-                if (!required) {
-                    return {};
-                }
-                else {
-                    throw err;
-                }
-            }
+            return await response.json();
         });
     }
 
@@ -41,6 +31,7 @@ export default class FetchedConfigDataSource extends DataSource {
             data = await this._processFn(response);
         }
         catch (err) {
+            console.debug('Error processing fetched response: %o', err);
             if (this._required) {
                 // Strange.  While navigating to the TS definition I clearly see that the cause property is of type unknown,
                 // but tsc actually throws an error saying it is of type Error | undefined, so casting as Error.

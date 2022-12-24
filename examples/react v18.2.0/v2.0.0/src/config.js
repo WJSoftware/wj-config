@@ -1,16 +1,33 @@
 import wjConfig, { Environment } from 'wj-config';
 import mainConfig from './config.json'; // One may import data like this, or fetch it.
+import envTraits from './env-traits.js';
 
-const env = new Environment(window.env.REACT_ENVIRONMENT);
+const env = new Environment({
+    name: window.env.REACT_ENVIRONMENT,
+    traits: window.env.REACT_ENV_TRAITS
+}, [
+    'Development',
+    'Test',
+    'PreProduction',
+    'Production'
+]);
 const config = wjConfig()
     .addObject(mainConfig)
-    .name('Main Configuration')
-    .addFetchedConfig(`./config.${env.value}.json`, false)
-    .name(`${env.value} Configuration`)
-    .addEnvironment(window.env, 'REACT_APP_')
+    .name('Main')
     .includeEnvironment(env)
+    .addPerEnvironment((b, envName) => b.addFetchedConfig(`/config.${envName}.json`, false))
+    .addFetchedConfig('/config.verbose.json', false)
+    .name('Verbose')
+    .whenAnyTrait(envTraits.VerboseLogging)
+    .addFetchedConfig('/config.BasicCustomer.json')
+    .name('Basic Customer')
+    .addFetchedConfig('/config.PremiumCustomer.json')
+    .name('Premium Customer')
+    // Ensure preimium customer configuration only applies in production environments.
+    .whenAllTraits(envTraits.PremiumCustomer | envTraits.Production)
+    .addEnvironment(window.env, 'REACT_APP_')
     .createUrlFunctions("api")
-    .build(env.isDevelopment());
+    .build(true);
 
 export default await config;
 

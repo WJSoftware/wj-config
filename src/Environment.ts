@@ -1,35 +1,66 @@
-import type { IEnvironment } from "wj-config";
+import type { EnvironmentTest, IEnvironment, IEnvironmentDefinition, Traits } from "wj-config";
 import { InvalidEnvNameError } from "./EnvConfigError.js";
+import { EnvironmentDefinition } from "./EnvironmentDefinition.js";
 
-/**
- * Environment class used to provide environment information throw the configuration object.
- */
+function ensureEnvDefinition(env: string | IEnvironmentDefinition): IEnvironmentDefinition {
+    if (typeof env === 'string') {
+        return new EnvironmentDefinition(env);
+    }
+    return env;
+}
+
 export class Environment implements IEnvironment {
     /**
      * Default list of environment names.
      */
     static defaultNames: string[] = ['Development', 'PreProduction', 'Production'];
 
-    readonly value: string;
-    readonly names: string[];
-    [x: string]: (() => boolean) | string | string[];
+    readonly current: IEnvironmentDefinition;
+    readonly all: string[];
+    [x: string | 'current' | 'all' | 'hasTraits' | 'hasAnyTrait']: EnvironmentTest | IEnvironmentDefinition | string[] | ((traits: Traits) => boolean)
 
-    /**
-     * Initializes a new instance of this class.
-     * @param value The current environment name.
-     * @param names The list of known environment names.
-     */
-    constructor(value: string, names?: string[]) {
-        this.value = value;
-        this.names = names ?? Environment.defaultNames;
-        let currEnvFound = false;
-        this.names.forEach((name) => {
-            (this as unknown as { [x: string]: () => boolean })[`is${name}`] = function () { return (this as unknown as Environment).value === name; };
-            currEnvFound = currEnvFound || name === value;
+    constructor(currentEnvironment: string | IEnvironmentDefinition, possibleEnvironments?: string[]) {
+        this.all = possibleEnvironments ?? Environment.defaultNames;
+        this.current = ensureEnvDefinition(currentEnvironment);
+        let validCurrentEnvironment = false;
+        this.all.forEach((envName) => {
+            (this as unknown as { [x: string]: () => boolean })[`is${envName}`] = function () { return (this as unknown as Environment).current.name === envName; };
+            validCurrentEnvironment = validCurrentEnvironment || this.current.name === envName;
         });
-        // Throw if the current environment value was not found.
-        if (!currEnvFound) {
-            throw new InvalidEnvNameError(value);
+        // Throw if the current environment name was not found among the possible environment names..
+        if (!validCurrentEnvironment) {
+            throw new InvalidEnvNameError(this.current.name);
         }
+    }
+
+    hasTraits(traits: Traits): boolean {
+        const hasBitwiseTraits = (t: number) => ((this.current.traits as number) & t) === t && t > 0;
+        const hasStringTraits = (t: string[]) => {
+            let has = true;
+            t.forEach(it => {
+                has = has && (this.current.traits as string[]).includes(it);
+            });
+            return has;
+        };
+        if (typeof traits === "number") {
+            return hasBitwiseTraits(traits);
+        }
+        return hasStringTraits(traits);
+    }
+
+    hasAnyTrait(traits: Traits): boolean {
+        const hasAnyBitwiseTrait = (t: number) => ((this.current.traits as number) & t) > 0;
+        const hasAnyStringTrait = (t: string[]) => {
+            for (let x of t) {
+                if ((this.current.traits as string[]).includes(x)) {
+                    return true;
+                }
+            }
+            return false;
+        };
+        if (typeof traits === "number") {
+            return hasAnyBitwiseTrait(traits);
+        }
+        return hasAnyStringTrait(traits);
     }
 }

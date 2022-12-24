@@ -26,7 +26,7 @@ const inflateDictionary = (dic: ICoreConfig, hierarchySeparator: string, prefixO
     if (prefixOrPredicate) {
         if (typeof prefixOrPredicate === "string") {
             if (prefixOrPredicate.length === 0) {
-                throw new Error('The provided prefix value is an empty string.');
+                throw new Error('The provided prefix value cannot be an empty string.');
             }
             prefix = prefixOrPredicate;
             predicateFn = name => name.startsWith(prefixOrPredicate);
@@ -37,6 +37,10 @@ const inflateDictionary = (dic: ICoreConfig, hierarchySeparator: string, prefixO
     }
     forEachProperty(dic, (key, value) => {
         if (predicateFn(key)) {
+            // Object values are disallowed because a dictionary's source is assumed to be flat.
+            if (isConfig(value)) {
+                throw new Error(`Dictionary data sources cannot hold object values.  Key: ${key}`);
+            }
             const keyParts = processKey(key, hierarchySeparator, prefix);
             let obj: ConfigurationValue = result;
             for (let i = 0; i < keyParts.length - 1; ++i) {
@@ -49,7 +53,12 @@ const inflateDictionary = (dic: ICoreConfig, hierarchySeparator: string, prefixO
             if ((obj as ICoreConfig)[keyParts[keyParts.length - 1]]) {
                 throw new Error(`Cannot set the value of variable "${key}" because "${keyParts[keyParts.length - 1]}" has already been created as an object to hold other values.`);
             }
-            (obj as ICoreConfig)[keyParts[keyParts.length - 1]] = attemptParse(value);
+            // If the value is a string, attempt parsing.  This is to support data sources that can only hold strings
+            // as values, such as enumerating actual system environment variables.
+            if (typeof value === 'string') {
+                value = attemptParse(value);
+            }
+            (obj as ICoreConfig)[keyParts[keyParts.length - 1]] = value;
         }
     });
     return result;

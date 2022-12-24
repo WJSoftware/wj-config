@@ -1,45 +1,36 @@
-table.persons {
+table.people {
     margin-top: 2em;
     margin-left: auto;
     margin-right: auto;
-    border: 2px #282c34 solid
 }
 
-table.persons th {
-    background-color: #282c34;
-    color: white;
-}
-
-table.persons>tbody>tr>td {
+table.people>tbody>tr>td {
     text-align: left;
 }
 
-table.persons>tbody>tr>td:first-child {
+table.people>tbody>tr>td:first-child {
     text-align: center;
-}
-
-table.persons tr>td:first-child {
-    background-color: maroon;
-    color: white;
+    background-color: var(--masterBgColor);
+        color: var(--masterColor);
     font-weight: bold;
     border-radius: 7px;
     padding-left: 5px;
     padding-right: 5px;
 }
 
-table.persons>tbody>tr>td:last-child {
+table.people>tbody>tr>td:last-child {
     background-color: rgb(227, 227, 227);
 }
 
-table.persons img.flag {
+table.people img.flag {
     width: 2em;
 }
 span.loader {
     display: inline-block;
     margin-left: auto;
     margin-right: auto;
-    background-color: darkcyan;
-    color: skyblue;
+    background-color: var(--masterBgColor);
+        color: var(--masterColor);
     font-weight: bold;
     padding: 2px 12px;
     border-radius: 7px;

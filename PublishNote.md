@@ -1,10 +1,20 @@
-> Version 2 BETA 2 is out!
+> First Release Candiate!
 > See complete examples [in the Version_2 branch](https://github.com/WJSoftware/wj-config/tree/Version_2/examples).
 
-## Beta 1
+## Release Candidate 0
 
-1. Fixed the URL functions created by the package because they were being created without the dynamic query string 
-parameter.
+1. Ability to condition the inclusion of a specified data source.
+2. Specialized method to add per-environment configuration data sources.
+3. Per-trait configuration:  Assign a list of traits to the current environment, then define data sources that should 
+be applied depending on the existence of individual or sub-groups of traits, and let the builder decide whether or not 
+the data sources should be included.  No more generating per-region or per-customer type configuration files.
+
+### Breaking Changes
+
+1. The property `environment.value` disappeared.  Use `environment.current.name` instead.
+2. The property `environment.names` disappeared.  Use `environment.all` instead.
+
+---
 
 ## Beta 2
 
