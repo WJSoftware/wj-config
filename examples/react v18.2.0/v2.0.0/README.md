@@ -1,29 +1,17 @@
-# wj-config v1.1.0 Example - ReactJS
+# wj-config v2.0.0 Example - ReactJS
 
-This is an example built for `wj-config` v1.1.0.  It was created using the Create React App tool that created the 
+This is an example built for `wj-config` v2.0.0.  It was created using the Create React App tool that created the 
 application with **ReactJS** v18.2.0.
 
 ## Running in Visual Studio Code
 
-This repository contains the `launch.json` file already configured.  Simply run the configuration named 
-**Launch React Example v18.2.0 - v1.1.0**.
+As a first step, make sure you run `npm i` or `npm ci` in the example's folder to install all package dependencies.
+
+This repository contains the `launch.json` file Visual Studio Code requires already configured.  Simply run the 
+configuration named **Launch React Example v18.2.0 - v2.0.0**.
 
 This configuration has a pre-launch task that takes care of starting the NPM server (the `npm start` command), so no 
 need to run this yourself.
-
-## What Is Demonstrated Here
-
-This example shows:
-
-1. How the `/src/config.js` file should be coded.
-2. How to obtain the environment functionality ahead of time (see `config.js`).
-3. How to consume configuration from React components (see `App.js` and `components/PersonsTable.js`).
-4. How to consume configuration from services (see `services/country-service.js`).
-5. How to configure environment variables as an object of the global `window` object (see `public/config.js` and 
-`public/index.html`).
-6. How to define environment variables for local testing/development (see `src/config.js` and 
-`.env.development.local`).
-7. How to consume the generated `environment` object in configuration (see `App.js`).
 
 ## Environment Variables in React with WJ-Config
 
@@ -31,18 +19,13 @@ This example shows:
 > to explore any other ways you wish.  Surely there will be other methods of doing this.
 
 The `wj-config` configuration package should largely eliminate the need for environment variables.  However, if the 
-need for environment variables arise, then configure them in the `.env.development.local` file and alter your 
-`config.js` file to load from `process.env` if running locally (usually this means the `Development` environment), or 
-from `window.env` if deployed somewhere (any other environment).  This is how is actually done in this example.
+need for environment variables arise, then you may proceed as shown in this example:  Create the `public/env.js` file 
+and import it using a script tag in your index page.  This file defines the `window.env` object.  Add "environment" 
+variables to this object following the environment variable name convention if you wish for `wj-config` to use them as 
+a data source.
 
-The advantage of this process is that you can (and should) exclude the `.env.development.local` file from source 
-control and then there won't be any potential secrets in source control while still having everything that is needed 
-for a successful deployment in source control.
-
-The deployment part can be done in several ways explained in the 
-[deployment folder's readme file](https://github.com/WJSoftware/wj-config/tree/main/deployment), where you can also 
-find the `cpenv` script (in **Powershell** and **bash** flavors) that copies environment variables from the system and 
-dumps them in the form of JavaScript that can be used to set `window.env`.
+As explained by the package's README, you need to specify two values outside the realm of `wj-config` somewhere.  You 
+can use `window.env` to transmit the environment name and the environment traits.  This is done in this example.
 
 __________________
 
