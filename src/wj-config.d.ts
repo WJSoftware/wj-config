@@ -174,6 +174,17 @@ declare module 'wj-config' {
         addSingleValue(path: string, value: ConfigurationValue, hierarchySeparator: string = ':'): IBuilder;
 
         /**
+         * Special function that allows the developer the opportunity to add one data source per defined environment.
+         * 
+         * The function iterates through all possible environments and calls the addDs function for each one.  It is 
+         * assumed that the addDs function will add zero or one data source.  To signal no data source was added, 
+         * addDs must return the boolean value "false".
+         * @param addDs Function that is meant to add a single data source of any type that is associated to the 
+         * provided environment name.
+         */
+        addPerEnvironment(addDs: (builder: IBuilder, envName: string) => boolean | string): IBuilder;
+
+        /**
          * Sets the data source name of the last data source added to the builder.
          * @param name Name for the data source.
          */

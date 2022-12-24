@@ -100,6 +100,19 @@ export default class Builder implements IBuilder {
         return this.add(new SingleValueDataSource(path, value, hierarchySeparator));
     }
 
+    addPerEnvironment(addDs: (builder: IBuilder, envName: string) => boolean | string): IBuilder {
+        if (!this._envSource) {
+            throw new Error('Using addPerEnvironment() requires a prior call to includeEnvironment().');
+        }
+        this._envSource.environment.all.forEach(n => {
+            const result = addDs(this, n);
+            if (result !== false) {
+                this.forEnvironment(n, typeof result === 'string' ? result : undefined);
+            }
+        });
+        return this;
+    }
+
     name(name: string): IBuilder {
         if (!this._lastCallWasDsAdd) {
             throw new Error('Names for data sources must be set immediately after adding the data source or setting its conditional.');
