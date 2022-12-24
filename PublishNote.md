@@ -9,6 +9,13 @@
 be applied depending on the existence of individual or sub-groups of traits, and let the builder decide whether or not 
 the data sources should be included.  No more generating per-region or per-customer type configuration files.
 
+### Breaking Changes
+
+1. The property `environment.value` disappeared.  Use `environment.current.name` instead.
+2. The property `environment.names` disappeared.  Use `environment.all` instead.
+
+---
+
 ## Beta 2
 
 1. Fixed the `FetchedConfigDataSource` class.  Now it properly returns an empty object if an error occurs after 
