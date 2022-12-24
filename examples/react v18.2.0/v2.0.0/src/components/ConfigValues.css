@@ -1,0 +1,17 @@
+table.config {
+    margin-left: auto;
+    margin-right: auto;
+    margin-bottom: 1.5em;
+}
+
+table.config tbody td {
+    text-align: left;
+}
+
+table.config tbody>tr>td:first-of-type {
+    font-family: monospace;
+}
+
+table.config tbody>tr>td:first-of-type:first-child {
+    background-color: #eee;
+}

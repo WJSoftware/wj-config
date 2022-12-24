@@ -1,0 +1,17 @@
+div.banner {
+    display: inline-block;
+    font-size: smaller;
+    margin-left: auto;
+    margin-right: auto;
+    margin-bottom: 1em;
+    max-width: 80%;
+    border: 0.2em rgb(199, 13, 246) solid;
+    background-color: rgb(250, 233, 255);
+    border-radius: 10px;
+    padding: 0.5em 2em;
+}
+
+div.banner.inline>h4 {
+    display: inline;
+    margin-right: 1em;
+}

@@ -46,7 +46,7 @@ let readCountries = null;
 const CountryInfo = props => {
     const countries = readCountries();
     return <Fragment>
-        <img className="flag" src={config.api.flags.flag(() => props.countryCode)} title={countries[props.countryCode]} alt={countries[props.countryCode]} />
+        <img crossOrigin="anonymous" className="flag" src={config.api.flags.flag(() => props.countryCode)} title={countries[props.countryCode]} alt={countries[props.countryCode]} />
         &nbsp;
         {countries[props.countryCode]} ({props.countryCode})
     </Fragment>
@@ -55,7 +55,7 @@ const CountryInfo = props => {
 const CorePersonsTable = props => {
     const persons = readPersons();
     if (!persons) {
-        return <span>No persons</span>
+        return <span>No people</span>
     }
     // See if the Mockaroo free key is exhausted.
     if (persons.length === 1) {
@@ -77,7 +77,7 @@ const CorePersonsTable = props => {
                 })
         );
     }
-    return <table className="persons">
+    return <table className="data people">
         <thead>
             <tr>
                 <th>ID</th>
@@ -129,7 +129,7 @@ const PersonsTable = ({ personCount, minBday }) => {
         readCountries = null;
         setUpdateCount(updateCount + 1);
     }, [personCount, minBday]);
-    return <Suspense fallback={<span className="loader loader-large">Loading persons...</span>}>
+    return <Suspense fallback={<span className="loader loader-large">Loading people...</span>}>
         <CorePersonsTable />
     </Suspense>
 }
