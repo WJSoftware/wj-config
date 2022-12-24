@@ -54,20 +54,25 @@ The repository contains the necessary `launch.json` file to run each of the exam
 
 ## Quickstart
 
-> This quickstart shows the classic way of doing per-environment configurations.  Starting with v2.0.0, there is a 
-> clearer way to do per-environment overrides by using conditional inclusion of data sources.  Read this Quickstart 
-> and then read the sub-section titled [Conditional Per-Environment Configuration](#conditional-per-environment-configuration).
+1. Install the NPM package.
+2. Create your JSON configuration files (quickstart will assume you want per-environment configuration).
+3. Build your configuration object.
 
-First, install the NPM package in your project.
+### 1. Install the NPM Package
 
 ```bat
 npm install wj-config
 ```
+
+### 2. Create your JSON Configuration Files
+
 Create a JSON file to be your main configuration file and name it, say `config.json`.  For **React** you have two 
 choices:
 
 1. To include this file under the `/src` folder, in which case you later `import` it.
 2. To include it in the `/public` folder, in which case you later `fetch` it.
+
+For **NodeJS** you import or load using the `fs` module.
 
 Example:
 
@@ -96,13 +101,9 @@ Example:
 }
 ```
 
-**IMPORTANT**:  The `ws` section above follows a specific set of rules to be able to easily configure per-environment 
-hosts, ports or other parts of the URL's.  The example doesn't show any of these because it is an example that 
-produces *relative* URL's.  For detailed information see the [URL Configuration](#url-configuration) section below.
+> **NOTE**: The `ws` section is special.  See [URL Configuration](#url-configuration) for the details.
 
-That's the main configuration.  Now create any per-environment overrides you may need in a new file.  Name this new 
-file using the environment name, just like in ASP.net configuration:  `config.Developent.json`.  Then only specify the 
-values that change.  Example:
+Now write per-configuration JSON files.  Example for development (would be named `config.Development.json`):
 
 ```json
 {
@@ -112,17 +113,21 @@ values that change.  Example:
 }
 ```
 
-Now you're ready to load `wj-config`.  Create a module of yours called `config.js`.  Obtain the environment name, load 
-the 2 JSON files and initialize the library.
+Yes, you only write the overrides, the values that change for the environment.  All other configuration is still 
+available, but does not have to be repeated.
 
-### NodeJS ES Modules (Recommended)
+### 3. Build Your Configuration Object
+
+Create a module of yours called `config.js` or whatever pleases you.  Obtain the environment name, load the 2 JSON 
+files and initialize the library.  This is in general.
+
+There are two styles available:  The *classic* style leaves to you, the programmer to figure out a way to select the 
+correct per-environment data source.  The *conditional* style leaves the decision to the configuration builder.  Pick 
+whatever pleases you.
+
+From now on, any code samples that call the `loadJsonFile()` function are referring to this one:
 
 ```js
-import wjConfig, { Environment } from 'wj-config';
-import mainConfig from "./config.json" assert {type: 'json'}; // Importing data is a thing in NodeJS.
-import fs from 'fs';
-
-// If importing JSON was not a thing in NodeJS, mainConfig would be the result of calling this function.
 const loadJsonFile = (fileName, isRequired) => {
     const fileExists = fs.existsSync(fileName);
     if (fileExists) {
@@ -135,14 +140,25 @@ const loadJsonFile = (fileName, isRequired) => {
     // Return an empty object.
     return {};
 };
+```
+
+If you don't like it, feel free to write your own.
+
+#### Classic Style
+
+##### NodeJS ES Modules (Recommended)
+
+```js
+import wjConfig, { Environment } from 'wj-config';
+import mainConfig from "./config.json" assert {type: 'json'}; // Importing data is a thing in NodeJS.
 
 // Obtain an environment object ahead of time to help setting configuration up.
 const env = new Environment(process.env.NODE_ENV);
 
 const config = wjConfig()
-    .addObject(mainConfig)
+    .addObject(mainConfig) // Main configuration JSON file.
     .name('Main') // Give data sources a meaningful name for value tracing purposes.
-    .addObject(loadJsonFile(`./config.${env.current.name}.json`))
+    .addObject(loadJsonFile(`./config.${env.current.name}.json`)) // The developer is deciding by using a file name tactic.
     .name(env.current.name)
     .addEnvironment(process.env) // Adds a data source that reads the environment variables in process.env.
     .includeEnvironment(env) // So the final configuration object has the environment property.
@@ -153,24 +169,13 @@ const config = wjConfig()
 export default await config; // The build() function is asynchronous, so await and export the result.
 ```
 
-### NodeJS CommonJS Modules (If You Must)
+The calls to `addEnvironment()`, `includeEnvironment()` and `createUrlFunctions()` are not mandatory, they are just 
+customary.  Typically, you also want to include the environment variables, have the `environment` object and also make 
+use of [URL functions](#url-configuration).
+
+##### NodeJS CommonJS Modules (If You Must)
 
 ```js
-const fs = require('fs');
-
-const loadJsonFile = (fileName, isRequired) => {
-    const fileExists = fs.existsSync(fileName);
-    if (fileExists) {
-        const data = fs.readFileSync(fileName);
-        return JSON.parse(data);
-    }
-    else if (isRequired) {
-        throw new Error(`Configuration file ${fileName} is required but was not found.`);
-    }
-    // Return an empty object.
-    return {};
-};
-
 // Export the result of an IIFE, which will be a promise to return the configuration object.  This means that code in 
 // need for the configuration object will have to execute inside async functions to be able to await, or wrap the 
 // whole thing within a call to .then(), like in one of the examples provided in this project's repository.
@@ -180,17 +185,17 @@ module.exports = (async function () {
     const env = new Environment(process.env.NODE_ENV);
     return wjConfig()
         .addObject(loadJsonFile('./config.json', true))
-        .name('Main') // Give data sources a meaningful name for value tracing purposes.
+        .name('Main')
         .addObject(loadJsonFile(`./config.${env.current.name}.json`))
         .name(env.current.name)
-        .addEnvironment(process.env) // Adds a data source that reads the environment variables in process.env.
-        .includeEnvironment(env) // So the final configuration object has the environment property.
-        .createUrlFunctions() // So the final configuration object will contain URL builder functions.
-        .build(env.isDevelopment()); // Only trace configuration values in the Development environment.
+        .addEnvironment(process.env)
+        .includeEnvironment(env)
+        .createUrlFunctions()
+        .build(env.isDevelopment());
 })();
 ```
 
-### React
+##### React
 
 > **IMPORTANT**:  Eject or use the `@craco/craco` package (or similar one) and configure webpack to allow top-level 
 > awaits.  Details in the [React section](#react-specific-notes).  It can also work without top-level awaits, but in 
@@ -204,7 +209,7 @@ const env = new Environment(window.env.REACT_ENVIRONMENT);
 const config = wjConfig()
     .addObject(mainConfig)
     .name('Main') // Give data sources a meaningful name for value tracing purposes.
-    .addFetchedConfig(`./config.${env.current.name}.json`, false) // Fetch the JSON from the /public folder.
+    .addFetchedConfig(`/config.${env.current.name}.json`, false) // Fetch the JSON from the /public folder.
     .name(env.current.name)
     .addEnvironment(window.env, 'REACT_APP_') // Adds a data source that reads the environment variables in window.env.
     .includeEnvironment(env) // So the final configuration object has the environment property.
@@ -213,17 +218,6 @@ const config = wjConfig()
 
 export default await config;
 ```
-
-At this point, your `config.js` module is ready to be imported or required anywhere in your project and it will 
-contain the properties your JSON files defined as well as an `environment` property with:
-
-1. A `current` property that provides an environment definition object with the `name` and `traits` property.  It 
-represents the currently active environment.
-2. A `all` property that has the list of all possible environment names.
-2. One `isXXX()` function for each environment name provided during initialization (not shown in the examples above, 
-so the library used the default names *Development*, *PreProduction* and *Production*).
-
-**IMPORTANT**:  The `environment` property is named like this by default, but its name can be specified.
 
 ---
 
@@ -255,15 +249,12 @@ import config from './config';
 console.log(config.app.title);
 ```
 
-### Conditional Per-Environment Configuration
+### Conditional Style
 
 > Since **v2.0.0**
 
-Ok, so as stated at the beginning of the **Quickstart**, the shown way of setting per-environment configuration is the 
-*classic* way of doing it.  Now that **wj-config** has conditional inclusion of data sources, a clearer way of doing 
-per-environment configuration has risen.
-
-This would be the **React** Quickstart example written with conditional inclusion.
+There are two possible ways to do conditional style per-environment configuration.  The shortest first using the 
+**React** sample:
 
 ```javascript
 import wjConfig, { Environment } from 'wj-config';
@@ -273,11 +264,45 @@ const env = new Environment(window.env.REACT_ENVIRONMENT);
 const config = wjConfig()
     .addObject(mainConfig)
     .name('Main')
-    .addFetchedConfig(`./config.Development.json`, false)
+    .includeEnvironment(env)
+    .addPerEnvironment((b, envName) => b.addFetchedConfig(`/config.${envName}.json`, false))
+    .addEnvironment(window.env, 'REACT_APP_')
+    .createUrlFunctions()
+    .build(env.isDevelopment());
+
+export default await config;
+```
+
+It looks almost identical to the classic.  This one has a few advantages:
+
+1. Covers all possible environments.
+2. Helps you avoid typos.
+3. Makes sure there's at least one data source per defined environment.
+
+**IMPORTANT**:  This conditional style requires the call to `includeEnvironment()` and to be made *before* calling 
+`addPerEnvironment()`.  Make sure you define your environment names when creating the `Environment` object:
+
+```javascript
+const env = new Environment(window.env.REACT_ENVIRONMENT, ['myDev', 'myTest', 'myProd']);
+```
+
+This way `addPerEnvironment()` knows your environment names.
+
+The longer way of the conditional style looks like this:
+
+```javascript
+import wjConfig, { Environment } from 'wj-config';
+import mainConfig from './config.json';
+
+const env = new Environment(window.env.REACT_ENVIRONMENT);
+const config = wjConfig()
+    .addObject(mainConfig)
+    .name('Main')
+    .addFetchedConfig(`/config.Development.json`, false)
     .forEnvironment('Development')
-    .addFetchedConfig(`./config.PreProduction.json`, false)
+    .addFetchedConfig(`/config.PreProduction.json`, false)
     .forEnvironment('PreProduction')
-    .addFetchedConfig(`./config.Production.json`, false)
+    .addFetchedConfig(`/config.Production.json`, false)
     .forEnvironment('Production')
     .addEnvironment(window.env, 'REACT_APP_')
     .includeEnvironment(env)
@@ -287,58 +312,33 @@ const config = wjConfig()
 export default await config;
 ```
 
-Although wordier at first, it is far clearer that we are doing per-environment configuration overrides and whether or 
-not they are in the right place.  Remember, the order of data sources matter.
+This one has advantages 2 and 3 above, plus allows for the possiblity of having completely different data source types 
+per environment.  95% of the time you'll need the short one only.
 
-Furthermore, the `forEnvironment()` function standardizes the data source's name and enables environment coverage 
-validation to ensure no environments are being left behind.  For more information, read about this function in 
-[this section](#the-forenvironment-function-explained).
-
-Let's also re-write the **NodeJS** version using the new `ComputedDataSource` data source, for reasons that are 
-explained after the code sample:
+This works in **NodeJS** too.  There is a performance catch, though:  If in NodeJS you use `loadJsonFile()` with the 
+`addObject()` data source function, you'll be reading all per-environment configuration files.  To avoid this hit, use 
+the `ComputedDataSource` data source:
 
 ```js
 import wjConfig, { Environment } from 'wj-config';
 import mainConfig from "./config.json" assert {type: 'json'};
-import fs from 'fs';
-
-const loadJsonFile = (fileName, isRequired) => {
-    const fileExists = fs.existsSync(fileName);
-    if (fileExists) {
-        const data = fs.readFileSync(fileName);
-        return JSON.parse(data);
-    }
-    else if (isRequired) {
-        throw new Error(`Configuration file ${fileName} is required but was not found.`);
-    }
-    return {};
-};
 
 const env = new Environment(process.env.NODE_ENV);
 
 const config = wjConfig()
     .addObject(mainConfig)
     .name('Main')
-    .addComputed(() => loadJsonFile('./config.Development.json'))
-    .forEnvironment('Development')
-    .addComputed(() => loadJsonFile('./config.PreProduction.json'))
-    .forEnvironment('PreProduction')
-    .addComputed(() => loadJsonFile('./config.Production.json'))
-    .forEnvironment('Production')
-    .addEnvironment(process.env)
     .includeEnvironment(env)
+    // Using addComputed to avoid loading every file.
+    .addPerEnvironment((b, envName) => b.addComputed(() => loadJsonFile(`./config.${envName}.json`)))
+    .addEnvironment(process.env)
     .createUrlFunctions()
     .build(env.isDevelopment());
 
 export default await config;
 ```
 
-Long story short (for now), by using the new `ComputedDataSource` data source we only load one of the configuration 
-files:  The one that matches the current environment.  The benefits mentioned for the **React** example also apply 
-here.
-
-Ok, so now you know how to do per-environment configuration in the *classic* and *conditional* styles.  Pick your 
-poison.
+Now you know how to do per-environment configuration in the *classic* and *conditional* styles.  Pick your poison.
 
 ## URL Configuration
 
@@ -458,7 +458,7 @@ const singleCatalogueUrl = config.ws.gateway.catalogue.single(n => catalogueId, 
 // Using a dictionary object.
 const singleCatalogueUrl = config.ws.gateway.catalogue.single(n => catalogueId, { format: 'full' });
 // Using a function that returns a dictionary object.
-const singleCatalogueUrl = config.ws.gateway.catalogue.single(n => catalogueId, () => { return { format: 'full' }; });
+const singleCatalogueUrl = config.ws.gateway.catalogue.single(n => catalogueId, () => ({ format: 'full' }));
 console.log(singleCatalogueUrl); // Shows /api/v1/cat/123?format=full for all the presented variants above.
 ```
 
@@ -487,8 +487,7 @@ console.log(quickSearch); // Shows /api/v1/cat/?maxRecords=100&search=abc%20def 
 
 > Since **v1.0.0**
 
-As if all of the above weren't enough to convince you this is the best configuration package available, you may also 
-create fully dynamic URL's with the same mechanism.
+You may also create fully dynamic URL's with the same mechanism.
 
 Every non-leaf object (node) in a web services path in your configuration is granted the `buildUrl()` function that 
 works exactly the same as the leaf functions but also accepts a path.  Referring to the same configuration example as 
@@ -611,10 +610,10 @@ because their values are not of type `string`.
 
 > Since **v1.0.0**
 
-As mentioned already in several other places, the configuration object is granted an `environment` property whose 
-value is an object with the `value` property, a `names` property that contains the list of defined environments and as 
-many `isXXX()` functions as there are environment names.  Assuming the names on the default configuration, the object 
-will have `isDevelopment()`, `isPreProduction()` and `isProduction()`.
+The configuration object is granted an `environment` property whose value is an object with a `value` property, a 
+`names` property that contains the list of defined environments and as many `isXXX()` functions as there are 
+environment names.  Assuming the names on the default configuration, the object will have `isDevelopment()`, 
+`isPreProduction()` and `isProduction()`.
 
 The `isXXX()` functions return a Boolean response based on the stored value in `value`.  This is an example of how 
 this object would look like for the [Quickstart](#quickstart) example:
@@ -666,7 +665,7 @@ Starting with v2, the current environment is not only a name:  It is an object w
 `traits`.
 
 This object is represented by the TypeScript type called `IEnvironmentDefinition`.  This is a new feature that allows 
-developers to define the current environment by assigning characteristics (traits), and then condition data sources 
+developers to define the current environment by assigning characteristics or traits, and then condition data sources 
 based on said traits.
 
 So long story short:  The environment object now looks like this:
@@ -748,7 +747,7 @@ For `ASA`, `config.asa.json`:
 Now the trick:  We will add those files as configuration data sources (either fetched or read from disk or imported) 
 and then apply a conditional based on environment traits.
 
-Before we do this, let's define how traits are defined in code.
+Before we do this, let's understand how traits are defined in code.
 
 ### Traits
 
@@ -777,7 +776,7 @@ export default Object.freeze({
 ```
 
 Generally speaking, with a numeric trait definition, you would calculate the total traits an environment would have by 
-using the bitwise OR operation:
+using the bitwise OR binary operator (`|`):
 
 ```javascript
 const envTraits = myTraits.Americas | myTraits.Europe;
@@ -802,33 +801,33 @@ const currentEnvDef = new EnvironmentDefinition(process.env.NODE_ENV, process.en
 const env = new Environment(currentEnvDef, ['MyList', 'OfPossible', 'Environments']);
 // Main configuration file.  Boolean argument defines if the file must exist.
 const mainConfig = loadJsonFile('./config.json', true);
-// Classic per-environment configuration.
-const perEnvConfig = loadJsonFile(`config.${env.current.name}.json`, false);
 export default await wjConfig()
     .addObject(mainConfig)
     .name('Main')
-    .addObject(perEnvConfig)
-    .name(env.current.name)
+    .includeEnvironment(env)
+    // Classic or coditional per-environment config.  Conditional shown here.
+    .addPerEnvironment((b, envName) => b.addComputed(() => loadJsonFile(`./config.${envName}.json`, false)))
     .addComputed(() => loadJsonFile('config.amr.json', false))
-    // The second parameter is just the data source name.
     .whenAllTraits(myTraits.Americas, 'Americas') // <-- It conditions the recently added data source.
     .addComputed(() => loadJsonFile('config.eur.json', false))
     .whenAllTraits(myTraits.Europe, 'Europe')
     .addComputed(() => loadJsonFile('config.asa.json', false))
     .whenAllTraits(myTraits.Asia, 'Asia')
-    .includeEnvironment(env)
     .build();
 ```
 
-And just like that, the configuration object will discard any per-region configurations if the trait specification 
-in the current environment does not contain the corresponding per-region trait.  The code does not have to be 
-modified in any way or form when deploying to the different regions.  All that needs to change is the value of the 
-`ENV_TRAITS` environment variable so it reflects the correct trait combination.
+Since we said this was a **NodeJS** sample, we use `addComputed()` to only load the files that are really needed.
+
+With the above, the configuration object will discard any per-region configurations if the trait specification 
+for the current environment (given by the value of the `ENV_TRAITS` environment variable) does not contain the 
+corresponding per-region trait.  The code does not have to be modified in any way or form when deploying to the 
+different regions.  All that needs to change is the value of the `ENV_TRAITS` environment variable during deployment 
+or server/pod configuration so it reflects the correct trait combination.
 
 Furthermore, we did not have to create duplicates of per-environment configuration files to create combinations with 
 each of the per-region settings.  The combinations are left in the hands of the configuration builder at runtime.
 
-As you can see, this applies to any possible environment, without any change.  This is the power and convenience of 
+This applies to any possible environment, without any change, as seen above.  This is the power and convenience of 
 using environment traits.
 
 **WARNING**:  The `whenAllTraits()` and `whenAnyTrait()` functions are used, the builder will emit an error if there 
@@ -843,8 +842,8 @@ This is a new feature that came to be to support **per-trait configuration**, as
 
 Any data source can be selectively included in runtime by using the special builder function `when()`.
 
-The `when()` function accepts a *function that receives the current environment object, that is meant to return a 
-`Boolean` value*.  If the return value is `true`, the associated data source is included; if the return value is 
+The `when()` function accepts a *function that receives the current environment object, and is meant to return a 
+`Boolean` value*.  If the returned value is `true`, the associated data source is included; if the returned value is 
 `false` then the associated data source is excluded and therefore won't participate in the creation of the final 
 configuration object.
 
@@ -865,18 +864,18 @@ export default await wjConfig()
     .build();
 ```
 
-As you can see, it is not required to create a conditional that actually uses the environment object.  This is why 
-the use of `when()` does not raise an issue if the `includeEnvironment()` call is not included.  Just note that the 
-value of the `e` parameter inside the conditional function will be `undefined`.  If you need the environment, better 
-to call `includeEnvironment()`.
+It is not required to create a conditional that actually uses the provided environment object.  This is why the use of 
+`when()` does fail if the `includeEnvironment()` call is not included as a building step.  Just note that the value of 
+the `e` parameter inside the conditional function will be `undefined`.  If you need the environment, better to call 
+`includeEnvironment()`.
 
 Also seen in the example is the presence of a second argument passed to `when()`:  It merely sets the data source's 
 name.  `.when(e => isChromium, 'Chromium')` is equivalent to `.when(e => isChromium).name('Chromium')`.
 
 ### The forEnvironment Function Explained
 
-As seen in the final section of the [Quickstart](#conditional-per-environment-configuration), there is this function 
-called `forEnvironment()` that makes the per-configuration task wordier, but clearer.  It is also mentioned that it 
+As seen in the conditional style section of the [Quickstart](#conditional-style), there is this function called 
+`forEnvironment()` that makes the per-configuration task wordier, but clearer.  It is also mentioned that it 
 provides advantages over the *classic* way of doing per-environment configuration overrides.  Let's talk about those.
 
 #### Standardized Data Source Naming
@@ -885,7 +884,8 @@ Regardless of the type of data source being conditionally applied, its name is s
 `{Environment} (environment-specific)`.  Example:  `Production (environment-specific)`.
 
 It is possible to use `forEnvironment()` more than once for a given environment.  When this happens, the label 
-assigned to the first data source will be of the form `{Environment} (environment-specific)` for the first one, and then it will be of the form `{Environment} #{Count} (environment-specific)` for all subsequent ones.  Example: 
+assigned to the first data source will be of the form `{Environment} (environment-specific)` for the first one, and 
+then it will be of the form `{Environment} #{Count} (environment-specific)` for all subsequent ones.  Example: 
 `Production #2 (environment-specific)`
 
 Of course, if you don't like this naming convention, you can still use `forEnvironment()`'s second parameter to set 
@@ -902,7 +902,8 @@ This advantage can be disabled but is active by default:  The builder assumes yo
 data source per defined environment and is able to enforce this by throwing an error if not all possible environments 
 have been assigned at least one data source.
 
-Yes, it is possible to cover other environments in a different way, and this is why the `build()` function now has a second optional Boolean parameter called `enforcePerEnvironmentCoverage`.  Set this one to `false` to disable this 
+Yes, it is possible to cover other environments in a different way, and this is why the `build()` function now has a 
+second optional Boolean parameter called `enforcePerEnvironmentCoverage`.  Set this one to `false` to disable this 
 check.
 
 ## React-Specific Notes
@@ -964,7 +965,8 @@ There are two possible solutions that I know of:
 
 1. Eject.  That's right.  Simply run `npm eject` so the webpack configuration is readily available for modification.
 2. Install `@craco/craco` from the [NPM global repository](https://www.npmjs.com/package/@craco/craco).  For modern 
-React applications using `react-scripts` package v5.x install [version 7](https://www.npmjs.com/package/@craco/craco/v/7.0.0) or greater.
+React applications using `react-scripts` package v5.x install [version 7](https://www.npmjs.com/package/@craco/craco/v/7.0.0) 
+or greater.
 
 The example provided in this repository uses the second option.  It is a super-simple thing to do and is done in a 
 matter of 3 minutes.
@@ -1009,7 +1011,7 @@ Those used to ASP.net Configuration will find this behavior incredibly familiar.
 
 > Since **v2.0.0**
 
-**IMPORTANT**:  Since v2, the environment data source is not automatically added and must be added using the builder's 
+Since v2, the environment data source is not automatically added and must be added using the builder's 
 `addEnvironment()` function.
 
 ### The Environment Variable Name Explained
@@ -1130,10 +1132,9 @@ properties, however, are objects of type `IDataSourceInfo`.  This basically mean
 By tracing values you can know exactly which data source provided the final configuration value.  The `index` property 
 will tell you the priority of the data source relative to the others, where a higher index implies a higher priority.
 
-**IMPORTANT**:  Some data sources like the `ObjectDataSource` provide by default a generic name that is the same for 
-all instances, making it impossible to distinguish in a trace between two of these.  This is where the builder's 
-`name()` function comes in handy.  Use it to set meaningful names to data sources so it is easy to understand data 
-traces.
+Some data sources like the `ObjectDataSource` provide by default a generic name that is the same for all instances, 
+making it impossible to distinguish in a trace between two of these.  This is where the builder's `name()` function 
+comes in handy.  Use it to set meaningful names to data sources so it is easy to understand data traces.
 
 ### Qualified Data Sources
 
@@ -1170,6 +1171,6 @@ something not found at all in v1.
 15. Data sources can now be conditioned to leave the final decision to runtime.
 16. Environments can be defined by a set of traits and then configuration data sources can be sectioned in a per-trait 
 basis, enabling a new and completely different approach to building configurations.
-17. By using *conditional per-environment configuration*, the configuration builder can validate that there is at 
-least one data source per defined environment name, giving the developer the confidence that all environments are 
-covered.
+17. Dong per-environment configuration by using *conditional* style, the configuration builder can validate that there 
+is at least one data source per defined environment name, giving the developer the confidence that all environments 
+are covered.
