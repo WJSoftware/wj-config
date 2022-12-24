@@ -1171,6 +1171,6 @@ something not found at all in v1.
 15. Data sources can now be conditioned to leave the final decision to runtime.
 16. Environments can be defined by a set of traits and then configuration data sources can be sectioned in a per-trait 
 basis, enabling a new and completely different approach to building configurations.
-17. Dong per-environment configuration by using *conditional* style, the configuration builder can validate that there 
-is at least one data source per defined environment name, giving the developer the confidence that all environments 
-are covered.
+17. By doing per-environment configuration with the *conditional* style, the configuration builder can validate that 
+there is at least one data source per defined environment name, giving the developer the confidence that all 
+environments are covered.

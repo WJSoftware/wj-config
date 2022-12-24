@@ -126,7 +126,7 @@ export default class Builder implements IBuilder {
             throw new Error('Conditionals for data sources must be set immediately after adding the data source or setting its name.');
         }
         if (this._dsDefs[this._dsDefs.length - 1].predicate) {
-            throw new Error('Cannot set more than one prediate (conditional) per data source, and the last-added data source already has a predicate.');
+            throw new Error('Cannot set more than one predicate (conditional) per data source, and the last-added data source already has a predicate.');
         }
         const dsDef = this._dsDefs[this._dsDefs.length - 1];
         dsDef.predicate = predicate;
