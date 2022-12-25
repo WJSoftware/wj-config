@@ -879,12 +879,12 @@ export default await wjConfig()
     .build();
 ```
 
-And this one is one for **NodeJS** that includes a configuration object only if the standard output has not been 
+And this one is one for **NodeJS** that includes a configuration data source only if the standard output has not been 
 redirected.
 
 ```javascript
 import wjConfig, { Environment } from "wj-config";
-import mainConfig from './config.json';
+import mainConfig from './config.json' assert { type: 'json' };
 
 export default await wjConfig()
     .addObject(mainConfig)
