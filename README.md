@@ -879,13 +879,28 @@ export default await wjConfig()
     .build();
 ```
 
+And this one is one for **NodeJS** that includes a configuration object only if the standard output has not been 
+redirected.
+
+```javascript
+import wjConfig, { Environment } from "wj-config";
+import mainConfig from './config.json';
+
+export default await wjConfig()
+    .addObject(mainConfig)
+    .name('Main')
+    .addComputed(() => loadJsonFile('config.TTY.json'))
+    .when(e => process.stdout.isTTY)
+    .build();
+```
+
 It is not required to create a conditional that actually uses the provided environment object.  This is why the use of 
 `when()` doesn't fail if the `includeEnvironment()` call is not included as a building step.  Just note that the value 
 of the `e` parameter inside the conditional function will be `undefined`.  If you need the environment, better to call 
 `includeEnvironment()`.
 
-Also seen in the example is the presence of a second argument passed to `when()`:  It merely sets the data source's 
-name.  `.when(e => isChromium, 'Chromium')` is equivalent to `.when(e => isChromium).name('Chromium')`.
+Also seen in the **React** example is the presence of a second argument passed to `when()`:  It merely sets the data 
+source's name.  `.when(e => isChromium, 'Chromium')` is equivalent to `.when(e => isChromium).name('Chromium')`.
 
 ### The forEnvironment Function Explained
 
