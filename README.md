@@ -119,7 +119,7 @@ available, but does not have to be repeated.
 ### 3. Build Your Configuration Object
 
 Create a module of yours called `config.js` or whatever pleases you.  Obtain the environment name, load the 2 JSON 
-files and initialize the library.  This is in general.
+files and build the configuration object.  This is in general.
 
 There are two styles available:  The *classic* style leaves to you, the programmer, the responsibility of figuring out 
 a way to select the correct per-environment data source.  The *conditional* style leaves the decision to the 
@@ -797,7 +797,9 @@ import myTraits from './myTraits.js';
 
 // Easiest to show with NodeJS as we already have an environment object with all variables ready.
 // The ENV_TRAITS environment variable would contain the desired trait value assigned when deploying.
-const currentEnvDef = new EnvironmentDefinition(process.env.NODE_ENV, process.env.ENV_TRAITS);
+
+// We use the parseInt() function to tell wj-config our traits are NUMERIC.
+const currentEnvDef = new EnvironmentDefinition(process.env.NODE_ENV, parseInt(process.env.ENV_TRAITS));
 const env = new Environment(currentEnvDef, ['MyList', 'OfPossible', 'Environments']);
 // Main configuration file.  Boolean argument defines if the file must exist.
 const mainConfig = loadJsonFile('./config.json', true);
@@ -815,6 +817,19 @@ export default await wjConfig()
     .whenAllTraits(myTraits.Asia, 'Asia')
     .build();
 ```
+
+#### A NOTE FOR REACT
+
+`parseInt()` is not needed if your `window.env.REACT_ENV_TRAITS` property has a number directly assinged, like this:
+
+```javascript
+window.env = {
+    REACT_ENVIRONMENT: 'MyDev',
+    REACT_ENV_TRATIS: 5 // <--- Traits 0x1 and 0x4.
+};
+```
+
+---
 
 Since we said this was a **NodeJS** sample, we use `addComputed()` to only load the files that are really needed.
 
