@@ -1,7 +1,21 @@
 {
     "app": {
         "title": "NodeJS v18.2.0 with wj-config v2.0.0",
-        "version": "1.0.0"
+        "version": "1.0.0",
+        "artChoices": [
+            "amiga1000",
+            "amiga1200",
+            "appleiic",
+            "macintosh"
+        ],
+        "outputPeople": false
+    },
+    "logging": {
+        "minLevel": "verbose",
+        "consoleOptions": {
+            "includeProperties": false,
+            "includeTimestamps": true
+        }
     },
     "ws": {
         "opts": {

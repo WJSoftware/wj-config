@@ -1,29 +1,33 @@
 import wjConfig, { Environment } from 'wj-config';
 import mainConfig from "./config.json" assert {type: 'json'};
-import fs from 'fs';
+import loadFile from './load-file.js';
+import envTraits from './env-traits.js';
 
 const loadJsonFile = (fileName, isRequired) => {
-    const fileExists = fs.existsSync(fileName);
-    if (fileExists) {
-        const data = fs.readFileSync(fileName);
-        return JSON.parse(data);
+    const data = loadFile(fileName, isRequired);
+    if (data === null) {
+        return {};
     }
-    else if (isRequired) {
-        throw new Error(`Configuration file ${fileName} is required but was not found.`);
-    }
-    // Return an empty object.
-    return {};
+    return JSON.parse(data);
 };
 
-const env = new Environment(process.env.NODE_ENV);
+const env = new Environment({
+    name: process.env.NODE_ENV,
+    traits: parseInt(process.env.ENV_TRAITS)
+});
 
 const config = wjConfig()
     .addObject(mainConfig)
     .name('Main Configuration')
-    .addObject(loadJsonFile(`./config.${env.value}.json`))
-    .name(`${env.value} Configuration`)
-    .addEnvironment(process.env)
     .includeEnvironment(env)
+    .addPerEnvironment((b, e) => b.addComputed(() => loadJsonFile(`./config.${e}.json`)))
+    .addComputed(() => loadJsonFile('config.nonTTY.json'))
+    .when(e => !process.stdout.isTTY)
+    .addComputed(() => loadJsonFile('config.Amiga.json'))
+    .whenAllTraits(envTraits.Amiga, 'Amiga Preference')
+    .addComputed(() => loadJsonFile('config.Apple.json'))
+    .whenAllTraits(envTraits.Apple, 'Apple Preference')
+    .addEnvironment(process.env)
     .createUrlFunctions()
     .build(env.isPreProduction());
 
