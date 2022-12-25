@@ -5,7 +5,7 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Launch NodeJS MJS Example v18.2.0 - v2.0.0",
+            "name": "Launch NodeJS MJS Example v18.1.0 - v2.0.0",
             "cwd": "${workspaceFolder}/examples/NodeJS-MJS/v2.0.0",
             "program": "${workspaceFolder}/examples/NodeJS-MJS/v2.0.0/index.js",
             "request": "launch",
@@ -21,7 +21,7 @@
             "console": "integratedTerminal"
         },
         {
-            "name": "Launch NodeJS CJS Example v18.2.0 - v2.0.0",
+            "name": "Launch NodeJS CJS Example v18.1.0 - v2.0.0",
             "cwd": "${workspaceFolder}/examples/NodeJS-CJS/v2.0.0",
             "program": "${workspaceFolder}/examples/NodeJS-CJS/v2.0.0/index.js",
             "request": "launch",
