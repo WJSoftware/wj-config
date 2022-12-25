@@ -10,6 +10,12 @@ As a first step, make sure you run `npm i` or `npm ci` in the example's folder t
 This repository contains the `launch.json` file Visual Studio Code requires already configured.  Simply run the 
 configuration named **Launch NodeJS MJS Example v18.1.0 - v2.0.0**.
 
+## Between ES Modules and CommonJS Modules...
+
+This example does exactly the same as the console sample written in **ES Modules**.  Go ahead and compare both code 
+bases.  You'll conclude that the superior way is **ES Modules**.  While you are free to continue using whichever you 
+desire, I urge you to join me in a movement to normalize using **ES Modules** for server-sided code.
+
 ## What is Showcased
 
 1. Outputs all of the configuration object's first level properties in tables (some may be wide, so 4K resolution is 
