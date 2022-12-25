@@ -1172,8 +1172,8 @@ comes in handy.  Use it to set meaningful names to data sources so it is easy to
 
 Starting with v2, it is possible to conditionally include data sources at runtime.  Tracing also adds the 
 `_qualifiedDs` property to the resulting configuration object.  It consists of an array of `IDataSourceInfo` objects 
-of all data sources that qualified (its conditional function returned `true`).  Only the data sources in this array 
-will have contributed to the final shape of the configuration object.
+of all data sources that qualified (its conditional function returned `true`), or that had no conditional attached to 
+them.  Only the data sources in this array will have contributed to the final shape of the configuration object.
 
 ## Advantages of v2.0.0
 
