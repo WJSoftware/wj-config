@@ -29,7 +29,8 @@
                 "<node_internals>/**"
             ],
             "env": {
-                "NODE_ENV": "PreProduction",
+                "NODE_ENV": "Production",
+                "ENV_TRAITS": "1",
                 "OPT_app__title": "Title set by Environment"
             },
             "type": "node",
