@@ -121,9 +121,9 @@ available, but does not have to be repeated.
 Create a module of yours called `config.js` or whatever pleases you.  Obtain the environment name, load the 2 JSON 
 files and initialize the library.  This is in general.
 
-There are two styles available:  The *classic* style leaves to you, the programmer to figure out a way to select the 
-correct per-environment data source.  The *conditional* style leaves the decision to the configuration builder.  Pick 
-whatever pleases you.
+There are two styles available:  The *classic* style leaves to you, the programmer, the responsibility of figuring out 
+a way to select the correct per-environment data source.  The *conditional* style leaves the decision to the 
+configuration builder.  Pick whichever pleases you, but know that the latter is safer.
 
 From now on, any code samples that call the `loadJsonFile()` function are referring to this one:
 
@@ -865,8 +865,8 @@ export default await wjConfig()
 ```
 
 It is not required to create a conditional that actually uses the provided environment object.  This is why the use of 
-`when()` does fail if the `includeEnvironment()` call is not included as a building step.  Just note that the value of 
-the `e` parameter inside the conditional function will be `undefined`.  If you need the environment, better to call 
+`when()` doesn't fail if the `includeEnvironment()` call is not included as a building step.  Just note that the value 
+of the `e` parameter inside the conditional function will be `undefined`.  If you need the environment, better to call 
 `includeEnvironment()`.
 
 Also seen in the example is the presence of a second argument passed to `when()`:  It merely sets the data source's 
