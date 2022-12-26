@@ -352,7 +352,7 @@ declare module 'wj-config' {
     }
 
     /**
-     * Environment class used to provide environment information throw the configuration object.
+     * Environment class used to provide environment information through the configuration object.
      */
     export class Environment {
         /**
@@ -378,6 +378,20 @@ declare module 'wj-config' {
     }
 
     /**
+     * Environment definition class used to specify the current environment as an object.
+     */
+    export class EnvironmentDefinition {
+        public readonly name: string;
+        public readonly traits: Traits;
+        /**
+         * Initializes a new instance of this class.
+         * @param name The name of the current environment.
+         * @param traits The traits assigned to the current environment.
+         */
+        constructor(name: string, traits?: Traits);
+    }
+
+    /**
      * Type that defines the acceptable trait types for a single trait.  It is encouraged to use number-based traits.
      */
     export type Trait = number | string;
@@ -391,8 +405,15 @@ declare module 'wj-config' {
      * Defines the capabilities required from objects used as environment definitions.
      */
     export interface IEnvironmentDefinition {
-        name: string,
-        traits: Traits
+        /**
+         * Gets the environment's name.
+         */
+        readonly name: string,
+
+        /**
+         * Gets the environment's traits.
+         */
+        readonly traits: Traits
     }
 
     /**
