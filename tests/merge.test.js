@@ -1,6 +1,6 @@
-require('chai').should();
-const helpers = require('../src/helpers');
-const merge = require('../src/merge');
+import 'chai/register-expect.js';
+import { forEachProperty } from '../out/helpers.js';
+import merge from '../out/merge.js';
 
 describe('merge', () => {
     const testValidationArg1Fn = arg => {
@@ -8,32 +8,32 @@ describe('merge', () => {
         const act = () => merge(arg, null);
 
         // Assert.
-        act.should.throw(Error);
+        expect(act).to.throw(Error);
     };
-    it('Should throw if the first argument is null.', () => testValidationArg1Fn(null));
-    it('Should throw if the first argument is undefined.', () => testValidationArg1Fn(undefined));
-    it('Should throw if the first argument is not an object.', () => testValidationArg1Fn([]));
+    it('Should throw if the first array element is null.', () => testValidationArg1Fn([null]));
+    it('Should throw if the first array element is undefined.', () => testValidationArg1Fn([undefined]));
+    it('Should throw if the first argument is not an array.', () => testValidationArg1Fn({}));
     const testValidationArg2Fn = (arg, shouldThrow) => {
         // Act.
-        const act = () => merge({}, arg);
+        const act = () => merge([{}, arg], arg);
 
         // Assert.
         if (shouldThrow) {
-            act.should.throw(Error);
+            expect(act).to.throw(Error);
         }
         else {
-            act.should.not.throw();
+            expect(act).to.not.throw();
         }
     };
-    it('Should not throw if the second argument is null.', () => testValidationArg2Fn(null, false));
-    it('Should not throw if the second argument is undefined.', () => testValidationArg2Fn(undefined, false));
-    it('Should throw if the second argument is not an object.', () => testValidationArg2Fn(456, true));
+    it('Should not throw if any subsequent array element is null.', () => testValidationArg2Fn(null, false));
+    it('Should not throw if any subsequent array element is undefined.', () => testValidationArg2Fn(undefined, false));
+    it('Should throw if any subsequent array element is not an object.', () => testValidationArg2Fn(456, true));
     const propertyMismatchTestFn = (config1, config2) => {
         // Act.
-        const act = () => merge(config1, config2);
+        const act = () => merge([config1, config2]);
 
         // Assert.
-        act.should.throw(Error);
+        expect(act).to.throw(Error);
     };
     it('Should throw an error if the value of a property in object 1 is an object but in object 2 is a scalar value.', () => propertyMismatchTestFn({
         p1: 'Set A',
@@ -103,20 +103,20 @@ describe('merge', () => {
             }
         };
         const allProps = [];
-        helpers.forEachProperty(config1, key => { allProps.push(key); });
-        helpers.forEachProperty(config2, key => {
+        forEachProperty(config1, key => { allProps.push(key); });
+        forEachProperty(config2, key => {
             if (!allProps.includes(key)) {
                 allProps.push(key);
             }
         });
 
         // Act.
-        const result = merge(config1, config2);
+        const result = merge([config1, config2]);
 
         // Assert.
         const resultProps = [];
-        helpers.forEachProperty(result, key => { resultProps.push(key); });
-        resultProps.should.have.same.members(allProps);
+        forEachProperty(result, key => { resultProps.push(key); });
+        expect(resultProps).to.have.same.members(allProps);
     });
     it('Should create a result whose property values are from object 2 properties whenever they exist, and if not, from object 1 properties.', () => {
         // Arrange.
@@ -135,15 +135,15 @@ describe('merge', () => {
         };
 
         // Act.
-        const result = merge(config1, config2);
+        const result = merge([config1, config2]);
 
         // Assert.
-        helpers.forEachProperty(result, (key, value) => {
+        forEachProperty(result, (key, value) => {
             if (config2[key]) {
-                value.should.equal(config2[key]);
+                expect(value).to.equal(config2[key]);
             }
             else {
-                value.should.equal(config1[key]);
+                expect(value).to.equal(config1[key]);
             }
         });
     });
