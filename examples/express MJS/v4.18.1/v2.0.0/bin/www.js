@@ -9,6 +9,10 @@ import http from 'http';
 import logFactory from '../services/log-factory.js';
 import config from '../config.js';
 
+// Show the webservices trace if not running in production.
+if (config._trace && !config.environment.isProduction()) {
+    console.log("%o", config._trace.ws);
+}
 const log = logFactory('server');
 app.set('port', config.appSettings.port);
 // Create HTTP server.

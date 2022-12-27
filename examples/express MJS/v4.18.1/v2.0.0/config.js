@@ -1,5 +1,6 @@
-import wjConfig, { Environment } from "wj-config";
+import wjConfig, { Environment, EnvironmentDefinition } from "wj-config";
 import fs from "fs";
+import envTraits from "./env-traits.js";
 
 const loadJsonFile = (fileName, isRequired) => {
     const fileExists = fs.existsSync(fileName);
@@ -14,16 +15,20 @@ const loadJsonFile = (fileName, isRequired) => {
     return {};
 };
 
-const env = new Environment(process.env.NODE_ENV);
+const envDef = new EnvironmentDefinition(process.env.NODE_ENV, process.env.ENV_TRAITS);
+const env = new Environment(envDef);
 
-const config = wjConfig()
+const config = await wjConfig()
     .addObject(loadJsonFile('./config.json', true))
-    .name('Main Configuration')
-    .addObject(loadJsonFile(`./config.${env.value}.json`))
-    .name(`${env.value} Configuration`)
-    .addEnvironment(process.env)
+    .name('Main')
     .includeEnvironment(env)
+    .addPerEnvironment((b, e) => b.addComputed(() => loadJsonFile(`./config.${e}.json`)))
+    .addComputed(() => loadJsonFile('./config.png.json'))
+    .whenAllTraits(envTraits.PngFlags, 'PNG Flags')
+    .addComputed(() => loadJsonFile('./config.svg.json'))
+    .whenAllTraits(envTraits.SvgFlags, 'SVG Flags')
+    .addEnvironment(process.env)
     .createUrlFunctions()
     .build(env.isDevelopment());
 
-export default await config;
+export default config;

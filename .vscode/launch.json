@@ -98,7 +98,8 @@
             "cwd": "${workspaceFolder}/examples/express MJS/v4.18.1/v2.0.0",
             "program": "${workspaceFolder}/examples/express MJS/v4.18.1/v2.0.0/bin/www.js",
             "env": {
-                "NODE_ENV": "Development"
+                "NODE_ENV": "Development",
+                "ENV_TRAITS": "1"
             },
             "console": "integratedTerminal"
         }
