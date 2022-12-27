@@ -1,4 +1,5 @@
 const fs = require('fs');
+const envTraits = require('./env-traits');
 
 const loadJsonFile = (fileName, isRequired) => {
     const fileExists = fs.existsSync(fileName);
@@ -14,15 +15,20 @@ const loadJsonFile = (fileName, isRequired) => {
 };
 
 module.exports = (async function () {
-    const { default: wjConfig, Environment } = await import('wj-config');
-    const env = new Environment(process.env.NODE_ENV);
+    const { default: wjConfig, Environment, EnvironmentDefinition } = await import('wj-config');
+    const envDef = new EnvironmentDefinition(process.env.NODE_ENV, process.env.ENV_TRAITS);
+    const env = new Environment(envDef);
     return wjConfig()
         .addObject(loadJsonFile('./config.json', true))
-        .name('Main Configuration') // Give data sources a meaningful name that appears in value traces.
-        .addObject(loadJsonFile(`./config.${env.value}.json`))
-        .name('Env Configuration')
-        .addEnvironment(process.env) // Adds a data source that reads the environment variables in process.env.
-        .includeEnvironment(env) // So the final configuration object has the environment property.
-        .createUrlFunctions() // So the final configuration object will contain URL builder functions.
-        .build(env.isDevelopment()); // Only trace configuration values in the Development environment.
+        .name('Main')
+        .includeEnvironment(env)
+        .addPerEnvironment((b, e) => b.addComputed(() => loadJsonFile(`./config.${e}.json`)))
+        .addComputed(() => loadJsonFile('./config.png.json'))
+        .whenAllTraits(envTraits.PngFlags, 'PNG Flags')
+        .addComputed(() => loadJsonFile('./config.svg.json'))
+        .whenAllTraits(envTraits.SvgFlags, 'SVG Flags')
+        .addEnvironment(process.env)
+        .includeEnvironment(env)
+        .createUrlFunctions()
+        .build(env.isDevelopment());
 })();

@@ -12,19 +12,21 @@ const configPromise = require('../config');
 configPromise.then(async config => {
     const log = await logPromise;
     const app = await appPromise;
+
+    // Show the webservices trace if not running in production.
+    if (config._trace && !config.environment.isProduction()) {
+        console.log("%o", config._trace.ws);
+    }
     /**
      * Get port from environment and store in Express.
      */
-
     const port = normalizePort(config.appSettings.port);
     app.set('port', port);
-
     /**
      * Create HTTP server.
      */
 
     const server = http.createServer(app);
-
     /**
      * Listen on provided port, on all network interfaces.
      */
@@ -36,7 +38,6 @@ configPromise.then(async config => {
     /**
      * Normalize a port into a number, string, or false.
      */
-
     function normalizePort(val) {
         const port = parseInt(val, 10);
 
@@ -56,7 +57,6 @@ configPromise.then(async config => {
     /**
      * Event listener for HTTP server "error" event.
      */
-
     function onError(error) {
         if (error.syscall !== 'listen') {
             throw error;
@@ -84,7 +84,6 @@ configPromise.then(async config => {
     /**
      * Event listener for HTTP server "listening" event.
      */
-
     function onListening() {
         const addr = server.address();
         const bind = typeof addr === 'string'

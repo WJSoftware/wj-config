@@ -12,9 +12,6 @@
         "options": {
             "mockaroo": {
                 "key": "a53dac10"
-            },
-            "flags": {
-                "mimeType": "image/svg+xml"
             }
         },
         "mockaroo": {
@@ -26,8 +23,7 @@
         },
         "flags": {
             "host": "countryflagsapi.com",
-            "scheme": "https",
-            "flag": "/svg/{countryCode}"
+            "scheme": "https"
         },
         "countries": {
             "host": "restcountries.com",

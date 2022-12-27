@@ -77,14 +77,15 @@
         {
             "type": "node",
             "request": "launch",
-            "name": "Launch Express Example v4.16.4 - v2.0.0",
+            "name": "Launch Express Example v4.16.1 - v2.0.0",
             "skipFiles": [
                 "<node_internals>/**"
             ],
             "cwd": "${workspaceFolder}/examples/express CJS/v4.16.1/v2.0.0",
             "program": "${workspaceFolder}/examples/express CJS/v4.16.1/v2.0.0/bin/www",
             "env": {
-                "NODE_ENV": "Development"
+                "NODE_ENV": "Development",
+                "ENV_TRAITS": "1"
             },
             "console": "integratedTerminal"
         },
