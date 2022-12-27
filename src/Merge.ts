@@ -64,7 +64,7 @@ export default function merge(objects: ICoreConfig[], dataSources?: IDataSource[
         throw new Error('The provided value is not an array of objects.');
     }
     // There must be at least one object.
-    if (objects.length === 0 || !isConfig(objects[0])) {
+    if (objects.length === 0 || !isConfig(objects[0]) || objects[0] === null || objects[0] === undefined) {
         throw new Error('The first element of the array is required and must be a suitable configuration object.');
     }
     // If there are data sources, the number of these must match the number of provided objects.
@@ -83,13 +83,18 @@ export default function merge(objects: ICoreConfig[], dataSources?: IDataSource[
         };
     }
     for (let idx = initialIndex; idx < objects.length; ++idx) {
-        if (!isConfig(objects[idx])) {
+        let nextObject = objects[idx];
+        // If null or undefined, just substitute for an empty object.
+        if (nextObject === null || nextObject === undefined) {
+            nextObject = {};
+        }
+        if (!isConfig(nextObject)) {
             throw new Error(`Configuration object at index ${idx} is not of the appropriate type.`);
         }
         if (trace) {
             trace.dataSource = (dataSources as IDataSource[])[idx];
         }
-        mergeTwo(result, objects[idx], trace);
+        mergeTwo(result, nextObject, trace);
     }
     if (trace) {
         result._trace = trace.trace;
