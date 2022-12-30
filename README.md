@@ -88,6 +88,8 @@ free to explore them and to contribute.
 | NodeJS Express (CommonJS) | v2.0.0 | Express v4.16.1 | 3004 |
 | NodeJS Express (ES Modules) | v2.0.0 | Express v4.18.1 | 3005 |
 | ReactJS | v2.0.0 | v18.2.0 | 3006 |
+| VueJS | v2.0.0 | v3.2.45 | 3007 |
+| Deno | v2.0.0 | v1.29.1 |
 
 The repository contains the necessary `launch.json` file to run each of the examples in *Visual Studio Code*.
 
