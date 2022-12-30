@@ -21,6 +21,26 @@
             "console": "integratedTerminal"
         },
         {
+            "name": "Launch Deno Example v1.29.1 - v2.0.0",
+            "cwd": "${workspaceFolder}/examples/Deno/v2.0.0",
+            "runtimeExecutable": "deno",
+            "runtimeArgs": [
+                "run",
+                "--inspect-brk",
+                "-A",
+                "${workspaceFolder}/examples/Deno/v2.0.0/index.js"
+            ],
+            "attachSimplePort": 9229,
+            "request": "launch",
+            "env": {
+                "DENO_ENV": "Production",
+                "ENV_TRAITS": "1",
+                "OPT_app__title": "Title set by Environment"
+            },
+            "type": "node",
+            "console": "integratedTerminal"
+        },
+        {
             "name": "Launch NodeJS CJS Example v18.1.0 - v2.0.0",
             "cwd": "${workspaceFolder}/examples/NodeJS-CJS/v2.0.0",
             "program": "${workspaceFolder}/examples/NodeJS-CJS/v2.0.0/index.js",
