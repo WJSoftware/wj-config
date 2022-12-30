@@ -2,13 +2,52 @@
 
 [![NPM](https://img.shields.io/npm/v/wj-config?style=plastic)](https://www.npmjs.com/package/wj-config)
 ![Latest Release](https://img.shields.io/github/v/release/WJSoftware/wj-config?include_prereleases&sort=semver&style=plastic)
+![Lines of code](https://img.shields.io/tokei/lines/github/WJSoftware/wj-config?style=plastic&color=blueviolet)
+![npm bundle size](https://img.shields.io/bundlephobia/min/wj-config?color=red&label=minified&style=plastic)
 
 > JavaScript configuration module for **NodeJS** and **React** that works like ASP.net configuration where any number 
 > of data sources are merged and environment variables can contribute/overwrite values by following a naming 
 > convention.
 
-Welcome to **wj-config**.  This is a Javascript library that can be used for almost any type of project, including but 
-not limited to, **NodeJS** and **React** applications.
+Welcome to **wj-config**.  This JavaScript configuration library works everywhere, most likely.  The table below shows 
+the frameworks or libraries that have successful samples in the [examples](https://github.com/WJSoftware/wj-config/tree/main/examples) folder in the left column.  The 
+right column is pretty much anything else out there that looks like it supports **ES Modules**.
+
+<table style="margin-left: auto; margin-right: auto">
+    <thead>
+        <tr>
+            <th>Works With</th>
+            <th>Probably Works With</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td style="vertical-align: top">
+                <img src="https://miro.medium.com/fit/c/192/192/1*APjYv_YDdw1J7WCT4uKh9Q.png" style="width: 16px; height: 16px;" alt="JavaScript" />&nbsp;JavaScript<br />
+                <img src="https://www.typescriptlang.org/favicon-32x32.png?v=8944a05a8b601855de116c8a56d3b3ae" style="width: 16px; height: 16px;" alt="TypeScript" />&nbsp;TypeScript<br />
+                <img src="https://nodejs.org/favicon.ico" style="width: 16px; height: 16px;" alt="NodeJS" />&nbsp;NodeJS<br />
+                <img src="https://deno.land/logo.svg" style="width: 16px; height: 16px;" alt="Deno" />&nbsp;Deno<br />
+                <img src="https://reactjs.org/favicon.ico" style="width: 16px; height: 16px;" alt="ReactJS" />&nbsp;ReactJS<br />
+                <img src="https://vuejs.org/logo.svg" style="width: 16px; height: 16px;" alt="VueJS" />&nbsp;VueJS
+            </td>
+            <td style="vertical-align: top">
+                <img src="https://solidjs.com/img/favicons/favicon-32x32.png" style="width:16px; height: 16px" alt="SolidJS" />&nbsp;SolidJS<br />
+                <img src="https://svelte.dev/favicon.png" style="width: 16px; height: 16px;" alt="Svelte" />&nbsp;Svelte<br />
+                <img src="https://preactjs.com/favicon.ico" style="width: 16px; height: 16px;" alt="Preact" />&nbsp;Preact<br />
+                <img src="https://electronjs.org/assets/img/favicon.ico" style="width: 16px; height: 16px;" alt="Electron" />&nbsp;Electron<br />
+                <img src="https://angular.io/assets/images/favicons/favicon-32x32.png" style="width: 16px; height: 16px;" alt="Angular" />&nbsp;Angular<br />
+                <img src="https://remix.run//favicon-light.1.png" style="width: 16px; height: 16px;" alt="Remix" />&nbsp;Remix<br />
+                <img src="https://emberjs.com/images/favicon.png" style="width: 16px; height: 16px;" alt="EmberJS" />&nbsp;EmberJS<br />
+                <img src="https://sennajs.com/images/favicon.ico" style="width: 16px; height: 16px;" alt="SennaJS" />&nbsp;SennaJS<br />
+                <img src="https://mithril.js.org/favicon.png" style="width: 16px; height: 16px;" alt="MithrilJS" />&nbsp;MithrilJS<br />
+                <img src="https://www.slingjs.org/wp-content/uploads/2021/08/sling-48x48.png" style="width: 16px; height: 16px;" alt="SlingJS" />&nbsp;SlingJS<br />
+                <img src="https://lit.dev/images/flame-favicon.svg" style="width: 16px; height: 16px;" alt="Lit" />&nbsp;Lit<br />
+            </td>
+        </tr>
+    </tbody>
+</table>
+
+Feel free to fork and pull request to include sample applications for your favorite library/framework.
 
 ## Important Notes
 
