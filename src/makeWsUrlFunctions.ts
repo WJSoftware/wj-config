@@ -127,7 +127,7 @@ function makeWsUrlFunctions(ws: IWsParent | ICoreConfig, routeValuesRegExp: RegE
         const sc = shouldConvert(key);
         if (sc && canBuildUrl && typeof value === 'string') {
             ws[key] = function (routeValues?: RouteValues, queryString?: QueryString) {
-                return ((this as IWsPath).buildUrl ?? noop)(value, routeValues, queryString);
+                return ((ws as IWsPath).buildUrl ?? noop)(value, routeValues, queryString);
             };
         }
         else if (sc && isConfig(value)) {
