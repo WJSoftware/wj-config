@@ -1,5 +1,14 @@
-> First Release Candiate!
+> Second Release Candiate!
 > See complete examples [in the Version_2 branch](https://github.com/WJSoftware/wj-config/tree/Version_2/examples).
+
+## Release Candidate 1
+
+1. Added various minor fixes as the bugs were revealed by unit testing.
+
+### Breaking Changes
+
+1. The **ComputedDataSource** source has been deleted.  Now all data sources accept deferred execution of their 
+*"main"* (or "data") argument.  Long story short:  Change `addComputed` to `addObject` and all will work just fine.
 
 ## Release Candidate 0
 
@@ -14,19 +23,7 @@ the data sources should be included.  No more generating per-region or per-custo
 1. The property `environment.value` disappeared.  Use `environment.current.name` instead.
 2. The property `environment.names` disappeared.  Use `environment.all` instead.
 
----
-
-## Beta 2
-
-1. Fixed the `FetchedConfigDataSource` class.  Now it properly returns an empty object if an error occurs after 
-fetching **and** the data sources is **not required**. **NOTE**:  If you think I should cover the cases where fetching 
-actually throws an error, create a new issue at the [project's homepage](https://github.com/WJSoftware/wj-config), 
-**Issues** tab.
-2. Now the builder's `createUrlFunctions()` function allows either an array of strings or a single string to specify 
-which configuration properties should undergo URL function creation.  A single string is the same as a 1-element array.
-3. Increased TypeScript's target version to ES2022.
-4. Added the `engines` property to `package.json` to specify **NodeJS v16.9.0** as the minimum required **NodeJS** 
-version for **wj-config** v2.0.0.
+> Unit testing is still in progress, so it is highly probable you'll see an RC2 in the next few weeks.
 
 > Visit the [project's homepage](https://github.com/WJSoftware/wj-config) for the latest version of this README.
 ---
