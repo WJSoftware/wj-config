@@ -22,26 +22,26 @@ right column is pretty much anything else out there that looks like it supports 
     </thead>
     <tbody>
         <tr>
-            <td style="vertical-align: top">
-                <img src="https://miro.medium.com/fit/c/192/192/1*APjYv_YDdw1J7WCT4uKh9Q.png" style="width: 16px; height: 16px;" alt="JavaScript" />&nbsp;JavaScript<br />
-                <img src="https://www.typescriptlang.org/favicon-32x32.png?v=8944a05a8b601855de116c8a56d3b3ae" style="width: 16px; height: 16px;" alt="TypeScript" />&nbsp;TypeScript<br />
-                <img src="https://nodejs.org/favicon.ico" style="width: 16px; height: 16px;" alt="NodeJS" />&nbsp;NodeJS<br />
-                <img src="https://deno.land/logo.svg" style="width: 16px; height: 16px;" alt="Deno" />&nbsp;Deno<br />
-                <img src="https://reactjs.org/favicon.ico" style="width: 16px; height: 16px;" alt="ReactJS" />&nbsp;ReactJS<br />
-                <img src="https://vuejs.org/logo.svg" style="width: 16px; height: 16px;" alt="VueJS" />&nbsp;VueJS
+            <td valign="top">
+                <img src="https://miro.medium.com/fit/c/192/192/1*APjYv_YDdw1J7WCT4uKh9Q.png" width="16px" height="16px" alt="JavaScript" />&nbsp;JavaScript<br />
+                <img src="https://www.typescriptlang.org/favicon-32x32.png?v=8944a05a8b601855de116c8a56d3b3ae" width="16px" height="16px" alt="TypeScript" />&nbsp;TypeScript<br />
+                <img src="https://nodejs.org/favicon.ico" width="16px" height="16px" alt="NodeJS" />&nbsp;NodeJS<br />
+                <img src="https://deno.land/logo.svg" width="16px" height="16px" alt="Deno" />&nbsp;Deno<br />
+                <img src="https://reactjs.org/favicon.ico" width="16px" height="16px" alt="ReactJS" />&nbsp;ReactJS<br />
+                <img src="https://vuejs.org/logo.svg" width="16px" height="16px" alt="VueJS" />&nbsp;VueJS
             </td>
-            <td style="vertical-align: top">
-                <img src="https://solidjs.com/img/favicons/favicon-32x32.png" style="width:16px; height: 16px" alt="SolidJS" />&nbsp;SolidJS<br />
-                <img src="https://svelte.dev/favicon.png" style="width: 16px; height: 16px;" alt="Svelte" />&nbsp;Svelte<br />
-                <img src="https://preactjs.com/favicon.ico" style="width: 16px; height: 16px;" alt="Preact" />&nbsp;Preact<br />
-                <img src="https://electronjs.org/assets/img/favicon.ico" style="width: 16px; height: 16px;" alt="Electron" />&nbsp;Electron<br />
-                <img src="https://angular.io/assets/images/favicons/favicon-32x32.png" style="width: 16px; height: 16px;" alt="Angular" />&nbsp;Angular<br />
-                <img src="https://remix.run//favicon-light.1.png" style="width: 16px; height: 16px;" alt="Remix" />&nbsp;Remix<br />
-                <img src="https://emberjs.com/images/favicon.png" style="width: 16px; height: 16px;" alt="EmberJS" />&nbsp;EmberJS<br />
-                <img src="https://sennajs.com/images/favicon.ico" style="width: 16px; height: 16px;" alt="SennaJS" />&nbsp;SennaJS<br />
-                <img src="https://mithril.js.org/favicon.png" style="width: 16px; height: 16px;" alt="MithrilJS" />&nbsp;MithrilJS<br />
-                <img src="https://www.slingjs.org/wp-content/uploads/2021/08/sling-48x48.png" style="width: 16px; height: 16px;" alt="SlingJS" />&nbsp;SlingJS<br />
-                <img src="https://lit.dev/images/flame-favicon.svg" style="width: 16px; height: 16px;" alt="Lit" />&nbsp;Lit<br />
+            <td valign="top">
+                <img src="https://solidjs.com/img/favicons/favicon-32x32.png" width="16px" height="16px" />&nbsp;SolidJS<br />
+                <img src="https://svelte.dev/favicon.png" width="16px" height="16px" alt="Svelte" />&nbsp;Svelte<br />
+                <img src="https://preactjs.com/favicon.ico" width="16px" height="16px" alt="Preact" />&nbsp;Preact<br />
+                <img src="https://electronjs.org/assets/img/favicon.ico" width="16px" height="16px" alt="Electron" />&nbsp;Electron<br />
+                <img src="https://angular.io/assets/images/favicons/favicon-32x32.png" width="16px" height="16px" alt="Angular" />&nbsp;Angular<br />
+                <img src="https://remix.run//favicon-light.1.png" width="16px" height="16px" alt="Remix" />&nbsp;Remix<br />
+                <img src="https://emberjs.com/images/favicon.png" width="16px" height="16px" alt="EmberJS" />&nbsp;EmberJS<br />
+                <img src="https://sennajs.com/images/favicon.ico" width="16px" height="16px" alt="SennaJS" />&nbsp;SennaJS<br />
+                <img src="https://mithril.js.org/favicon.png" width="16px" height="16px" alt="MithrilJS" />&nbsp;MithrilJS<br />
+                <img src="https://www.slingjs.org/wp-content/uploads/2021/08/sling-48x48.png" width="16px" height="16px" alt="SlingJS" />&nbsp;SlingJS<br />
+                <img src="https://lit.dev/images/flame-favicon.svg" width="16px" height="16px" alt="Lit" />&nbsp;Lit<br />
             </td>
         </tr>
     </tbody>
