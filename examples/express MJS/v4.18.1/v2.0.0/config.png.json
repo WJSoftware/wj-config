@@ -1,0 +1,12 @@
+{
+    "ws": {
+        "options": {
+            "flags": {
+                "mimeType": "image/png"
+            }
+        },
+        "flags": {
+            "flag": "/png/{countryCode}"
+        }
+    }
+}

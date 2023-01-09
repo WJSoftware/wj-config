@@ -9,7 +9,8 @@
   "author": "José Pablo Ramírez Vargas <webJose@gmail.com>",
   "license": "ISC",
   "devDependencies": {
-    "chai": "^4.3.6",
+    "chai": "^4.3.7",
     "mocha": "^10.0.0"
-  }
+  },
+  "type": "module"
 }

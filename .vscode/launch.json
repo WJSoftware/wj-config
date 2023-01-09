@@ -5,6 +5,58 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "name": "Launch NodeJS MJS Example v18.1.0 - v2.0.0",
+            "cwd": "${workspaceFolder}/examples/NodeJS-MJS/v2.0.0",
+            "program": "${workspaceFolder}/examples/NodeJS-MJS/v2.0.0/index.js",
+            "request": "launch",
+            "skipFiles": [
+                "<node_internals>/**"
+            ],
+            "env": {
+                "NODE_ENV": "Production",
+                "ENV_TRAITS": "1",
+                "OPT_app__title": "Title set by Environment"
+            },
+            "type": "node",
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "Launch Deno Example v1.29.1 - v2.0.0",
+            "cwd": "${workspaceFolder}/examples/Deno/v2.0.0",
+            "runtimeExecutable": "deno",
+            "runtimeArgs": [
+                "run",
+                "--inspect-brk",
+                "-A",
+                "${workspaceFolder}/examples/Deno/v2.0.0/index.js"
+            ],
+            "attachSimplePort": 9229,
+            "request": "launch",
+            "env": {
+                "DENO_ENV": "Production",
+                "ENV_TRAITS": "1",
+                "OPT_app__title": "Title set by Environment"
+            },
+            "type": "node",
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "Launch NodeJS CJS Example v18.1.0 - v2.0.0",
+            "cwd": "${workspaceFolder}/examples/NodeJS-CJS/v2.0.0",
+            "program": "${workspaceFolder}/examples/NodeJS-CJS/v2.0.0/index.js",
+            "request": "launch",
+            "skipFiles": [
+                "<node_internals>/**"
+            ],
+            "env": {
+                "NODE_ENV": "Production",
+                "ENV_TRAITS": "1",
+                "OPT_app__title": "Title set by Environment"
+            },
+            "type": "node",
+            "console": "integratedTerminal"
+        },
+        {
             "type": "chrome",
             "request": "launch",
             "name": "Launch React Example v18.2.0 - v1.0.2",
@@ -21,16 +73,62 @@
             "preLaunchTask": "npm: start - examples/react v18.2.0/v1.1.0"
         },
         {
+            "type": "chrome",
+            "request": "launch",
+            "name": "Launch React Example v18.2.0 - v2.0.0",
+            "url": "http://localhost:3006",
+            "webRoot": "${workspaceFolder}/examples/react/v18.2.0/v2.0.0",
+            "preLaunchTask": "npm: start - examples/react v18.2.0/v2.0.0"
+        },
+        {
+            "type": "chrome",
+            "request": "launch",
+            "name": "Launch VueJS Example v3.2.45 - v2.0.0",
+            "url": "http://localhost:3007",
+            "webRoot": "${workspaceFolder}/examples/react/v18.2.0/v2.0.0",
+            "preLaunchTask": "npm: run dev - examples/VueJS v3.2.45/v2.0.0"
+        },
+        {
             "type": "node",
             "request": "launch",
             "name": "Launch Express Example v4.16.1 - v1.0.2",
             "skipFiles": [
                 "<node_internals>/**"
             ],
-            "cwd": "${workspaceFolder}/examples/express/v4.16.1/v1.0.2",
-            "program": "${workspaceFolder}/examples/express/v4.16.1/v1.0.2/bin/www",
+            "cwd": "${workspaceFolder}/examples/express CJS/v4.16.1/v1.0.2",
+            "program": "${workspaceFolder}/examples/express CJS/v4.16.1/v1.0.2/bin/www",
             "env": {
                 "NODE_ENV": "Development"
+            },
+            "console": "integratedTerminal"
+        },
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "Launch Express Example v4.16.1 - v2.0.0",
+            "skipFiles": [
+                "<node_internals>/**"
+            ],
+            "cwd": "${workspaceFolder}/examples/express CJS/v4.16.1/v2.0.0",
+            "program": "${workspaceFolder}/examples/express CJS/v4.16.1/v2.0.0/bin/www",
+            "env": {
+                "NODE_ENV": "Development",
+                "ENV_TRAITS": "1"
+            },
+            "console": "integratedTerminal"
+        },
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "Launch Express MJS Example v4.18.1 - v2.0.0",
+            "skipFiles": [
+                "<node_internals>/**"
+            ],
+            "cwd": "${workspaceFolder}/examples/express MJS/v4.18.1/v2.0.0",
+            "program": "${workspaceFolder}/examples/express MJS/v4.18.1/v2.0.0/bin/www.js",
+            "env": {
+                "NODE_ENV": "Development",
+                "ENV_TRAITS": "1"
             },
             "console": "integratedTerminal"
         }

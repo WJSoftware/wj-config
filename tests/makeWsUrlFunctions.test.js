@@ -1,13 +1,13 @@
-require('chai').should();
-const helpers = require('../src/helpers');
-const makeWsUrlFunctions = require('../src/makeWsUrlFunctions');
+import 'chai/register-expect.js';
+import { isConfig, forEachProperty } from '../out/helpers.js';
+import makeWsUrlFunctions from '../out/makeWsUrlFunctions.js';
 
 const propertyInHierarchy = (obj, propertyName, result, resultKey) => {
     if (!result) {
         result = {};
     }
-    helpers.forEachProperty(obj, (key, value) => {
-        if (helpers.isObject(value)) {
+    forEachProperty(obj, (key, value) => {
+        if (isConfig(value)) {
             const newKey = resultKey ? `${resultKey}_${key}` : key;
             propertyInHierarchy(value, propertyName, result, newKey);
         }
@@ -23,10 +23,10 @@ describe('makeWsUrlFunctions', () => {
 
         // Assert.
         if (shouldThrow) {
-            act.should.throw(Error);
+            expect(act).to.throw(Error);
         }
         else {
-            act.should.not.throw();
+            expect(act).to.not.throw();
         }
     }
     it('Should not throw an error if given null as object.', () => incorrectTypeTestFn(null, false));
@@ -38,7 +38,7 @@ describe('makeWsUrlFunctions', () => {
 
         // Assert.
         const pih = propertyInHierarchy(config, 'buildUrl');
-        pih.should.deep.equal(expectedResult);
+        expect(pih).to.deep.equal(expectedResult);
     };
     it('Should identify the first object with rootPath as the root object.', () => hasBuildUrlTestFn({
         ws: {
@@ -122,12 +122,12 @@ describe('makeWsUrlFunctions', () => {
         ws_gateway_products: false,
         ws_gateway_products_archivedProducts: false
     }));
-    it('Should not convert any properties whose name start with an underscore.', () => {
+    it('Should not convert any properties whose type is not string.', () => {
         // Arrange.
         const config = {
             ws: {
                 rootPath: '/api',
-                _timeout: 30,
+                timeout: 30,
                 login: 'login'
             }
         };
@@ -136,7 +136,23 @@ describe('makeWsUrlFunctions', () => {
         makeWsUrlFunctions(config);
 
         // Assert.
-        config.ws._timeout.should.be.a('number');
+        expect(config.ws.timeout).to.be.a('number');
+    });
+    it('Should not convert any string properties whose name start with an underscore.', () => {
+        // Arrange.
+        const config = {
+            ws: {
+                rootPath: '/api',
+                _type: 'json',
+                login: 'login'
+            }
+        };
+
+        // Act.
+        makeWsUrlFunctions(config);
+
+        // Assert.
+        expect(config.ws._type).to.be.a('string');
     });
     it('Should not convert the reserved properties host, scheme, port and rootPath.', () => {
         // Arrange.
@@ -153,10 +169,10 @@ describe('makeWsUrlFunctions', () => {
         makeWsUrlFunctions(config);
 
         // Assert.
-        config.ws.host.should.be.a('string');
-        config.ws.scheme.should.be.a('string');
-        config.ws.port.should.be.a('number');
-        config.ws.rootPath.should.be.a('string');
+        expect(config.ws.host).to.be.a('string');
+        expect(config.ws.scheme).to.be.a('string');
+        expect(config.ws.port).to.be.a('number');
+        expect(config.ws.rootPath).to.be.a('string');
     });
     it('Should convert any properties in the root object whose name is not reserved and does not start with underscore.', () => {
         // Arrange.
@@ -173,9 +189,9 @@ describe('makeWsUrlFunctions', () => {
         makeWsUrlFunctions(config);
 
         // Assert.
-        config.ws.login.should.be.a('function');
-        config.ws.ping.should.be.a('function');
-        config.ws.status.should.be.a('function');
+        expect(config.ws.login).to.be.a('function');
+        expect(config.ws.ping).to.be.a('function');
+        expect(config.ws.status).to.be.a('function');
     });
     it('Should convert any properties in child objects of a root object whose name is not reserved and does not start with underscore.', () => {
         // Arrange.
@@ -194,9 +210,9 @@ describe('makeWsUrlFunctions', () => {
         makeWsUrlFunctions(config);
 
         // Assert.
-        config.ws.general.login.should.be.a('function');
-        config.ws.general.ping.should.be.a('function');
-        config.ws.general.status.should.be.a('function');
+        expect(config.ws.general.login).to.be.a('function');
+        expect(config.ws.general.ping).to.be.a('function');
+        expect(config.ws.general.status).to.be.a('function');
     });
     describe('buildUrl', () => {
         const urlPartsTestFn = (config, expectedUrl) => {
@@ -207,7 +223,7 @@ describe('makeWsUrlFunctions', () => {
             const url = config.ws.testUrl();
 
             // Assert.
-            url.should.equal(expectedUrl);
+            expect(url).to.equal(expectedUrl);
         };
         it('Should build a relative path if no host is provided.', () => urlPartsTestFn({
             ws: {
@@ -258,7 +274,7 @@ describe('makeWsUrlFunctions', () => {
             const url = config.ws.gateway.security.users.getAll();
 
             // Assert.
-            url.should.equal('/api/sec/users');
+            expect(url).to.equal('/api/sec/users');
         });
         const routeReplacementTestFn = (routeValues, expectedResult) => {
             // Arrange.
@@ -276,13 +292,13 @@ describe('makeWsUrlFunctions', () => {
                     }
                 }
             };
-            makeWsUrlFunctions(config);
+            makeWsUrlFunctions(config, /\{(\w+)\}/g);
 
             // Act.
             const url = config.ws.gateway.security.users.get(routeValues);
 
             // Assert.
-            url.should.equal(expectedResult);
+            expect(url).to.equal(expectedResult);
         };
         it('Should build a URL with no route replacements if no replacement object, function or array is provided.', () => routeReplacementTestFn(undefined, '/api/sec/users/{id}'));
         it('Should build a URL with replaceable route values replaced if a replacement object is provided.', () => routeReplacementTestFn({ id: 123 }, '/api/sec/users/123'));

@@ -1,0 +1,10 @@
+div.no-free-data {
+    display: inline-block;
+    font-size: x-large;
+    border: solid 3px darkred;
+    border-radius: 15px;
+    padding: 2em 3em;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 2em;
+}

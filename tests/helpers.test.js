@@ -1,14 +1,14 @@
-require('chai').should();
-const helpers = require('../src/helpers');
+import 'chai/register-expect.js';
+import { isArray, isConfig, isFunction, forEachProperty, attemptParse } from '../out/helpers.js'; 
 
 describe('helpers', () => {
     describe('isArray', () => {
         const testFn = (testObj, expectedResult) => {
             // Act.
-            const result = helpers.isArray(testObj);
+            const result = isArray(testObj);
 
             // Assert.
-            result.should.equal(expectedResult);
+            expect(result).to.equal(expectedResult);
         };
         it('Should return true if the given object is an empty array.', () => testFn([], true));
         it('Should return true if the given object is an array.', () => testFn([1, 'A'], true));
@@ -26,10 +26,10 @@ describe('helpers', () => {
     describe('isObject', () => {
         const testFn = (testObj, expectedResult) => {
             // Act.
-            const result = helpers.isObject(testObj);
+            const result = isConfig(testObj);
 
             // Assert.
-            result.should.equal(expectedResult);
+            expect(result).to.equal(expectedResult);
         };
         it('Should return false if the given object is an empty array.', () => testFn([], false));
         it('Should return false if the given object is an array.', () => testFn([1, 'A'], false));
@@ -38,6 +38,7 @@ describe('helpers', () => {
         it('Should return false if the given object is a number.', () => testFn(1, false));
         it('Should return false if the given object is a string.', () => testFn('ABC', false));
         it('Should return false if the given object is a Boolean.', () => testFn(true, false));
+        it('Should return false if the given object is a date.', () => testFn(new Date(), false));
         it('Should return true if the given object is an arrow function.', () => testFn(() => { }, false));
         it('Should return true if the given object is an anonymous function.', () => testFn(function () { }, false));
         it('Should return true if the given object is a named function.', () => testFn(namedFunction, false));
@@ -47,10 +48,10 @@ describe('helpers', () => {
     describe('isFunction', () => {
         const testFn = (testObj, expectedResult) => {
             // Act.
-            const result = helpers.isFunction(testObj);
+            const result = isFunction(testObj);
 
             // Assert.
-            result.should.equal(expectedResult);
+            expect(result).to.equal(expectedResult);
         };
         it('Should return false if the given object is an empty array.', () => testFn([], false));
         it('Should return false if the given object is an array.', () => testFn([1, 'A'], false));
@@ -75,30 +76,30 @@ describe('helpers', () => {
         const testObj = new TestObj();
         it('Should throw an error if the provided callback is not a function.', () => {
             // Act.
-            const act = () => helpers.forEachProperty(testObj, 1);
+            const act = () => forEachProperty(testObj, 1);
 
             // Assert.
-            act.should.throw(Error);
+            expect(act).to.throw(Error);
         });
         it('Should only enumerate the direct properties of an object.', () => {
             // Arrange.
             let counter = 0;
 
             // Act.
-            helpers.forEachProperty(testObj, () => { ++counter; });
+            forEachProperty(testObj, () => { ++counter; });
 
             // Assert.
-            counter.should.equal(3);
+            expect(counter).to.equal(3);
         });
         const loopControlTestFn = (returnObj, expectedLoopCount) => {
             // Arrange.
             let counter = 0;
 
             // Act.
-            helpers.forEachProperty(testObj, () => { ++counter; return returnObj; })
+            forEachProperty(testObj, () => { ++counter; return returnObj; })
 
             // Assert.
-            counter.should.equal(expectedLoopCount);
+            expect(counter).to.equal(expectedLoopCount);
         };
         it('Should break the loop if the callback function returns true.', () => loopControlTestFn(true, 1));
         it('Should break the loop if the callback function returns a non-empty string.', () => loopControlTestFn('A', 1));
@@ -113,10 +114,10 @@ describe('helpers', () => {
     describe('attemptParse', () => {
         it('Should throw an error if the provided value is not a string.', () => {
             //Act.
-            const act = () => helpers.attemptParse(true);
+            const act = () => attemptParse(true);
 
             // Assert.
-            act.should.throw(Error);
+            expect(act).to.throw(Error);
         });
         const conversionTestCases = [
             {
@@ -196,13 +197,13 @@ describe('helpers', () => {
                 type: 'Floating Point'
             }
         ];
-        conversionTestFn = (value) => {
+        const conversionTestFn = (value) => {
             // Act.
-            const result = helpers.attemptParse(value.toString());
+            const result = attemptParse(value.toString());
 
             // Assert.
-            result.should.be.a(typeof value);
-            result.should.equal(value);
+            expect(result).to.be.a(typeof value);
+            expect(result).to.equal(value);
         }
         conversionTestCases.forEach((testCase) => {
             it(`Should convert the ${testCase.type} value ${testCase.value} to its native data type.`, () => conversionTestFn(testCase.value));
@@ -239,15 +240,15 @@ describe('helpers', () => {
         ]
         const hexTestFn = (value, expectedValue) => {
             // Act.
-            const result = helpers.attemptParse(value);
+            const result = attemptParse(value);
 
             // Assert.
-            result.should.equal(expectedValue);
+            expect(result).to.equal(expectedValue);
         };
         hexTestCases.forEach(testCase => {
             it(`Should convert the hexadecimal value ${testCase.value} to its decimal value ${testCase.expected}.`, () => hexTestFn(testCase.value, testCase.expected));
         });
-        stringTestCases = [
+        const stringTestCases = [
             {
                 value: 'The quick brown fox',
                 name: 'a string'
@@ -283,11 +284,11 @@ describe('helpers', () => {
         ];
         const stringTestFn = (value) => {
             // Act.
-            const result = helpers.attemptParse(value);
+            const result = attemptParse(value);
 
             // Assert.
-            result.should.be.a('string');
-            result.should.equal(value.toString());
+            expect(result).to.be.a('string');
+            expect(result).to.equal(value.toString());
         }
         stringTestCases.forEach(testCase => {
             it(`Should return the string representation of ${testCase.name}.`, () => stringTestFn(testCase.value.toString()));

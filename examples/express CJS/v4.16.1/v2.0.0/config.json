@@ -1,0 +1,34 @@
+{
+    "appSettings": {
+        "id": "wj-config-api",
+        "title": "NodeJS Express with WJ-Config",
+        "port": 80
+    },
+    "logging": {
+        "rootNamespace": "express-wj-config",
+        "minLevel": "information"
+    },
+    "ws": {
+        "options": {
+            "mockaroo": {
+                "key": "a53dac10"
+            }
+        },
+        "mockaroo": {
+            "host": "my.api.mockaroo.com",
+            "scheme": "https",
+            "person": {
+                "all": "/persons.json"
+            }
+        },
+        "flags": {
+            "host": "countryflagsapi.com",
+            "scheme": "https"
+        },
+        "countries": {
+            "host": "restcountries.com",
+            "scheme": "https",
+            "search": "/v3.1/alpha?codes={codes}"
+        }
+    }
+}

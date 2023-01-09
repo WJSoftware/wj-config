@@ -1,0 +1,12 @@
+{
+    "ws": {
+        "options": {
+            "flags": {
+                "mimeType": "image/svg+xml"
+            }
+        },
+        "flags": {
+            "flag": "/svg/{countryCode}"
+        }
+    }
+}

@@ -1,8 +1,9 @@
 {
     "name": "wj-config",
-    "version": "1.1.3",
-    "main": "wj-config.js",
-    "description": "Javascript configuration module for NodeJS and React that works like ASP.net configuration where 2 JSON's are merged and environment variables can contribute/overwrite values by following a naming convention.",
+    "version": "2.0.0-rc.1",
+    "main": "index.js",
+    "type": "module",
+    "description": "Javascript configuration module for NodeJS and browser frameworks such as React that works like ASP.net configuration where data sources are specified (usually JSON files) and environment variables can contribute/overwrite values by following a naming convention.",
     "author": "José Pablo Ramírez Vargas <webJose@gmail.com>",
     "keywords": [
         "config",
@@ -30,5 +31,15 @@
         "url": "https://github.com/WJSoftware/wj-config/issues"
     },
     "license": "MIT-open-group",
-    "homepage": "https://github.com/WJSoftware/wj-config#readme"
+    "homepage": "https://github.com/WJSoftware/wj-config#readme",
+    "devDependencies": {
+        "typescript": "^4.7.4"
+    },
+    "types": "wj-config.d.ts",
+    "scripts": {
+        "build": "npx tsc"
+    },
+    "engines": {
+        "node": ">=16.9.0"
+    }
 }

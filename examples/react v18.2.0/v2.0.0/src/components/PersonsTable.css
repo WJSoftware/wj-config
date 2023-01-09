@@ -1,0 +1,48 @@
+table.people {
+    margin-top: 2em;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+table.people>tbody>tr>td {
+    text-align: left;
+}
+
+table.people>tbody>tr>td:first-child {
+    text-align: center;
+    background-color: var(--masterBgColor);
+        color: var(--masterColor);
+    font-weight: bold;
+    border-radius: 7px;
+    padding-left: 5px;
+    padding-right: 5px;
+}
+
+table.people>tbody>tr>td:last-child {
+    background-color: rgb(227, 227, 227);
+}
+
+table.people img.flag {
+    width: 2em;
+}
+span.loader {
+    display: inline-block;
+    margin-left: auto;
+    margin-right: auto;
+    background-color: var(--masterBgColor);
+        color: var(--masterColor);
+    font-weight: bold;
+    padding: 2px 12px;
+    border-radius: 7px;
+}
+
+span.loader-inline {
+    font-size: smaller;
+}
+
+span.loader-large {
+    margin: 2em 2em;
+    color: yellow;
+    font-size: x-large;
+    padding: 1em 2em;
+}

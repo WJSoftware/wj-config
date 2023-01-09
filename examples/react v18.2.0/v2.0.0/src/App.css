@@ -1,0 +1,73 @@
+:root {
+  --masterBgColor: rgb(36, 104, 146);
+  --masterColor: white;
+}
+.App {
+  text-align: center;
+}
+
+.App-logo {
+  height: 40vmin;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .App-logo {
+    animation: App-logo-spin infinite 20s linear;
+  }
+}
+
+.App-header {
+  background-color: var(--masterBgColor);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+  color: white;
+  padding-bottom: 2em;
+}
+
+.App-header h1,
+.App-header h5 {
+  margin-top: 0.1em;
+  margin-bottom: 0.1em;
+}
+.App-link {
+  color: #61dafb;
+}
+
+@keyframes App-logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+table.data {
+  border: 2px var(--masterBgColor) solid;
+}
+
+table.data>thead>tr>th {
+  padding: 0.25em 1em;
+  background-color: var(--masterBgColor);
+  color: var(--masterColor);
+}
+
+table.data>tbody>tr>td {
+  padding: 0.1em 1em;
+}
+
+section {
+  margin: 0em 2em;
+}
+
+section p {
+  text-align: left;
+}
+
+section ul {
+  text-align: left;
+}
