@@ -38,6 +38,7 @@ describe('helpers', () => {
         it('Should return false if the given object is a number.', () => testFn(1, false));
         it('Should return false if the given object is a string.', () => testFn('ABC', false));
         it('Should return false if the given object is a Boolean.', () => testFn(true, false));
+        it('Should return false if the given object is a date.', () => testFn(new Date(), false));
         it('Should return true if the given object is an arrow function.', () => testFn(() => { }, false));
         it('Should return true if the given object is an anonymous function.', () => testFn(function () { }, false));
         it('Should return true if the given object is a named function.', () => testFn(namedFunction, false));
