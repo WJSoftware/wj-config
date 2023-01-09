@@ -15,7 +15,9 @@ export function isArray(obj: unknown): obj is any[] { return Array.isArray(obj);
  * @param obj Object to test.
  * @returns True if the object is a non-leaf object; false otherwise.
  */
-export function isConfig(obj: unknown): obj is IConfig { return typeof obj === 'object' && !isArray(obj); }
+export function isConfig(obj: unknown): obj is IConfig {
+    return typeof obj === 'object' && !isArray(obj) && !(obj instanceof Date);
+}
 
 /**
  * Tests the provided object to determine if it is a function.

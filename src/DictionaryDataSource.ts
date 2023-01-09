@@ -25,9 +25,6 @@ const inflateDictionary = (dic: ICoreConfig, hierarchySeparator: string, prefixO
     let prefix: string;
     if (prefixOrPredicate) {
         if (typeof prefixOrPredicate === "string") {
-            if (prefixOrPredicate.length === 0) {
-                throw new Error('The provided prefix value cannot be an empty string.');
-            }
             prefix = prefixOrPredicate;
             predicateFn = name => name.startsWith(prefixOrPredicate);
         }
@@ -66,18 +63,33 @@ const inflateDictionary = (dic: ICoreConfig, hierarchySeparator: string, prefixO
 
 export default class DictionaryDataSource extends DataSource implements IDataSource {
     private _dictionary: ICoreConfig;
-    private _hierarchySeparator?: string;
+    private _hierarchySeparator: string;
     private _prefixOrPredicate?: string | Predicate<string>;
 
-    constructor(dictionary: ICoreConfig, hierarchySeparator?: string, prefixOrPredicate?: string | Predicate<string>) {
+    constructor(dictionary: ICoreConfig, hierarchySeparator: string, prefixOrPredicate?: string | Predicate<string>) {
         super('Dictionary');
+        if (typeof prefixOrPredicate === 'string' && prefixOrPredicate.length === 0) {
+            throw new Error('The provided prefix value cannot be an empty string.');
+        }
+        if (dictionary === null || dictionary === undefined) {
+            throw new Error('The provided dictionary cannot be null or undefined.');
+        }
+        if (!isConfig(dictionary)) {
+            throw new Error('The provided dictionary must be a flat object.');
+        }
+        if (!hierarchySeparator) {
+            throw new Error('Dictionaries must specify a hierarchy separator.');
+        }
+        if (typeof hierarchySeparator !== 'string') {
+            throw new Error('The hierarchy separator must be a string.');
+        }
         this._dictionary = dictionary;
         this._hierarchySeparator = hierarchySeparator;
         this._prefixOrPredicate = prefixOrPredicate;
     }
 
     getObject(): Promise<ICoreConfig> {
-        const inflatedObject = inflateDictionary(this._dictionary, this._hierarchySeparator ?? '__', this._prefixOrPredicate);
+        const inflatedObject = inflateDictionary(this._dictionary, this._hierarchySeparator, this._prefixOrPredicate);
         return Promise.resolve(inflatedObject);
     }
 }
