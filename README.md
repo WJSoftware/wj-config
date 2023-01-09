@@ -61,8 +61,7 @@ In a nutshell, this configuration package provides:
 
 + The ability to merge any number of data sources as one, just like ASP.net configuration loads files and memory 
 dictionaries.
-+ 7 pre-defined data sources:  JSON string, POJO object, single value, fetched data, dictionary, computed and 
-environment.
++ 6 pre-defined data sources:  JSON string, POJO object, single value, fetched data, dictionary, and environment.
 + Condition the inclusion of a data source based on a predicate function's return value.
 + Assign traits to the current environment and condition the inclusion of data sources based on the current 
 environment's assigned traits.
@@ -357,8 +356,8 @@ This one has advantages 2 and 3 above, plus allows for the possiblity of having 
 per environment.  95% of the time you'll need the short one only.
 
 This works in **NodeJS** too.  There is a performance catch, though:  If in NodeJS you use `loadJsonFile()` with the 
-`addObject()` data source function, you'll be reading all per-environment configuration files.  To avoid this hit, use 
-the `ComputedDataSource` data source:
+`addObject()` data source function, you'll be reading all per-environment configuration files, even the unqualified 
+ones.  To avoid this performance hit, pass a function to `addObject()` that, in turn, calls `loadJsonFile()`:
 
 ```js
 import wjConfig, { Environment } from 'wj-config';
@@ -370,8 +369,8 @@ const config = wjConfig()
     .addObject(mainConfig)
     .name('Main')
     .includeEnvironment(env)
-    // Using addComputed to avoid loading every file.
-    .addPerEnvironment((b, envName) => b.addComputed(() => loadJsonFile(`./config.${envName}.json`)))
+    // Using a function that calls loadJsonFile() instead of calling loadJsonFile directly.
+    .addPerEnvironment((b, envName) => b.addObject(() => loadJsonFile(`./config.${envName}.json`)))
     .addEnvironment(process.env)
     .createUrlFunctions()
     .build(env.isDevelopment());
@@ -849,12 +848,12 @@ export default await wjConfig()
     .name('Main')
     .includeEnvironment(env)
     // Classic or coditional per-environment config.  Conditional shown here.
-    .addPerEnvironment((b, envName) => b.addComputed(() => loadJsonFile(`./config.${envName}.json`, false)))
-    .addComputed(() => loadJsonFile('config.amr.json', false))
+    .addPerEnvironment((b, envName) => b.addObject(() => loadJsonFile(`./config.${envName}.json`, false)))
+    .addObject(() => loadJsonFile('config.amr.json', false))
     .whenAllTraits(myTraits.Americas, 'Americas') // <-- It conditions the recently added data source.
-    .addComputed(() => loadJsonFile('config.eur.json', false))
+    .addObject(() => loadJsonFile('config.eur.json', false))
     .whenAllTraits(myTraits.Europe, 'Europe')
-    .addComputed(() => loadJsonFile('config.asa.json', false))
+    .addObject(() => loadJsonFile('config.asa.json', false))
     .whenAllTraits(myTraits.Asia, 'Asia')
     .build();
 ```
@@ -871,8 +870,6 @@ window.env = {
 ```
 
 ---
-
-Since we said this was a **NodeJS** sample, we use `addComputed()` to only load the files that are really needed.
 
 With the above, the configuration object will discard any per-region configurations if the trait specification 
 for the current environment (given by the value of the `ENV_TRAITS` environment variable) does not contain the 
@@ -930,7 +927,7 @@ import mainConfig from './config.json' assert { type: 'json' };
 export default await wjConfig()
     .addObject(mainConfig)
     .name('Main')
-    .addComputed(() => loadJsonFile('config.TTY.json'))
+    .addObject(() => loadJsonFile('config.TTY.json'))
     .when(e => process.stdout.isTTY)
     .build();
 ```
@@ -1120,7 +1117,6 @@ This is the complete list of readily available data sources in this package.
 
 | Data Source Class | Builder Function | Description |
 | - | - | - |
-| `ComputedDataSource` | `addComputed()` | Adds the object returned by the provided function.  The function may return the object or a promise to it. |
 | `DictionaryDataSource` | `addDictionary()` | Adds the properties of a flat dictionary into the configuration hierarchy.  The property names traverse the hierarchy using a colon (:) as hierarchy separator.  An optional prefix may be specified too. |
 | `EnvironmentDataSource` | `addEnvironment()` | Adds the given object as a dictionary whose prefix is mandatory and its hierarchy separator is double underscore (__). |
 | `FetchedConfigDataSource` | `addFetchedConfig()` | Fetches data using `fetch()` and adds its result as configuration source.  The result of the call must of course be a JSON object. |

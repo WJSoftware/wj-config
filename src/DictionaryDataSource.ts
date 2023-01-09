@@ -62,11 +62,17 @@ const inflateDictionary = (dic: ICoreConfig, hierarchySeparator: string, prefixO
 };
 
 export default class DictionaryDataSource extends DataSource implements IDataSource {
-    private _dictionary: ICoreConfig;
+    private _dictionary: ICoreConfig | (() => ICoreConfig);
     private _hierarchySeparator: string;
     private _prefixOrPredicate?: string | Predicate<string>;
 
-    constructor(dictionary: ICoreConfig, hierarchySeparator: string, prefixOrPredicate?: string | Predicate<string>) {
+    #validateDictionary(dic: ICoreConfig) {
+        if (!isConfig(dic)) {
+            throw new Error('The provided dictionary must be a flat object.');
+        }
+    }
+
+    constructor(dictionary: ICoreConfig | (() => ICoreConfig), hierarchySeparator: string, prefixOrPredicate?: string | Predicate<string>) {
         super('Dictionary');
         if (typeof prefixOrPredicate === 'string' && prefixOrPredicate.length === 0) {
             throw new Error('The provided prefix value cannot be an empty string.');
@@ -74,8 +80,8 @@ export default class DictionaryDataSource extends DataSource implements IDataSou
         if (dictionary === null || dictionary === undefined) {
             throw new Error('The provided dictionary cannot be null or undefined.');
         }
-        if (!isConfig(dictionary)) {
-            throw new Error('The provided dictionary must be a flat object.');
+        if (typeof dictionary !== 'function') {
+            this.#validateDictionary(dictionary);
         }
         if (!hierarchySeparator) {
             throw new Error('Dictionaries must specify a hierarchy separator.');
@@ -89,7 +95,12 @@ export default class DictionaryDataSource extends DataSource implements IDataSou
     }
 
     getObject(): Promise<ICoreConfig> {
-        const inflatedObject = inflateDictionary(this._dictionary, this._hierarchySeparator, this._prefixOrPredicate);
+        let dic = this._dictionary;
+        if (typeof dic === 'function') {
+            dic = dic();
+        }
+        this.#validateDictionary(dic);
+        const inflatedObject = inflateDictionary(dic, this._hierarchySeparator, this._prefixOrPredicate);
         return Promise.resolve(inflatedObject);
     }
 }

@@ -94,32 +94,27 @@ declare module 'wj-config' {
         /**
          * Adds the specified object to the collection of data sources that will be used to build the configuration 
          * object.
-         * @param obj Data object to include as part of the final configuration data.
+         * @param obj Data object to include as part of the final configuration data, or a function that returns said 
+         * object.
          */
-        addObject(obj: IConfig): IBuilder;
-
-        /**
-         * Adds the object returned by the provided function to the collection of data sources that will be used to 
-         * build the configuration object.
-         * @param fn Function to execute in order to obtain the configuration data.  Its return value may be the 
-         * configuration data itself or a promise to it.
-         */
-        addComputed(fn: ComputedConfigFunction): IBuilder;
+        addObject(obj: ICoreConfig | (() => ICoreConfig)): IBuilder;
 
         /**
          * Adds the specified dictionary to the collection of data sources that will be used to build the configuration 
          * object.
-         * @param dictionary Dictionary object to include (after processing) as part of the final configuration data.
+         * @param dictionary Dictionary object to include (after processing) as part of the final configuration data, 
+         * or a function that returns said object.
          * @param hierarchySeparator Optional hierarchy separator.  If none is specified, a colon (:) is assumed.
          * @param prefix Optional prefix.  Only properties that start with the specified prefix are included, and the 
          * prefix is always removed after the dictionary is processed.  If no prefix is provided, then all dictionary 
          * entries will contribute to the configuration data.
          */
-        addDictionary(dictionary: IConfig, hierarchySeparator?: string, prefix?: string): IBuilder;
+        addDictionary(dictionary: ICoreConfig | (() => ICoreConfig), hierarchySeparator?: string, prefix?: string): IBuilder;
 
         /**
          * 
-         * @param dictionary Dictionary object to include (after processing) as part of the final configuration data.
+         * @param dictionary Dictionary object to include (after processing) as part of the final configuration data, 
+         * or a function that returns said object.
          * @param hierarchySeparator Optional hierarchy separator.  If none is specified, a colon (:) is assumed.
          * @param predicate Optional predicate function that is called for every property in the dictionary.  Only when 
          * the return value of the predicate is true the property is included in configuration.
@@ -129,12 +124,13 @@ declare module 'wj-config' {
         /**
          * Adds the qualifying environment variables to the collection of data sources that will be used to build the 
          * configuration object.
-         * @param env Environment object containing the environment variables to include in the configuration.
+         * @param env Environment object containing the environment variables to include in the configuration, or a 
+         * function that returns said object.
          * @param prefix Optional prefix.  Only properties that start with the specified prefix are included, and the 
          * prefix is always removed after processing.  To avoid exposing non-application data as configuration, a prefix 
          * is always used.  If none is specified, the default prefix is OPT_.
          */
-        addEnvironment(env: IConfig, prefix?: string): IBuilder;
+        addEnvironment(env: IConfig | (() => ICoreConfig), prefix?: string): IBuilder;
 
         /**
          * Adds a fetch operation to the collection of data sources that will be used to build the configuration 
@@ -159,19 +155,20 @@ declare module 'wj-config' {
         /**
          * Adds the specified JSON string to the collection of data sources that will be used to build the 
          * configuration object.
-         * @param json The JSON string to parse into a JavaScript object.
+         * @param json The JSON string to parse into a JavaScript object, or a function that returns said string.
          * @param jsonParser Optional JSON parser.  If not specified, the built-in JSON object will be used.
          * @param reviver Optional reviver function.  For more information see the JSON.parse() documentation.
          */
-        addJson(json: string, jsonParser?: JSON, reviver?: (this: any, key: string, value: any) => any): IBuilder;
+        addJson(json: string | (() => string), jsonParser?: JSON, reviver?: (this: any, key: string, value: any) => any): IBuilder;
 
         /**
          * Adds a single value to the collection of data sources that will be used to build the configuration object.
-         * @param path Key comprised of names that determine the hierarchy of the value.
-         * @param value Value of the property.
+         * @param path Key comprised of names that determine the hierarchy of the value, or a function that returns 
+         * the [key, value] tuple that needs to be added.  If using the second one, the "value" argument is ignored.
+         * @param value Value of the property; ignored if "path" is a tuple-returning function.
          * @param hierarchySeparator Optional hierarchy separator.  If not specified, colon (:) is assumed.
          */
-        addSingleValue(path: string, value: ConfigurationValue, hierarchySeparator: string = ':'): IBuilder;
+        addSingleValue(path: string | (() => [string, ConfigurationValue]), value?: ConfigurationValue, hierarchySeparator: string = ':'): IBuilder;
 
         /**
          * Special function that allows the developer the opportunity to add one data source per defined environment.
@@ -415,9 +412,4 @@ declare module 'wj-config' {
          */
         readonly traits: Traits
     }
-
-    /**
-     * Type that defines the accepted function signature for computed data sources.
-     */
-    export type ComputedConfigFunction = () => (ICoreConfig | Promise<ICoreConfig>);
 }

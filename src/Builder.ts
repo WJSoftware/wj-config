@@ -1,5 +1,4 @@
-import type { ComputedConfigFunction, ConfigurationValue, IBuilder, IConfig, ICoreConfig, IDataSource, IEnvironment, Predicate, ProcessFetchResponse, Traits } from "wj-config";
-import { ComputedDataSource } from "./ComputedDataSource.js";
+import type { ConfigurationValue, IBuilder, IConfig, ICoreConfig, IDataSource, IEnvironment, Predicate, ProcessFetchResponse, Traits } from "wj-config";
 import DictionaryDataSource from "./DictionaryDataSource.js"
 import { Environment } from "./Environment.js"
 import EnvironmentDataSource from "./EnvironmentDataSource.js"
@@ -72,31 +71,27 @@ export default class Builder implements IBuilder {
         return this;
     }
 
-    addObject(obj: ICoreConfig): IBuilder {
+    addObject(obj: ICoreConfig | (() => ICoreConfig)): IBuilder {
         return this.add(new ObjectDataSource(obj));
     }
 
-    addComputed(fn: ComputedConfigFunction): IBuilder {
-        return this.add(new ComputedDataSource(fn));
-    }
-
-    addDictionary(dictionary: ICoreConfig, hierarchySeparator: string = ':', prefixOrPredicate?: string | Predicate<string>): IBuilder {
+    addDictionary(dictionary: ICoreConfig | (() => ICoreConfig), hierarchySeparator: string = ':', prefixOrPredicate?: string | Predicate<string>): IBuilder {
         return this.add(new DictionaryDataSource(dictionary, hierarchySeparator, prefixOrPredicate));
     }
 
-    addEnvironment(env: ICoreConfig, prefix: string = 'OPT_'): IBuilder {
+    addEnvironment(env: ICoreConfig | (() => ICoreConfig), prefix: string = 'OPT_'): IBuilder {
         return this.add(new EnvironmentDataSource(env, prefix));
     }
 
-    addFetchedConfig(input: URL | RequestInfo, required: boolean = true, init?: RequestInit, procesFn?: ProcessFetchResponse): IBuilder {
+    addFetchedConfig(input: URL | RequestInfo | (() => URL | RequestInfo), required: boolean = true, init?: RequestInit, procesFn?: ProcessFetchResponse): IBuilder {
         return this.add(new FetchedConfigDataSource(input, required, init, procesFn));
     }
 
-    addJson(json: string, jsonParser?: JSON, reviver?: (this: any, key: string, value: any) => any) {
+    addJson(json: string | (() => string), jsonParser?: JSON, reviver?: (this: any, key: string, value: any) => any) {
         return this.add(new JsonDataSource(json, jsonParser, reviver));
     }
 
-    addSingleValue(path: string, value: ConfigurationValue, hierarchySeparator?: string): IBuilder {
+    addSingleValue(path: string | (() => [string, ConfigurationValue]), value?: ConfigurationValue, hierarchySeparator?: string): IBuilder {
         return this.add(new SingleValueDataSource(path, value, hierarchySeparator));
     }
 
