@@ -66,6 +66,12 @@ export default class DictionaryDataSource extends DataSource implements IDataSou
     private _hierarchySeparator: string;
     private _prefixOrPredicate?: string | Predicate<string>;
 
+    #validateDictionary(dic: ICoreConfig) {
+        if (!isConfig(dic)) {
+            throw new Error('The provided dictionary must be a flat object.');
+        }
+    }
+
     constructor(dictionary: ICoreConfig | (() => ICoreConfig), hierarchySeparator: string, prefixOrPredicate?: string | Predicate<string>) {
         super('Dictionary');
         if (typeof prefixOrPredicate === 'string' && prefixOrPredicate.length === 0) {
@@ -74,8 +80,8 @@ export default class DictionaryDataSource extends DataSource implements IDataSou
         if (dictionary === null || dictionary === undefined) {
             throw new Error('The provided dictionary cannot be null or undefined.');
         }
-        if (typeof dictionary !== 'function' && !isConfig(dictionary)) {
-            throw new Error('The provided dictionary must be a flat object.');
+        if (typeof dictionary !== 'function') {
+            this.#validateDictionary(dictionary);
         }
         if (!hierarchySeparator) {
             throw new Error('Dictionaries must specify a hierarchy separator.');
@@ -93,6 +99,7 @@ export default class DictionaryDataSource extends DataSource implements IDataSou
         if (typeof dic === 'function') {
             dic = dic();
         }
+        this.#validateDictionary(dic);
         const inflatedObject = inflateDictionary(dic, this._hierarchySeparator, this._prefixOrPredicate);
         return Promise.resolve(inflatedObject);
     }
