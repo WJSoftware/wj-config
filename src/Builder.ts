@@ -2,7 +2,7 @@ import type { ConfigurationValue, IBuilder, IConfig, ICoreConfig, IDataSource, I
 import DictionaryDataSource from "./DictionaryDataSource.js"
 import { Environment } from "./Environment.js"
 import EnvironmentDataSource from "./EnvironmentDataSource.js"
-import FetchedConfigDataSource from "./FetchedConfigDataSource.js";
+import FetchedDataSource from "./FetchedDataSource.js";
 import { isConfig } from "./helpers.js"
 import JsonDataSource from "./JsonDataSource.js";
 import makeWsUrlFunctions from "./makeWsUrlFunctions.js"
@@ -83,8 +83,8 @@ export default class Builder implements IBuilder {
         return this.add(new EnvironmentDataSource(env, prefix));
     }
 
-    addFetchedConfig(input: URL | RequestInfo | (() => URL | RequestInfo), required: boolean = true, init?: RequestInit, procesFn?: ProcessFetchResponse): IBuilder {
-        return this.add(new FetchedConfigDataSource(input, required, init, procesFn));
+    addFetched(input: URL | RequestInfo | (() => URL | RequestInfo), required: boolean = true, init?: RequestInit, procesFn?: ProcessFetchResponse): IBuilder {
+        return this.add(new FetchedDataSource(input, required, init, procesFn));
     }
 
     addJson(json: string | (() => string), jsonParser?: JSON, reviver?: (this: any, key: string, value: any) => any) {

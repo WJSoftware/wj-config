@@ -1,7 +1,7 @@
 import type { ICoreConfig, ProcessFetchResponse } from "wj-config";
 import { DataSource } from "./DataSource.js";
 
-export default class FetchedConfigDataSource extends DataSource {
+export default class FetchedDataSource extends DataSource {
     private _input: URL | RequestInfo | (() => URL | RequestInfo);
     private _required: boolean;
     private _init?: RequestInit;

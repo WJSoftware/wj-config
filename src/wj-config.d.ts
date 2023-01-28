@@ -140,7 +140,7 @@ declare module 'wj-config' {
          * @param init Optional fetch init data.  Refer to the fecth() documentation for information.
          * @param procesFn Optional processing function that must return the configuration data as an object.
          */
-        addFetchedConfig(url: URL, required: boolean = true, init?: RequestInit, procesFn?: ProcessFetchResponse): IBuilder;
+        addFetched(url: URL, required: boolean = true, init?: RequestInit, procesFn?: ProcessFetchResponse): IBuilder;
 
         /**
          * Adds a fetch operation to the collection of data sources that will be used to build the configuration 
@@ -150,7 +150,7 @@ declare module 'wj-config' {
          * @param init Optional fetch init data.  Refer to the fecth() documentation for information.
          * @param procesFn Optional processing function that must return the configuration data as an object.
          */
-        addFetchedConfig(request: RequestInfo, required: boolean = true, init?: RequestInit, procesFn?: ProcessFetchResponse): IBuilder;
+        addFetched(request: RequestInfo, required: boolean = true, init?: RequestInit, procesFn?: ProcessFetchResponse): IBuilder;
 
         /**
          * Adds the specified JSON string to the collection of data sources that will be used to build the 
