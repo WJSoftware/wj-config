@@ -64,11 +64,13 @@ function buildUrlImpl(
 }
 
 function parentRootPath(this: IWsParent) {
-    if (!this.host) {
-        // When no host is present, build a relative URL starting with the root path.
+    const isBrowser = window && window.location !== undefined;
+    if ((!this.host && !isBrowser) || (!this.host && !this.port && !this.scheme)) {
+        // When no host outside the browser, or no host, port or scheme in the browser,
+        // build a relative URL starting with the root path.
         return this.rootPath ?? '';
     }
-    return `${(this.scheme ?? 'http')}://${(this.host ?? '')}${(this.port ? ':' : '')}${(this.port ?? '')}${(this.rootPath ?? '')}`;
+    return `${(this.scheme ?? 'http')}://${(this.host ?? window?.location?.hostname ?? '')}${(this.port ? `:${this.port}` : '')}${(this.rootPath ?? '')}`;
 }
 
 function pathRootPath(this: IWsPath, parent: IWsPath) {
