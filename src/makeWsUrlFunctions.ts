@@ -4,6 +4,8 @@ import { forEachProperty, isArray, isFunction, isConfig } from "./helpers.js";
 const noop = (x?: any) => '';
 
 const rootPathFn = '_rootPath';
+const rootUrlObjectProps = ['host', 'rootPath'];
+const rootUrlObjectPropsForBrowser = ['host', 'rootPath', 'scheme', 'port'];
 
 function buildUrlImpl(
     this: IWsPath,
@@ -53,7 +55,7 @@ function buildUrlImpl(
         else {
             let qs = '';
             forEachProperty(qsValue, (key, value) => {
-                qs += `${key}=${encodeURIComponent(value)}&`
+                qs += `${encodeURIComponent(key)}=${encodeURIComponent(value)}&`
             });
             if (qs.length > 0) {
                 url += qs.substring(0, qs.length - 1)
@@ -63,12 +65,13 @@ function buildUrlImpl(
     return url;
 }
 
-function parentRootPath(this: IWsParent) {
-    if (!this.host) {
-        // When no host is present, build a relative URL starting with the root path.
+function parentRootPath(this: IWsParent, isBrowser: boolean) {
+    if ((!this.host && !isBrowser) || (!this.host && !this.port && !this.scheme)) {
+        // When no host outside the browser, or no host, port or scheme in the browser,
+        // build a relative URL starting with the root path.
         return this.rootPath ?? '';
     }
-    return `${(this.scheme ?? 'http')}://${(this.host ?? '')}${(this.port ? ':' : '')}${(this.port ?? '')}${(this.rootPath ?? '')}`;
+    return `${(this.scheme ?? 'http')}://${(this.host ?? window?.location?.hostname ?? '')}${(this.port ? `:${this.port}` : '')}${(this.rootPath ?? '')}`;
 }
 
 function pathRootPath(this: IWsPath, parent: IWsPath) {
@@ -76,7 +79,7 @@ function pathRootPath(this: IWsPath, parent: IWsPath) {
     return `${rp}${(this.rootPath ?? '')}`;
 }
 
-function makeWsUrlFunctions(ws: IWsParent | ICoreConfig, routeValuesRegExp: RegExp, parent?: IWsParent) {
+function makeWsUrlFunctions(ws: IWsParent | ICoreConfig, routeValuesRegExp: RegExp, isBrowser: boolean, parent?: IWsParent) {
     if (!ws) {
         return;
     }
@@ -95,16 +98,17 @@ function makeWsUrlFunctions(ws: IWsParent | ICoreConfig, routeValuesRegExp: RegE
         return !name.startsWith('_') && !exceptions.includes(name);
     };
     const isRoot = (obj: object) => {
-        // An object is a root object if it has host or rootPath.
+        // An object is a root object if it has host or rootPath, or if code is running in a browser, an object is a
+        // root object if it has any of the reserved properties.
         let yes = false;
-        forEachProperty(obj, k => yes = ['host', 'rootPath'].includes(k));
+        forEachProperty(obj, k => yes = rootUrlObjectProps.includes(k) || (isBrowser && rootUrlObjectPropsForBrowser.includes(k)));
         return yes;
     };
     // Add the _rootPath() function.
     let canBuildUrl = true;
     if (isRoot(ws) && (!parent?.buildUrl)) {
         ws[rootPathFn] = function () {
-            return parentRootPath.bind((ws as IWsPath))();
+            return parentRootPath.bind((ws as IWsPath))(isBrowser);
         };
     }
     else if (parent !== undefined && parent[rootPathFn] !== undefined) {
@@ -132,7 +136,7 @@ function makeWsUrlFunctions(ws: IWsParent | ICoreConfig, routeValuesRegExp: RegE
         }
         else if (sc && isConfig(value)) {
             // Object value.
-            makeWsUrlFunctions(value as IWsParent, routeValuesRegExp, (ws as IWsParent));
+            makeWsUrlFunctions(value as IWsParent, routeValuesRegExp, isBrowser, (ws as IWsParent));
         }
     });
 };
