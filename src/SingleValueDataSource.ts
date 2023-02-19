@@ -22,6 +22,11 @@ const buildDictionary = (key: string | (() => [string, ConfigurationValue]), val
 export default class SingleValueDataSource extends DictionaryDataSource {
     constructor(path: string | (() => [string, ConfigurationValue]), value?: ConfigurationValue, hierarchySeparator: string = ':') {
         super(buildDictionary(path, value), hierarchySeparator);
-        this.name = `Single Value: ${path}`;
+        if (typeof path === 'string') {
+            this.name = `Single Value: ${path}`;
+        }
+        else {
+            this.name = 'Single Value';
+        }
     }
 }
