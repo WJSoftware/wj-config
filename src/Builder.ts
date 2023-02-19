@@ -91,8 +91,8 @@ export default class Builder implements IBuilder {
         return this.add(new JsonDataSource(json, jsonParser, reviver));
     }
 
-    addSingleValue(path: string | (() => [string, ConfigurationValue]), value?: ConfigurationValue, hierarchySeparator?: string): IBuilder {
-        return this.add(new SingleValueDataSource(path, value, hierarchySeparator));
+    addSingleValue(path: string | (() => [string, ConfigurationValue]), valueOrHierarchySeparator?: ConfigurationValue | string, hierarchySeparator?: string): IBuilder {
+        return this.add(new SingleValueDataSource(path, valueOrHierarchySeparator, typeof path === 'function' ? valueOrHierarchySeparator as string : hierarchySeparator));
     }
 
     addPerEnvironment(addDs: (builder: IBuilder, envName: string) => boolean | string): IBuilder {
