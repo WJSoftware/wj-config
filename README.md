@@ -249,7 +249,7 @@ const env = new Environment(window.env.REACT_ENVIRONMENT);
 const config = wjConfig()
     .addObject(mainConfig)
     .name('Main') // Give data sources a meaningful name for value tracing purposes.
-    .addFetchedConfig(`/config.${env.current.name}.json`, false) // Fetch the JSON from the /public folder.
+    .addFetched(`/config.${env.current.name}.json`, false) // Fetch the JSON from the /public folder.
     .name(env.current.name)
     .addEnvironment(window.env, 'REACT_APP_') // Adds a data source that reads the environment variables in window.env.
     .includeEnvironment(env) // So the final configuration object has the environment property.
@@ -305,7 +305,7 @@ const config = wjConfig()
     .addObject(mainConfig)
     .name('Main')
     .includeEnvironment(env)
-    .addPerEnvironment((b, envName) => b.addFetchedConfig(`/config.${envName}.json`, false))
+    .addPerEnvironment((b, envName) => b.addFetched(`/config.${envName}.json`, false))
     .addEnvironment(window.env, 'REACT_APP_')
     .createUrlFunctions()
     .build(env.isDevelopment());
@@ -338,11 +338,11 @@ const env = new Environment(window.env.REACT_ENVIRONMENT);
 const config = wjConfig()
     .addObject(mainConfig)
     .name('Main')
-    .addFetchedConfig(`/config.Development.json`, false)
+    .addFetched(`/config.Development.json`, false)
     .forEnvironment('Development')
-    .addFetchedConfig(`/config.PreProduction.json`, false)
+    .addFetched(`/config.PreProduction.json`, false)
     .forEnvironment('PreProduction')
-    .addFetchedConfig(`/config.Production.json`, false)
+    .addFetched(`/config.Production.json`, false)
     .forEnvironment('Production')
     .addEnvironment(window.env, 'REACT_APP_')
     .includeEnvironment(env)
@@ -912,7 +912,7 @@ var isChromium = !!window.chrome && (!!window.chrome.webstore || !!window.chrome
 export default await wjConfig()
     .addObject(mainConfig)
     .name('Main')
-    .addFetchedConfig('/config.chromium.json')
+    .addFetched('/config.chromium.json')
     .when(e => isChromium, 'Chromium')
     .build();
 ```
@@ -1119,7 +1119,7 @@ This is the complete list of readily available data sources in this package.
 | - | - | - |
 | `DictionaryDataSource` | `addDictionary()` | Adds the properties of a flat dictionary into the configuration hierarchy.  The property names traverse the hierarchy using a colon (:) as hierarchy separator.  An optional prefix may be specified too. |
 | `EnvironmentDataSource` | `addEnvironment()` | Adds the given object as a dictionary whose prefix is mandatory and its hierarchy separator is double underscore (__). |
-| `FetchedConfigDataSource` | `addFetchedConfig()` | Fetches data using `fetch()` and adds its result as configuration source.  The result of the call must of course be a JSON object. |
+| `FetchedDataSource` | `addFetched()` | Fetches data using `fetch()` and adds its result as configuration source.  The result of the call must of course be a JSON object. |
 | `JsonDataSource` | `addJson()` | Adds the provided JSON string as source of configuration data.  The advantage here is that the JSON parser can be specified.  It could be the famous `JSON5` parser, for example.|
 | `ObjectDataSource` | `addObject()` | Adds the specified object as source of configuration data. |
 | `SingleValueDataSource` | `addSingleValue()` | Adds the specified key and value as source of configuration data.  Useful to import automatically created values from CI/CD or similar. |
