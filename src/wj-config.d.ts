@@ -112,14 +112,15 @@ declare module 'wj-config' {
         addDictionary(dictionary: ICoreConfig | (() => ICoreConfig), hierarchySeparator?: string, prefix?: string): IBuilder;
 
         /**
-         * 
+         * Adds the specified dictionary to the collection of data sources that will be used to build the configuration 
+         * object.
          * @param dictionary Dictionary object to include (after processing) as part of the final configuration data, 
          * or a function that returns said object.
          * @param hierarchySeparator Optional hierarchy separator.  If none is specified, a colon (:) is assumed.
          * @param predicate Optional predicate function that is called for every property in the dictionary.  Only when 
          * the return value of the predicate is true the property is included in configuration.
          */
-        addDictionary(dictionary: IConfig, hierarchySeparator?: string, predicate?: Predicate<string>): IBuilder;
+        addDictionary(dictionary: ICoreConfig | (() => ICoreConfig), hierarchySeparator?: string, predicate?: Predicate<string>): IBuilder;
 
         /**
          * Adds the qualifying environment variables to the collection of data sources that will be used to build the 
@@ -130,7 +131,7 @@ declare module 'wj-config' {
          * prefix is always removed after processing.  To avoid exposing non-application data as configuration, a prefix 
          * is always used.  If none is specified, the default prefix is OPT_.
          */
-        addEnvironment(env: IConfig | (() => ICoreConfig), prefix?: string): IBuilder;
+        addEnvironment(env: ICoreConfig | (() => ICoreConfig), prefix?: string): IBuilder;
 
         /**
          * Adds a fetch operation to the collection of data sources that will be used to build the configuration 
@@ -138,9 +139,9 @@ declare module 'wj-config' {
          * @param url URL to fetch.
          * @param required Optional Boolean value indicating if the fetch must produce an object.
          * @param init Optional fetch init data.  Refer to the fecth() documentation for information.
-         * @param procesFn Optional processing function that must return the configuration data as an object.
+         * @param processFn Optional processing function that must return the configuration data as an object.
          */
-        addFetched(url: URL, required: boolean = true, init?: RequestInit, procesFn?: ProcessFetchResponse): IBuilder;
+        addFetched(url: URL | (() => URL), required: boolean = true, init?: RequestInit, processFn?: ProcessFetchResponse): IBuilder;
 
         /**
          * Adds a fetch operation to the collection of data sources that will be used to build the configuration 
@@ -148,9 +149,9 @@ declare module 'wj-config' {
          * @param request Request object to use when fetching.  Refer to the fetch() documentation for information.
          * @param required Optional Boolean value indicating if the fetch must produce an object.
          * @param init Optional fetch init data.  Refer to the fecth() documentation for information.
-         * @param procesFn Optional processing function that must return the configuration data as an object.
+         * @param processFn Optional processing function that must return the configuration data as an object.
          */
-        addFetched(request: RequestInfo, required: boolean = true, init?: RequestInit, procesFn?: ProcessFetchResponse): IBuilder;
+        addFetched(request: RequestInfo | (() => RequestInfo), required: boolean = true, init?: RequestInit, processFn?: ProcessFetchResponse): IBuilder;
 
         /**
          * Adds the specified JSON string to the collection of data sources that will be used to build the 
@@ -163,12 +164,18 @@ declare module 'wj-config' {
 
         /**
          * Adds a single value to the collection of data sources that will be used to build the configuration object.
-         * @param path Key comprised of names that determine the hierarchy of the value, or a function that returns 
-         * the [key, value] tuple that needs to be added.  If using the second one, the "value" argument is ignored.
-         * @param value Value of the property; ignored if "path" is a tuple-returning function.
+         * @param path Key comprised of names that determine the hierarchy of the value.
+         * @param value Value of the property.
          * @param hierarchySeparator Optional hierarchy separator.  If not specified, colon (:) is assumed.
          */
-        addSingleValue(path: string | (() => [string, ConfigurationValue]), value?: ConfigurationValue, hierarchySeparator: string = ':'): IBuilder;
+        addSingleValue(path: string, value?: ConfigurationValue, hierarchySeparator: string = ':'): IBuilder;
+
+        /**
+         * Adds a single value to the collection of data sources that will be used to build the configuration object.
+         * @param dataFn Function that returns the [key, value] tuple that needs to be added.
+         * @param hierarchySeparator Optional hierarchy separator.  If not specified, colon (:) is assumed.
+         */
+        addSingleValue(dataFn: () => [string, ConfigurationValue], hierarchySeparator: string = ':'): IBuilder;
 
         /**
          * Special function that allows the developer the opportunity to add one data source per defined environment.
