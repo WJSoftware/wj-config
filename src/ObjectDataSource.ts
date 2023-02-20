@@ -9,7 +9,7 @@ export class ObjectDataSource extends DataSource implements IDataSource {
     /**
      * The object to inject.
      */
-    private _obj: ICoreConfig | (() => ICoreConfig);
+    private _obj: ICoreConfig | (() => Promise<ICoreConfig>);
 
     #validateObject(obj: ICoreConfig) {
         if (!isConfig(obj)) {
@@ -21,7 +21,7 @@ export class ObjectDataSource extends DataSource implements IDataSource {
      * Initializes a new instance of this class.
      * @param obj Data object to inject into the configuration build chain.
      */
-    constructor(obj: ICoreConfig | (() => ICoreConfig)) {
+    constructor(obj: ICoreConfig | (() => Promise<ICoreConfig>)) {
         super('Object');
         if (typeof obj !== 'function') {
             this.#validateObject(obj);
@@ -29,10 +29,10 @@ export class ObjectDataSource extends DataSource implements IDataSource {
         this._obj = obj;
     }
 
-    getObject(): Promise<ICoreConfig> {
+    async getObject(): Promise<ICoreConfig> {
         let obj = this._obj;
         if (typeof obj === 'function') {
-            obj = obj();
+            obj = await obj();
         }
         this.#validateObject(obj);
         return Promise.resolve(obj);

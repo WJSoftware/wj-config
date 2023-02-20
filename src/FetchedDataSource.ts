@@ -2,11 +2,11 @@ import type { ICoreConfig, ProcessFetchResponse } from "wj-config";
 import { DataSource } from "./DataSource.js";
 
 export default class FetchedDataSource extends DataSource {
-    private _input: URL | RequestInfo | (() => URL | RequestInfo);
+    private _input: URL | RequestInfo | (() => Promise<URL | RequestInfo>);
     private _required: boolean;
     private _init?: RequestInit;
     private _processFn: ProcessFetchResponse;
-    constructor(input: URL | RequestInfo | (() => URL | RequestInfo), required: boolean = true, init?: RequestInit, processFn?: ProcessFetchResponse) {
+    constructor(input: URL | RequestInfo | (() => Promise<URL | RequestInfo>), required: boolean = true, init?: RequestInit, processFn?: ProcessFetchResponse) {
         super(typeof input === 'string' ? `Fetch ${input}` : 'Fetched Configuration');
         this._input = input;
         this._required = required;
@@ -19,7 +19,7 @@ export default class FetchedDataSource extends DataSource {
     async getObject(): Promise<ICoreConfig> {
         let input = this._input;
         if (typeof input === 'function') {
-            input = input();
+            input = await input();
         }
         const response = await fetch(input, this._init);
         let data: ICoreConfig = {};

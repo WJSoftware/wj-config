@@ -97,7 +97,7 @@ declare module 'wj-config' {
          * @param obj Data object to include as part of the final configuration data, or a function that returns said 
          * object.
          */
-        addObject(obj: ICoreConfig | (() => ICoreConfig)): IBuilder;
+        addObject(obj: ICoreConfig | (() => Promise<ICoreConfig>)): IBuilder;
 
         /**
          * Adds the specified dictionary to the collection of data sources that will be used to build the configuration 
@@ -109,7 +109,7 @@ declare module 'wj-config' {
          * prefix is always removed after the dictionary is processed.  If no prefix is provided, then all dictionary 
          * entries will contribute to the configuration data.
          */
-        addDictionary(dictionary: ICoreConfig | (() => ICoreConfig), hierarchySeparator?: string, prefix?: string): IBuilder;
+        addDictionary(dictionary: ICoreConfig | (() => Promise<ICoreConfig>), hierarchySeparator?: string, prefix?: string): IBuilder;
 
         /**
          * Adds the specified dictionary to the collection of data sources that will be used to build the configuration 
@@ -120,7 +120,7 @@ declare module 'wj-config' {
          * @param predicate Optional predicate function that is called for every property in the dictionary.  Only when 
          * the return value of the predicate is true the property is included in configuration.
          */
-        addDictionary(dictionary: ICoreConfig | (() => ICoreConfig), hierarchySeparator?: string, predicate?: Predicate<string>): IBuilder;
+        addDictionary(dictionary: ICoreConfig | (() => Promise<ICoreConfig>), hierarchySeparator?: string, predicate?: Predicate<string>): IBuilder;
 
         /**
          * Adds the qualifying environment variables to the collection of data sources that will be used to build the 
@@ -131,7 +131,7 @@ declare module 'wj-config' {
          * prefix is always removed after processing.  To avoid exposing non-application data as configuration, a prefix 
          * is always used.  If none is specified, the default prefix is OPT_.
          */
-        addEnvironment(env: ICoreConfig | (() => ICoreConfig), prefix?: string): IBuilder;
+        addEnvironment(env: ICoreConfig | (() => Promise<ICoreConfig>), prefix?: string): IBuilder;
 
         /**
          * Adds a fetch operation to the collection of data sources that will be used to build the configuration 
@@ -141,7 +141,7 @@ declare module 'wj-config' {
          * @param init Optional fetch init data.  Refer to the fecth() documentation for information.
          * @param processFn Optional processing function that must return the configuration data as an object.
          */
-        addFetched(url: URL | (() => URL), required: boolean = true, init?: RequestInit, processFn?: ProcessFetchResponse): IBuilder;
+        addFetched(url: URL | (() => Promise<URL>), required: boolean = true, init?: RequestInit, processFn?: ProcessFetchResponse): IBuilder;
 
         /**
          * Adds a fetch operation to the collection of data sources that will be used to build the configuration 
@@ -151,7 +151,7 @@ declare module 'wj-config' {
          * @param init Optional fetch init data.  Refer to the fecth() documentation for information.
          * @param processFn Optional processing function that must return the configuration data as an object.
          */
-        addFetched(request: RequestInfo | (() => RequestInfo), required: boolean = true, init?: RequestInit, processFn?: ProcessFetchResponse): IBuilder;
+        addFetched(request: RequestInfo | (() => Promise<RequestInfo>), required: boolean = true, init?: RequestInit, processFn?: ProcessFetchResponse): IBuilder;
 
         /**
          * Adds the specified JSON string to the collection of data sources that will be used to build the 
@@ -160,7 +160,7 @@ declare module 'wj-config' {
          * @param jsonParser Optional JSON parser.  If not specified, the built-in JSON object will be used.
          * @param reviver Optional reviver function.  For more information see the JSON.parse() documentation.
          */
-        addJson(json: string | (() => string), jsonParser?: JSON, reviver?: (this: any, key: string, value: any) => any): IBuilder;
+        addJson(json: string | (() => Promise<string>), jsonParser?: JSON, reviver?: (this: any, key: string, value: any) => any): IBuilder;
 
         /**
          * Adds a single value to the collection of data sources that will be used to build the configuration object.
@@ -175,7 +175,7 @@ declare module 'wj-config' {
          * @param dataFn Function that returns the [key, value] tuple that needs to be added.
          * @param hierarchySeparator Optional hierarchy separator.  If not specified, colon (:) is assumed.
          */
-        addSingleValue(dataFn: () => [string, ConfigurationValue], hierarchySeparator: string = ':'): IBuilder;
+        addSingleValue(dataFn: () => Promise<[string, ConfigurationValue]>, hierarchySeparator: string = ':'): IBuilder;
 
         /**
          * Special function that allows the developer the opportunity to add one data source per defined environment.
@@ -261,7 +261,7 @@ declare module 'wj-config' {
         /**
          * Asynchronously builds the final configuration object.
          */
-        build(traceValueSources: boolean = false): Promise<IConfig>;
+        build(traceValueSources: boolean = false, enforcePerEnvironmentCoverage: boolean = true): Promise<IConfig>;
     }
 
     /**
