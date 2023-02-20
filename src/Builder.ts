@@ -71,27 +71,27 @@ export default class Builder implements IBuilder {
         return this;
     }
 
-    addObject(obj: ICoreConfig | (() => ICoreConfig)): IBuilder {
+    addObject(obj: ICoreConfig | (() => Promise<ICoreConfig>)): IBuilder {
         return this.add(new ObjectDataSource(obj));
     }
 
-    addDictionary(dictionary: ICoreConfig | (() => ICoreConfig), hierarchySeparator: string = ':', prefixOrPredicate?: string | Predicate<string>): IBuilder {
+    addDictionary(dictionary: ICoreConfig | (() => Promise<ICoreConfig>), hierarchySeparator: string = ':', prefixOrPredicate?: string | Predicate<string>): IBuilder {
         return this.add(new DictionaryDataSource(dictionary, hierarchySeparator, prefixOrPredicate));
     }
 
-    addEnvironment(env: ICoreConfig | (() => ICoreConfig), prefix: string = 'OPT_'): IBuilder {
+    addEnvironment(env: ICoreConfig | (() => Promise<ICoreConfig>), prefix: string = 'OPT_'): IBuilder {
         return this.add(new EnvironmentDataSource(env, prefix));
     }
 
-    addFetched(input: URL | RequestInfo | (() => URL | RequestInfo), required: boolean = true, init?: RequestInit, procesFn?: ProcessFetchResponse): IBuilder {
+    addFetched(input: URL | RequestInfo | (() => Promise<URL | RequestInfo>), required: boolean = true, init?: RequestInit, procesFn?: ProcessFetchResponse): IBuilder {
         return this.add(new FetchedDataSource(input, required, init, procesFn));
     }
 
-    addJson(json: string | (() => string), jsonParser?: JSON, reviver?: (this: any, key: string, value: any) => any) {
+    addJson(json: string | (() => Promise<string>), jsonParser?: JSON, reviver?: (this: any, key: string, value: any) => any) {
         return this.add(new JsonDataSource(json, jsonParser, reviver));
     }
 
-    addSingleValue(path: string | (() => [string, ConfigurationValue]), valueOrHierarchySeparator?: ConfigurationValue | string, hierarchySeparator?: string): IBuilder {
+    addSingleValue(path: string | (() => Promise<[string, ConfigurationValue]>), valueOrHierarchySeparator?: ConfigurationValue | string, hierarchySeparator?: string): IBuilder {
         return this.add(new SingleValueDataSource(path, valueOrHierarchySeparator, typeof path === 'function' ? valueOrHierarchySeparator as string : hierarchySeparator));
     }
 

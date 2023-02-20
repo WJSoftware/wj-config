@@ -17,7 +17,7 @@ const ensurePropertyValue = (obj: ICoreConfig, name: string) => {
 }
 
 export default class DictionaryDataSource extends DataSource implements IDataSource {
-    private _dictionary: ICoreConfig | (() => ICoreConfig);
+    private _dictionary: ICoreConfig | (() => Promise<ICoreConfig>);
     private _hierarchySeparator: string;
     private _prefixOrPredicate?: string | Predicate<string>;
 
@@ -87,7 +87,7 @@ export default class DictionaryDataSource extends DataSource implements IDataSou
         return result;
     }
 
-    constructor(dictionary: ICoreConfig | (() => ICoreConfig), hierarchySeparator: string, prefixOrPredicate?: string | Predicate<string>) {
+    constructor(dictionary: ICoreConfig | (() => Promise<ICoreConfig>), hierarchySeparator: string, prefixOrPredicate?: string | Predicate<string>) {
         super('Dictionary');
         if (!hierarchySeparator) {
             throw new Error('Dictionaries must specify a hierarchy separator.');
@@ -106,10 +106,10 @@ export default class DictionaryDataSource extends DataSource implements IDataSou
         this._dictionary = dictionary;
     }
 
-    getObject(): Promise<ICoreConfig> {
+    async getObject(): Promise<ICoreConfig> {
         let dic = this._dictionary;
         if (dic && typeof dic === 'function') {
-            dic = dic();
+            dic = await dic();
         }
         const inflatedObject = this.#inflateDictionary(dic);
         return Promise.resolve(inflatedObject);

@@ -1,7 +1,7 @@
 import type { ConfigurationValue, ICoreConfig } from "wj-config";
 import DictionaryDataSource from "./DictionaryDataSource.js";
 
-const buildDictionary = (key: string | (() => [string, ConfigurationValue]), value?: ConfigurationValue): ICoreConfig | (() => ICoreConfig) => {
+const buildDictionary = (key: string | (() => Promise<[string, ConfigurationValue]>), value?: ConfigurationValue): ICoreConfig | (() => Promise<ICoreConfig>) => {
     if (!key) {
         throw new Error('No valid path was provided.');
     }
@@ -11,8 +11,8 @@ const buildDictionary = (key: string | (() => [string, ConfigurationValue]), val
         return dic;
     };
     if (typeof key === 'function') {
-        return () => {
-            const [k, v] = (key as (() => [string, ConfigurationValue]))();
+        return async () => {
+            const [k, v] = await (key as (() => Promise<[string, ConfigurationValue]>))();
             return dicFn(k, v);
         };
     }
@@ -20,7 +20,7 @@ const buildDictionary = (key: string | (() => [string, ConfigurationValue]), val
 }
 
 export default class SingleValueDataSource extends DictionaryDataSource {
-    constructor(path: string | (() => [string, ConfigurationValue]), value?: ConfigurationValue, hierarchySeparator: string = ':') {
+    constructor(path: string | (() => Promise<[string, ConfigurationValue]>), value?: ConfigurationValue, hierarchySeparator: string = ':') {
         super(buildDictionary(path, value), hierarchySeparator);
         if (typeof path === 'string') {
             this.name = `Single Value: ${path}`;
