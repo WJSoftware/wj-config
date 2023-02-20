@@ -1,5 +1,24 @@
 > Second Release Candiate!
-> See complete examples [in the Version_2 branch](https://github.com/WJSoftware/wj-config/tree/Version_2/examples).
+
+## Release Candidate 3
+
+1. Small performance improvement on how URL-building functions work.
+2. Corrected references of `window` to be part of `globalThis` so NodeJS won't complain.
+
+## Release Candidate 2
+
+1. When running in the browser, config can specify `scheme` or `port` without a host.  This creates absolute URL's 
+using the value of `window.location.hostname`.
+2. Intellisense corrections.
+3. Dictionary validation has been enhanced to detect non-flat objects on construction.  This only happens when not 
+deferring the object by providing a function.
+4. Data-delaying functions (the functions that provide the main, or data, argument to data sources) can now be 
+asynchronous.
+
+### Breaking Changes
+
+1. `IBuilder.addFetchedConfig()` has been renamed to `addFetched()`.
+2. `IBuilder.addSingleValue()` has been split into two overloads.
 
 ## Release Candidate 1
 
