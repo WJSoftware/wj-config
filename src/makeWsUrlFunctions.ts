@@ -30,7 +30,7 @@ function buildUrlImpl(
     const rp = (this[rootPathFn] ?? noop)();
     let url = `${rp}${(path ?? '')}`;
     // Replace any replaceable route values.
-    if (routeRegex && routeRegex.test(url) && routeValuesFn) {
+    if (routeRegex && routeValuesFn && routeRegex.test(url)) {
         url = url.replace(routeRegex, (m, g1) => encodeURIComponent((routeValuesFn ?? noop)(g1)));
     }
     // Add query string values, if provided.
@@ -71,7 +71,7 @@ function parentRootPath(this: IWsParent, isBrowser: boolean) {
         // build a relative URL starting with the root path.
         return this.rootPath ?? '';
     }
-    return `${(this.scheme ?? 'http')}://${(this.host ?? window?.location?.hostname ?? '')}${(this.port ? `:${this.port}` : '')}${(this.rootPath ?? '')}`;
+    return `${(this.scheme ?? 'http')}://${(this.host ?? globalThis.window?.location?.hostname ?? '')}${(this.port ? `:${this.port}` : '')}${(this.rootPath ?? '')}`;
 }
 
 function pathRootPath(this: IWsPath, parent: IWsPath) {

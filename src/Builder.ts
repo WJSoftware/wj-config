@@ -256,7 +256,7 @@ export default class Builder implements IBuilder {
             urlData.wsPropertyNames.forEach((value) => {
                 const obj = wjConfig[value];
                 if (isConfig(obj)) {
-                    makeWsUrlFunctions(obj, urlData.routeValuesRegExp, window && window.location !== undefined);
+                    makeWsUrlFunctions(obj, urlData.routeValuesRegExp, globalThis.window && globalThis.window.location !== undefined);
                 }
                 else {
                     throw new Error(`The level 1 property "${value}" is not a node value (object), but it was specified as being an object containing URL-building information.`);
