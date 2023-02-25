@@ -26,7 +26,7 @@ module.exports = (async () => {
     app.use(express.static(path.join(__dirname, 'public')));
 
     app.use('/', indexRouter);
-    app.use('/persons', personRouter);
+    app.use('/people', personRouter);
     app.use('/flags', flagRouter);
 
     // catch 404 and forward to error handler
