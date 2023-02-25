@@ -238,6 +238,8 @@
     "https://esm.sh/structured-log@0.2.0": "f2cdd44fa33410e18024cfd3b4b85db6e20f790e82b893232d53d6e7366720cd",
     "https://esm.sh/v102/structured-log@0.2.0/deno/structured-log.js": "0b1d84e7dca6e3aa289277e14296982fdb80928b17c17c32f48671f14279d57e",
     "https://esm.sh/v102/wj-config@2.0.0-rc.0/deno/wj-config.js": "eabdc236dccefcf03fe942266da57586c86c0585be24a36fd3d7277368733304",
-    "https://esm.sh/wj-config@2.0.0-rc.0": "61ec9b1b5776ed07a0ffebd9f410c5660c4d95620a7516a42cdf8c3ab7cb8c38"
+    "https://esm.sh/v107/wj-config@2.0.0-rc.3/deno/wj-config.js": "29dcb03bba6c66277779cf6544db91de5fa55069116bdb41d36aaf35e11cd477",
+    "https://esm.sh/wj-config@2.0.0-rc.0": "61ec9b1b5776ed07a0ffebd9f410c5660c4d95620a7516a42cdf8c3ab7cb8c38",
+    "https://esm.sh/wj-config@2.0.0-rc.3": "9db5a915d69af7896e21882f1a530add9ff8f0347ee4deba79d94e1de2387ef9"
   }
 }

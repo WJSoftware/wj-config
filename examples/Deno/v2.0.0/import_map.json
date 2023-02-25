@@ -1,7 +1,7 @@
 {
     "imports": {
         "structured-log": "https://esm.sh/structured-log",
-        "wj-config": "https://esm.sh/wj-config@2.0.0-rc.0",
+        "wj-config": "https://esm.sh/wj-config@2.0.0-rc.3",
         "fs": "https://deno.land/std@0.170.0/fs/mod.ts"
     }
 }
