@@ -1,13 +1,20 @@
-const fs = require('fs');
+const fs = require('fs').promises;
+const exists = require('fs.promises.exists');
 
-module.exports = function (fileName, isRequired) {
-    const fileExists = fs.existsSync(fileName);
-    if (fileExists) {
-        return fs.readFileSync(fileName);
+module.exports = function loadFile(fileName, required) {
+    if (exists(fileName)) {
+        try {
+            return fs.readFile(fileName, {
+                encoding: 'utf-8'
+            });
+        }
+        catch (err) {
+            if (required) {
+                throw new Error(`An error was caught trying to read file "${fileName}".`, { cause: err });
+            }
+        }
     }
-    else if (isRequired) {
-        throw new Error(`File ${fileName} is required but was not found.`);
+    else if (required) {
+        throw new Error(`File "${fileName} is required but could not be found.`);
     }
-    // Return null.
-    return null;
 };

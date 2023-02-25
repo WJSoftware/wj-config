@@ -1,14 +1,6 @@
 const loadFile = require('./load-file');
 const envTraits = require('./env-traits');
 
-const loadJsonFile = (fileName, isRequired) => {
-    const data = loadFile(fileName, isRequired);
-    if (data === null) {
-        return {};
-    }
-    return JSON.parse(data);
-};
-
 module.exports = (async function () {
     const { default: wjConfig, Environment } = await import('wj-config');
     const env = new Environment({
@@ -16,15 +8,15 @@ module.exports = (async function () {
         traits: parseInt(process.env.ENV_TRAITS)
     });
     return wjConfig()
-        .addObject(loadJsonFile('./config.json', true))
+        .addJson(await loadFile('./config.json', true))
         .name('Main Configuration')
         .includeEnvironment(env)
-        .addPerEnvironment((b, e) => b.addComputed(() => loadJsonFile(`./config.${e}.json`)))
-        .addComputed(() => loadJsonFile('config.nonTTY.json'))
+        .addPerEnvironment((b, e) => b.addJson(() => loadFile(`./config.${e}.json`, false)))
+        .addJson(() => loadFile('config.nonTTY.json'))
         .when(e => !process.stdout.isTTY)
-        .addComputed(() => loadJsonFile('config.Amiga.json'))
+        .addJson(() => loadFile('config.Amiga.json'))
         .whenAllTraits(envTraits.Amiga, 'Amiga Preference')
-        .addComputed(() => loadJsonFile('config.Apple.json'))
+        .addJson(() => loadFile('config.Apple.json'))
         .whenAllTraits(envTraits.Apple, 'Apple Preference')
         .addEnvironment(process.env)
         .createUrlFunctions()
