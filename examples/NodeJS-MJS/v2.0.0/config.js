@@ -3,14 +3,6 @@ import mainConfig from "./config.json" assert {type: 'json'};
 import loadFile from './load-file.js';
 import envTraits from './env-traits.js';
 
-const loadJsonFile = (fileName, isRequired) => {
-    const data = loadFile(fileName, isRequired);
-    if (data === null) {
-        return {};
-    }
-    return JSON.parse(data);
-};
-
 const env = new Environment({
     name: process.env.NODE_ENV,
     traits: parseInt(process.env.ENV_TRAITS)
@@ -18,14 +10,14 @@ const env = new Environment({
 
 const config = wjConfig()
     .addObject(mainConfig)
-    .name('Main Configuration')
+    .name('Main')
     .includeEnvironment(env)
-    .addPerEnvironment((b, e) => b.addComputed(() => loadJsonFile(`./config.${e}.json`)))
-    .addComputed(() => loadJsonFile('config.nonTTY.json'))
+    .addPerEnvironment((b, e) => b.addJson(() => loadFile(`./config.${e}.json`)))
+    .addJson(() => loadFile('config.nonTTY.json'))
     .when(e => !process.stdout.isTTY)
-    .addComputed(() => loadJsonFile('config.Amiga.json'))
+    .addJson(() => loadFile('config.Amiga.json'))
     .whenAllTraits(envTraits.Amiga, 'Amiga Preference')
-    .addComputed(() => loadJsonFile('config.Apple.json'))
+    .addJson(() => loadFile('config.Apple.json'))
     .whenAllTraits(envTraits.Apple, 'Apple Preference')
     .addEnvironment(process.env)
     .createUrlFunctions()
