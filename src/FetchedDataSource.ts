@@ -12,7 +12,19 @@ export default class FetchedDataSource extends DataSource {
         this._required = required;
         this._init = init;
         this._processFn = processFn ?? (async (response) => {
-            return await response.json();
+            if (this._required && response.status === 204) {
+                throw new Error(`${this.name}: Configuration data from this source is required but the fetch operation yielded no data.`);
+            }
+            else if (this._required && response.status === 404) {
+                throw new Error(`${this.name}: Configuration data from this source is required but the fetch operation could not find the resource.`);
+            }
+            else if (this._required && !response.ok) {
+                throw new Error(`${this.name}: Configuration data from this source is required but the fetch operation yielded a non-OK response: ${response.status} (${response.statusText}).`);
+            }
+            else if (response.ok && response.status !== 204) {
+                return await response.json();
+            }
+            return null;
         });
     }
 
@@ -23,14 +35,6 @@ export default class FetchedDataSource extends DataSource {
         }
         const response = await fetch(input, this._init);
         let data: ICoreConfig = {};
-        if (this._required) {
-            if (response.status === 204) {
-                throw new Error(`${this.name}: Configuration data from this source is required but the fetch operation yielded no data.`);
-            }
-            else if (!response.ok) {
-                throw new Error(`${this.name}: Configuration data from this source is required but the fetch operation yielded a non-OK response: ${response.status} (${response.statusText}).`);
-            }
-        }
         try {
             data = await this._processFn(response);
         }
