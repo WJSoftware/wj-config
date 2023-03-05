@@ -9,8 +9,11 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@vueuse/core": "^9.13.0",
+    "pinia": "^2.0.28",
     "vue": "^3.2.45",
-    "wj-config": "^2.0.0-rc.0"
+    "vue-spinner": "^1.0.4",
+    "wj-config": "^2.0.0-rc.3"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^4.0.0",

@@ -1,15 +1,28 @@
 <script setup lang="ts">
-const props = defineProps<{
+import ScaleLoader from 'vue-spinner/src/ScaleLoader.vue';
+
+defineProps<{
     block: Boolean,
     text: string
 }>();
 </script>
 
 <template>
-    <span :class="{ spinner: true, 'spinner-inline': !block, 'spinner-block': block }">{{ text }}</span>
+<span :class="{ spinner: true, 'spinner-inline': !block, 'spinner-block': block }">
+    <ScaleLoader :color="block ? 'yellow' : 'white'" :class="{ inline: !block }" :height="block ? '1.5em' : '1em'" :width="block ? '4px' : '2px'" /><span v-if="!block">&nbsp;</span>{{ text }}
+</span>
 </template>
 
 <style scoped>
+.inline {
+    display: inline;
+    font-size: 1em;
+}
+
+.color {
+    color: inherit
+}
+
 span.spinner {
     display: inline-block;
     margin-left: auto;

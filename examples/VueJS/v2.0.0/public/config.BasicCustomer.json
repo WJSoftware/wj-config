@@ -1,0 +1,7 @@
+{
+    "personApi": {
+        "initialPeopleCount": 10,
+        "maxPeopleCount": 100,
+        "peopleCountStep": 2
+    }
+}

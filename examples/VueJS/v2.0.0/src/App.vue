@@ -1,8 +1,7 @@
 <script setup lang="ts">
+import PeoplePanel from './components/PeoplePanel.vue';
 import PeopleTable from './components/PeopleTable.vue';
 import config from './config';
-
-console.log('%o', config);
 </script>
 
 <template>
@@ -13,8 +12,9 @@ console.log('%o', config);
         <a href="https://vuejs.org/" target="_blank">
             <img src="./assets/vue.svg" class="logo vue" alt="Vue logo" />
         </a>
-        <h1>{{ (config as any).appSettings.title }}</h1>
-    </header>
+                <h1>{{ config.appSettings.title }}</h1>
+        </header>
+        <PeoplePanel />
     <PeopleTable />
 </template>
 
