@@ -1,6 +1,7 @@
 import type { QueryString, RouteValuesFunction } from "wj-config";
 
 export type UrlFunction = (replaceValues?: RouteValuesFunction | { [x: string | symbol]: any }, queryString?: QueryString) => string;
+
 export interface Config {
   appSettings: AppSettings;
   logging: Logging;
@@ -25,6 +26,7 @@ export interface PersonApi {
   initialPeopleCount: number;
   maxPeopleCount: number;
   peopleCountStep: number;
+  pills: (number)[];
 }
 export interface Api {
   options: Options;

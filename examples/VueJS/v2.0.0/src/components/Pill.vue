@@ -2,7 +2,7 @@
 import { PropType } from 'vue';
 
 
-export type PillItem = { id: string | number, name: string };
+export type PillItem = { id: string | number, text: string, selected: boolean };
 
 export default {
     props: {
@@ -24,7 +24,7 @@ export default {
 <template>
     <div :class="{ selected: selected }">
         <button @click="buttonClicked">
-            {{ item.name }}
+            {{ item.text }}
         </button>
     </div>
 </template>

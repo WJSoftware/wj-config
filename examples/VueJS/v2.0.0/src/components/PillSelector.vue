@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onBeforeMount, onUpdated, PropType, ref } from 'vue';
+import { PropType } from 'vue';
 import Pill, { PillItem } from './Pill.vue';
 
 const props = defineProps({
@@ -11,26 +11,34 @@ const props = defineProps({
     initialSelIndex: {
         type: [Number, Object],
         required: false
+    },
+    mode: {
+        type: String as PropType<'radio' | 'check'>,
+        required: true
     }
 });
 const emit = defineEmits(['selectionChanged']);
 
-onBeforeMount(() => {
-    selItem.value = props.initialSelIndex === undefined ? null : props.items[props.initialSelIndex as number];
-});
-
-const selItem = ref(null as unknown as (PillItem | null));
-
 function pillClicked(item: PillItem) {
-    selItem.value = item;
+    changeSelection(item);
     emit('selectionChanged', item);
+}
+
+function changeSelection(item: PillItem) {
+    if (props.mode == 'radio') {
+        props.items.forEach(i => {
+            i.selected = i.id === item.id
+        });
+        return;
+    }
+    item.selected = !item.selected;
 }
 </script>
 
 <template>
     <div className="pill-selector">
         <h5 v-if="title">{{ title }}</h5><br v-if="title" />
-        <Pill v-for="it in items" :key="it.id" :item="it" @click="pillClicked" :selected="it.id === selItem?.id" />
+        <Pill v-for="it in items" :key="it.id" :item="it" @click="pillClicked" :selected="it.selected" />
         <slot></slot>
     </div>
 </template>

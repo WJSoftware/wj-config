@@ -4,7 +4,7 @@
         "title": "Vite + Vue + WJ-Config",
         "projectName": "wj-config by WJ Software",
         "projectHome": "https://github.com/WJSoftware/wj-config",
-        "inputDelay": 500,
+        "inputDelay": 800,
         "dramaticPause": 7000,
         "mockarooText": "Mockaroo, your data-mocking site",
         "mockarooUrl": "https://www.mockaroo.com/"
@@ -16,7 +16,10 @@
         "defaultMinBday": "2000-01-01",
         "initialPeopleCount": 0,
         "maxPeopleCount": 0,
-        "peopleCountStep": 0
+        "peopleCountStep": 0,
+        "pills": [
+            0
+        ]
     },
     "api": {
         "options": {

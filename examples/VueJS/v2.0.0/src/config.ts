@@ -1,9 +1,11 @@
-import wjConfig, { Environment } from 'wj-config';
+import wjConfig, { Environment, EnvironmentDefinition } from 'wj-config';
 import { Config } from './config-def';
 import mainConfig from './config.json';
 import envTraits from './env-traits.js';
 
-const env = new Environment((window as any).env.APP_ENV, [
+const { APP_ENV: currEnv, ENV_TRAITS: currTraits } = (window as any).env;
+const envDef = new EnvironmentDefinition(currEnv, currTraits);
+const env = new Environment(envDef, [
     'Development',
     'Test',
     'PreProduction',

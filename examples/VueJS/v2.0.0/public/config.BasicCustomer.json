@@ -2,6 +2,11 @@
     "personApi": {
         "initialPeopleCount": 10,
         "maxPeopleCount": 100,
-        "peopleCountStep": 2
+        "peopleCountStep": 2,
+        "pills": [
+            10,
+            50,
+            100
+        ]
     }
 }
