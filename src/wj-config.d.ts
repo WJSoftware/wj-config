@@ -236,7 +236,7 @@ declare module 'wj-config' {
         * @param env Previously created environment object.
         * @param propertyName Optional property name for the environment object.
         */
-        includeEnvironment(env: IEnvironment, propertyName?: string): IBuilder;
+        includeEnvironment(env: Environment, propertyName?: string): IBuilder;
 
         /**
          * Adds an environment object created with the provided value and names as a property of the final configuration 
