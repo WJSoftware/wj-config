@@ -1,4 +1,4 @@
 window.env = {
     APP_ENV: 'Development',
-    ENV_TRAITS: 5
+    ENV_TRAITS: 15
 };

@@ -9,8 +9,12 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@fortawesome/fontawesome-svg-core": "^6.3.0",
+    "@fortawesome/free-solid-svg-icons": "^6.3.0",
+    "@fortawesome/vue-fontawesome": "^3.0.3",
     "@vueuse/core": "^9.13.0",
     "pinia": "^2.0.28",
+    "serilogger": "^0.5.0",
     "vue": "^3.2.45",
     "vue-spinner": "^1.0.4",
     "wj-config": "^2.0.0-rc.3"

@@ -19,5 +19,8 @@ export default defineConfig({
         replacement: fileURLToPath(new URL('./src', import.meta.url))
       }
     ]
+  },
+  optimizeDeps: {
+    exclude: ['wj-config']
   }
 })

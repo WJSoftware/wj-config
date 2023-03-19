@@ -18,14 +18,16 @@ const { isFetching, data, error } = useFetch(url, {
 }).json();
 watch(data, () => {
     peopleStore.people = data.value as (any[] | null);
+    peopleStore.fetchInProgress = false;
     if (peopleStore.people && peopleStore.people.length) {
         fetchCountries();
     }
 }, {
     flush: 'post'
 });
-watch(() => peopleStore.peopleCount, () => {
+watch([() => peopleStore.peopleCount, () => peopleStore.minBday], () => {
     console.debug('New URL: %s', peopleStore.peopleUrl);
+    peopleStore.fetchInProgress = true;
     url.value = peopleStore.peopleUrl;
     peopleStore.countries = null;
 });
@@ -67,35 +69,44 @@ async function fetchPeople() {
 </script>
 
 <template>
-                    <LoadingSpinner text="Loading people..." :block="true" v-if="isFetching" />
-                    <table v-else class="data people">
-                        <thead>
-                            <tr>
-                                <th>ID</th>
-                                <th>First Name</th>
-                                <th>Last Name</th>
-                                <th>Email</th>
-                                <th>Birth Date</th>
-                                <th>Country</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr v-for="p in peopleStore.people">
-                                <td>{{ p.id }}</td>
-                                <td>{{ p.first_name }}</td>
-                                <td>{{ p.last_name }}</td>
-                                <td>{{ p.email }}</td>
-                                <td>{{ p.birth_date }}</td>
-                                <td>
-                                    <img :src="flagsUrl({ countryCode: p.country_code })" :alt="p.country_code" crossorigin="anonymous"
-                                        class="flag" />&nbsp;
-                                    <span v-if="peopleStore.countries">{{ peopleStore.countries[p.country_code] }} ({{ p.country_code
-                                    }})</span>
-                                    <LoadingSpinner v-else text="Loading countries..." :block="false" />
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
+    <div class="people">
+        <pre v-if="error">
+                    {{ error }}
+                </pre>
+        <LoadingSpinner text="Loading people..." :block="true" v-if="isFetching" />
+        <table v-else class="data people">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>First Name</th>
+                    <th>Last Name</th>
+                    <th>Email</th>
+                    <th>Birth Date</th>
+                    <th>Country</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr v-for="p in peopleStore.people">
+                    <td>{{ p.id }}</td>
+                    <td>{{ p.first_name }}</td>
+                    <td>{{ p.last_name }}</td>
+                    <td>{{ p.email }}</td>
+                    <td>{{ p.birth_date }}</td>
+                    <td>
+                        <img :src="flagsUrl(() => config.flagsApi.lowerCaseCodes ? p.country_code.toLowerCase() : p.country_code)"
+                            :alt="p.country_code" :crossorigin="config.flagsApi.anonymousCrossOrigin ? 'anonymous' : ''"
+                            class="flag" />&nbsp;
+                        <span v-if="peopleStore.countries">{{ peopleStore.countries[p.country_code] }} ({{ p.country_code
+                        }})</span>
+                        <LoadingSpinner v-else text="Loading countries..." :block="false" />
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <div class="flags-info">
+            Flags courtesy of <a :href="config.flagsApi.backLink" target="_blank">{{ config.flagsApi.name }}</a>
+        </div>
+    </div>
 </template>
 
 <style scoped>
@@ -103,17 +114,21 @@ img.flag {
     max-height: 1em;
 }
 
-table.people {
+div.people {
     margin-top: 2em;
+    text-align: center;
+}
+
+div.people>table {
     margin-left: auto;
     margin-right: auto;
 }
 
-table.people>tbody>tr>td {
+div.people>table>tbody>tr>td {
     text-align: left;
 }
 
-table.people>tbody>tr>td:first-child {
+div.people>table>tbody>tr>td:first-child {
     text-align: center;
     background-color: var(--masterBgColor);
     color: var(--masterColor);
@@ -123,11 +138,11 @@ table.people>tbody>tr>td:first-child {
     padding-right: 5px;
 }
 
-table.people>tbody>tr>td:last-child {
+div.people>table>tbody>tr>td:last-child {
     background-color: rgb(227, 227, 227);
 }
 
-table.people img.flag {
+div.people>table img.flag {
     width: 2em;
 }
 
@@ -151,5 +166,12 @@ span.loader-large {
     color: yellow;
     font-size: x-large;
     padding: 1em 2em;
+}
+
+div.flags-info {
+    margin-top: 1em;
+    font-size: smaller;
+    font-weight: bold;
+    text-align: right;
 }
 </style>

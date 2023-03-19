@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { PropType } from 'vue';
+import ControlGroup from './ControlGroup.vue';
 import Pill, { PillItem } from './Pill.vue';
 
 const props = defineProps({
@@ -15,6 +16,10 @@ const props = defineProps({
     mode: {
         type: String as PropType<'radio' | 'check'>,
         required: true
+    },
+    disabled: {
+        type: Boolean,
+        default: false
     }
 });
 const emit = defineEmits(['selectionChanged']);
@@ -36,38 +41,16 @@ function changeSelection(item: PillItem) {
 </script>
 
 <template>
-    <div className="pill-selector">
-        <h5 v-if="title">{{ title }}</h5><br v-if="title" />
-        <Pill v-for="it in items" :key="it.id" :item="it" @click="pillClicked" :selected="it.selected" />
+    <ControlGroup class="pill-selector" :title="title">
+        <Pill v-for="it in items" :key="it.id" :item="it" @click="pillClicked" :selected="it.selected"
+            :disabled="disabled" />
         <slot></slot>
-    </div>
+    </ControlGroup>
 </template>
 
 <style>
-div.pill-selector {
-    --main-color: #1b4b58;
-    --text-color: white;
-    border: solid 0.15em var(--main-color);
-    padding: 0.1em 0.5em;
-    overflow: auto;
-    white-space: nowrap;
-    max-width: calc(100% - 3em);
-    border-radius: 0.75em;
-    display: inline-block;
-}
-
-div.pill-selector>h5 {
-    display: inline-block;
-    margin: 0.5em 1.5em;
-    font-size: smaller;
-    background-color: var(--main-color);
-    color: var(--text-color);
-    padding: 0.2em 1em;
-    border-radius: 0.5em;
-}
-
 div.pill-selector label {
-    border: solid 0.1em var(--main-color);
+    border: solid 0.1em var(--masterBgColor);
     border-radius: 0.5em;
     padding: 0.7em 0.5em;
     color: var(--main-color);
@@ -80,11 +63,11 @@ div.pill-selector>div {
     font-size: 12pt;
     margin: 2px 0px;
     border-radius: 1.5em;
-    color: var(--text-color);
+    color: var(--masterColor);
 }
 
 div.pill-selector>div.accented {
-    border-color: var(--main-color);
+    border-color: var(--masterBgColor);
     border-width: 0.22em;
     border-style: dotted solid solid dashed
 }
@@ -95,7 +78,7 @@ div.pill-selector>div.selected {
 }
 
 div.pill-selector>div>button {
-    background-color: var(--main-color);
+    background-color: var(--masterBgColor);
     border: none;
     padding: 0.4em 0.9em;
     text-align: center;

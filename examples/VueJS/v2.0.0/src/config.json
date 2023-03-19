@@ -10,7 +10,8 @@
         "mockarooUrl": "https://www.mockaroo.com/"
     },
     "logging": {
-        "minLevel": "information"
+        "minLevel": "information",
+        "outputPropertiesInConsole": true
     },
     "personApi": {
         "defaultMinBday": "2000-01-01",
@@ -20,6 +21,12 @@
         "pills": [
             0
         ]
+    },
+    "flagsApi": {
+        "anonymousCrossOrigin": true,
+        "lowerCaseCodes": false,
+        "name": "CountryFlagsApi.com",
+        "backLink": "https://countryflagsapi.com"
     },
     "api": {
         "options": {

@@ -3,6 +3,7 @@ export default Object.freeze({
     Production: 0x1,
     VerboseLogging: 0x2,
     PremiumCustomer: 0x4,
+    FlagPedia: 0x8,
     toString: function (value: number) {
         let result = [];
         let zero = '';

@@ -1,4 +1,4 @@
-import type { QueryString, RouteValuesFunction } from "wj-config";
+import type { IDataSourceInfo, IEnvironment, QueryString, RouteValuesFunction } from "wj-config";
 
 export type UrlFunction = (replaceValues?: RouteValuesFunction | { [x: string | symbol]: any }, queryString?: QueryString) => string;
 
@@ -6,7 +6,11 @@ export interface Config {
   appSettings: AppSettings;
   logging: Logging;
   personApi: PersonApi;
+  flagsApi: FlagsApi;
   api: Api;
+  environment: IEnvironment,
+  _trace: any,
+  _qualifiedDs: IDataSourceInfo[]
 }
 export interface AppSettings {
   id: string;
@@ -20,6 +24,7 @@ export interface AppSettings {
 }
 export interface Logging {
   minLevel: string;
+  outputPropertiesInConsole: boolean;
 }
 export interface PersonApi {
   defaultMinBday: string;
@@ -27,6 +32,12 @@ export interface PersonApi {
   maxPeopleCount: number;
   peopleCountStep: number;
   pills: (number)[];
+}
+export interface FlagsApi {
+  anonymousCrossOrigin: boolean;
+  lowerCaseCodes: boolean;
+  name: string;
+  backLink: string;
 }
 export interface Api {
   options: Options;

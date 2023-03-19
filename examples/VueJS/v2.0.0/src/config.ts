@@ -26,6 +26,9 @@ const config = await wjConfig()
     .name('Premium Customer')
     // Ensure preimium customer configuration only applies in production environments.
     .whenAllTraits(envTraits.PremiumCustomer | envTraits.Production)
+    .addFetched('/config.FlagPedia.json')
+    .name('FlagPedia.net')
+    .whenAllTraits(envTraits.FlagPedia)
     .createUrlFunctions("api")
     .build(true);
 

@@ -10,6 +10,10 @@ export default {
         item: {
             type: Object as PropType<PillItem>,
             required: true
+        },
+        disabled: {
+            type: Boolean,
+            default: false
         }
     },
     methods: {
@@ -22,8 +26,8 @@ export default {
 </script>
 
 <template>
-    <div :class="{ selected: selected }">
-        <button @click="buttonClicked">
+    <div :class="{ selected: selected, disabled: disabled }">
+        <button @click="buttonClicked" :disabled="disabled">
             {{ item.text }}
         </button>
     </div>

@@ -1,7 +1,14 @@
 <script setup lang="ts">
-import PeoplePanel from './components/PeoplePanel.vue';
-import PeopleTable from './components/PeopleTable.vue';
+import ConsoleLogsDemo from './components/ConsoleLogsDemo.vue';
+import InsideConfig from './components/InsideConfig.vue';
+import QueryData from './components/QueryData.vue';
 import config from './config';
+import loggerFactory from './logger-factory';
+
+const logger = loggerFactory('App');
+logger.verbose('This is a log entry in the verbose level.  It should only appear with configurations with the Verbose trait assigned.');
+logger.info('This is an informational log entry.');
+logger.warn('This is a warning log entry.');
 </script>
 
 <template>
@@ -12,10 +19,13 @@ import config from './config';
         <a href="https://vuejs.org/" target="_blank">
             <img src="./assets/vue.svg" class="logo vue" alt="Vue logo" />
         </a>
-                <h1>{{ config.appSettings.title }}</h1>
-        </header>
-        <PeoplePanel />
-    <PeopleTable />
+        <h1>{{ config.appSettings.title }}</h1>
+    </header>
+    <main>
+        <ConsoleLogsDemo />
+        <InsideConfig />
+        <QueryData />
+    </main>
 </template>
 
 <style scoped>
@@ -37,5 +47,14 @@ header {
     background-color: var(--masterBgColor);
     color: var(--masterColor);
     padding: 2rem;
+}
+
+article {
+    box-shadow: 0.5em 0.5em 0.2em rgba(0, 0, 0, 0.1);
+    border-radius: 1em;
+    border: 0.2em solid var(--masterBgColor);
+    margin-bottom: 1em;
+    padding: 2em;
+    text-align: justify;
 }
 </style>
