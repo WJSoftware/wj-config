@@ -89,6 +89,7 @@ free to explore them and to contribute.
 | ReactJS | v2.0.0 | v18.2.0 | 3006 |
 | VueJS | v2.0.0 | v3.2.45 | 3007 |
 | Deno | v2.0.0 | v1.29.1 |
+| Svelte | v2.0.0 | v3.54.0 | 3008 |
 
 The repository contains the necessary `launch.json` file to run each of the examples in *Visual Studio Code*.
 
