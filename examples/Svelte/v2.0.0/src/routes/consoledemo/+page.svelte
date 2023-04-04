@@ -1,7 +1,11 @@
 <script>
     import Article from "$lib/Article.svelte";
+    import config from "$src/config";
 </script>
 
+<svelte:head>
+    <title>Check Out the Console Logs - {config.appSettings.title}</title>
+</svelte:head>
 <Article title="Check Out the Console Logs">
     <p>
         This example uses the <strong>serilogger</strong> NPM package. It produces
