@@ -5,5 +5,8 @@ export default defineConfig({
 	plugins: [sveltekit()],
 	server: {
 		port: 3008
+	},
+	build: {
+		target: 'es2022'
 	}
 });
