@@ -47,7 +47,7 @@
             .forEach((i) => sortItems(i.subItems as Item[]));
     }
 
-    let items: Item[] | undefined = undefined;
+    let items: Item[];
     if (config._trace) {
         items = createItems(config, config._trace);
         sortItems(items);
