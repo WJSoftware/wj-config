@@ -28,15 +28,15 @@ right column is pretty much anything else out there that looks like it supports 
                 <img src="https://nodejs.org/favicon.ico" width="16px" height="16px" alt="NodeJS" />&nbsp;NodeJS<br />
                 <img src="https://deno.land/logo.svg" width="16px" height="16px" alt="Deno" />&nbsp;Deno<br />
                 <img src="https://reactjs.org/favicon.ico" width="16px" height="16px" alt="ReactJS" />&nbsp;ReactJS<br />
-                <img src="https://vuejs.org/logo.svg" width="16px" height="16px" alt="VueJS" />&nbsp;VueJS
+                <img src="https://vuejs.org/logo.svg" width="16px" height="16px" alt="VueJS" />&nbsp;VueJS<br />
+                <img src="https://svelte.dev/favicon.png" width="16px" height="16px" alt="Svelte" />&nbsp;Svelte
             </td>
             <td valign="top">
                 <img src="https://solidjs.com/img/favicons/favicon-32x32.png" width="16px" height="16px" />&nbsp;SolidJS<br />
-                <img src="https://svelte.dev/favicon.png" width="16px" height="16px" alt="Svelte" />&nbsp;Svelte<br />
                 <img src="https://preactjs.com/favicon.ico" width="16px" height="16px" alt="Preact" />&nbsp;Preact<br />
                 <img src="https://electronjs.org/assets/img/favicon.ico" width="16px" height="16px" alt="Electron" />&nbsp;Electron<br />
                 <img src="https://angular.io/assets/images/favicons/favicon-32x32.png" width="16px" height="16px" alt="Angular" />&nbsp;Angular<br />
-                <img src="https://remix.run//favicon-light.1.png" width="16px" height="16px" alt="Remix" />&nbsp;Remix<br />
+                <img src="https://remix.run/favicon-32.png" width="16px" height="16px" alt="Remix" />&nbsp;Remix<br />
                 <img src="https://emberjs.com/images/favicon.png" width="16px" height="16px" alt="EmberJS" />&nbsp;EmberJS<br />
                 <img src="https://sennajs.com/images/favicon.ico" width="16px" height="16px" alt="SennaJS" />&nbsp;SennaJS<br />
                 <img src="https://mithril.js.org/favicon.png" width="16px" height="16px" alt="MithrilJS" />&nbsp;MithrilJS<br />
