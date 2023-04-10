@@ -22,6 +22,7 @@
 	"type": "module",
 	"dependencies": {
 		"@fortawesome/free-solid-svg-icons": "^6.4.0",
+		"svelte-htable": "^0.0.1",
 		"wj-config": "^2.0.0-rc.3"
 	}
 }
