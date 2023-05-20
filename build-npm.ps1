@@ -42,7 +42,12 @@ begin {
     if ($VerUpgrade -ne '') {
         if ($PSCmdlet.ShouldProcess($path, "Package version increment: $VerUpgrade")) {
             Set-Location .\src
-            npm version $VerUpgrade --preid $PreId
+            if ($PreId -ne '') {
+                npm version $VerUpgrade --preid $PreId --no-git-tag-version
+            }
+            else {
+                npm version $VerUpgrade --no-git-tag-version
+            }
             Set-Location ..\
         }
     }
