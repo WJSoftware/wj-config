@@ -1,21 +1,24 @@
 <script lang="ts">
     import Article from "$lib/Article.svelte";
-    import HierarchicalTable from "$lib/HierarchicalTable.svelte";
+    import Htable, { CaptionOrder, ItemGrouping } from "svelte-htable";
     import Banner, { bannerTypes } from "$lib/Banner.svelte";
     import config from "$src/config";
     import envTraits from "$src/env-traits";
-    import type { IDataSourceInfo } from "wj-config";
-    import type { Item, Column } from "$lib/HierarchicalTable.svelte";
     import { isArray, isFunction, isObject } from "$src/helpers";
+    import type { Column, Item } from "svelte-htable/dist/InnerHtable.svelte";
+    import { FontAwesomeIcon, type WithPrefix } from "@fortawesome/svelte-fontawesome";
 
-    function sourceValue(traceInfo: IDataSourceInfo) {
-        return `${traceInfo.name}, Index ${traceInfo.index}`;
+    interface DataItem extends Item {
+        name: string,
+        value?: string,
+        trace?: string,
+        type?: string
     }
 
     function createItems(obj: any, traceObj: any): Item[] {
-        const configItems: Item[] = [];
+        const configItems: DataItem[] = [];
         for (const [k, v] of Object.entries(obj)) {
-            const item: Item = {
+            const item: DataItem = {
                 id: k,
                 name: k,
             };
@@ -25,15 +28,18 @@
             if (isArray(v)) {
                 item.value =
                     "[" + v.reduce((prev, cur) => prev + ", " + cur) + "]";
-                item.source = sourceValue(traceObj[k]);
+                item.type = 'array';
+                item.trace = traceObj[k];
             } else if (isFunction(v)) {
                 item.value = "[function]";
-                item.source = sourceValue(traceObj[k]);
+                item.type = 'function';
+                item.trace = traceObj[k];
             } else if (isObject(v)) {
                 item.subItems = createItems(v, traceObj[k]);
             } else {
-                item.value = v;
-                item.source = sourceValue(traceObj[k]);
+                item.value = v as any;
+                item.type = typeof v;
+                item.trace = traceObj[k];
             }
             configItems.push(item);
         }
@@ -54,16 +60,17 @@
     }
     const columns: Column[] = [
         {
-            name: "name",
+            key: "name",
             title: "Name",
         },
         {
-            name: "value",
+            key: "value",
             title: "Value",
         },
         {
-            name: "source",
+            key: "source",
             title: "Source",
+            renderValue: (i, k) => `${i.trace.name}, Index ${i.trace.index}`
         },
     ];
 </script>
@@ -79,14 +86,36 @@
         configuration sources in the order they were specified.
     </p>
     {#if config._trace}
-        <HierarchicalTable
+        <Htable
             {columns}
             {items}
             class="data"
-            cascadedClasses="data"
-            showLevel={true}
+            level={(l) => `Level: ${l}`}
             showPath={true}
-        />
+            captionOrder={CaptionOrder.LevelPath}
+        >
+            <svelte:fragment slot="column" let:item let:col let:renderValue>
+                {#if col.key === 'value'}
+                    {#if item.type === 'function'}
+                        <FontAwesomeIcon icon="fa-solid fa-percent" />
+                    {:else if item.type === 'string'}
+                        <FontAwesomeIcon icon="fa-solid fa-font" />
+                    {:else if item.type === 'number'}
+                        <FontAwesomeIcon icon="fa-solid fa-hashtag" />
+                    {:else if item.type === 'array'}
+                        <FontAwesomeIcon icon="fa-solid fa-layer-group" />
+                    {:else if item.value === true}
+                        <FontAwesomeIcon icon="fa-solid fa-thumbs-up" />
+                    {:else}
+                        <FontAwesomeIcon icon="fa-solid fa-thumbs-down" />
+                    {/if}
+                {/if}
+                {renderValue(item, col.key)}
+            </svelte:fragment>
+        </Htable>
+        <Banner type={bannerTypes.Tip} inline={true}>
+            <a href="https://github.com/webJose/svelte-htable">Hierarchical Table Component</a>
+        </Banner>
     {/if}
     <p>
         The <strong>Source</strong> column comes from the ability of the

@@ -1,10 +1,4 @@
 <script lang="ts" context="module">
-    import { library } from "@fortawesome/fontawesome-svg-core";
-    import { faAward, faHandsHelping } from "@fortawesome/free-solid-svg-icons";
-
-    library.add(faAward);
-    library.add(faHandsHelping);
-
     export const bannerTypes = Object.freeze({
         Tip: 1,
         Collab: 2,

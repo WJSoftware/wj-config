@@ -1,3 +1,17 @@
+<script lang="ts" context="module">
+    import { library } from "@fortawesome/fontawesome-svg-core";
+    import { faAward, faHandsHelping, faPercent, faFont, faHashtag, faThumbsUp, faThumbsDown, faLayerGroup } from "@fortawesome/free-solid-svg-icons";
+
+    library.add(faAward);
+    library.add(faHandsHelping);
+    library.add(faPercent);
+    library.add(faFont);
+    library.add(faHashtag);
+    library.add(faThumbsUp);
+    library.add(faThumbsDown);
+    library.add(faLayerGroup);
+</script>
+
 <script>
     import config from "$src/config";
 </script>

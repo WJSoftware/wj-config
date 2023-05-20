@@ -10,7 +10,7 @@ body {
 
 table.data {
     border: 2px var(--masterBgColor) solid;
-    margin: 0 auto;
+    margin: 0 auto 1em auto;
 }
 
 table.data>thead>tr>th {
@@ -28,4 +28,15 @@ table.data>caption {
     font-size: x-small;
     font-weight: bold;
     text-align: right;
+}
+table.data.sub-even {
+    background-color: rgb(222, 246, 255);
+}
+
+table.data details>summary {
+    font-weight: bold;
+}
+
+table.data.sub-odd {
+    background-color: white;
 }
