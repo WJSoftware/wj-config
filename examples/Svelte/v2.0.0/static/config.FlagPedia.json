@@ -1,0 +1,15 @@
+{
+    "flagsApi": {
+        "anonymousCrossOrigin": false,
+        "lowerCaseCodes": true,
+        "name": "Flagpedia.net",
+        "backLink": "https://flagpedia.net"
+    },
+    "api": {
+        "flags": {
+            "host": "flagcdn.com",
+            "scheme": "https",
+            "flag": "/{countryCode}.svg"
+        }
+    }
+}

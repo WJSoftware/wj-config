@@ -1,0 +1,42 @@
+:root {
+    --masterColor: white;
+    --masterBgColor: rgb(23, 53, 143);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+    margin: 1em 5em 3em 5em;
+}
+
+table.data {
+    border: 2px var(--masterBgColor) solid;
+    margin: 0 auto 1em auto;
+}
+
+table.data>thead>tr>th {
+    padding: 0.25em 1em;
+    background-color: var(--masterBgColor);
+    color: var(--masterColor);
+    text-align: center;
+}
+
+table.data>tbody>tr>td {
+    padding: 0.1em 1em;
+}
+
+table.data>caption {
+    font-size: x-small;
+    font-weight: bold;
+    text-align: right;
+}
+table.data.sub-even {
+    background-color: rgb(222, 246, 255);
+}
+
+table.data details>summary {
+    font-weight: bold;
+}
+
+table.data.sub-odd {
+    background-color: white;
+}

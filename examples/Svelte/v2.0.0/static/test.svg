@@ -1,0 +1,24 @@
+<svg width="200" height="200" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <filter id="brush">
+      <feTurbulence type="fractalNoise" baseFrequency="0.01" numOctaves="3"/>
+      <feDisplacementMap in="SourceGraphic" scale="10" xChannelSelector="R" yChannelSelector="G"/>
+    </filter>
+    <linearGradient id="paint" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="blue"/>
+      <stop offset="100%" stop-color="green"/>
+    </linearGradient>
+    <filter id="shadow">
+      <feDropShadow dx="3" dy="3" stdDeviation="1"/>
+    </filter>
+    <filter id="light">
+      <feSpecularLighting surfaceScale="5" specularConstant="1" specularExponent="20" lighting-color="#ffffff">
+        <fePointLight x="-5000" y="-10000" z="20000"/>
+      </feSpecularLighting>
+      <feComposite in2="SourceAlpha" operator="in"/>
+      <feComposite in2="SourceGraphic" operator="arithmetic" k1="0" k2="1" k3="1" k4="0"/>
+    </filter>
+  </defs>
+  <path d="M 100 20 A 60 60 0 1 1 99.9 20.1 Z" fill="white" stroke="url(#paint)" stroke-width="10" filter="url(#brush) url(#shadow) url(#light)"/>
+  <text x="75" y="90" font-size="50" font-weight="bold" fill="#000000">WJ</text>
+</svg>

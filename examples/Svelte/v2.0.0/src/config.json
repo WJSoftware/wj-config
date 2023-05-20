@@ -1,0 +1,55 @@
+{
+    "appSettings": {
+        "id": "wj-config-ui",
+        "title": "Svelte + WJ-Config",
+        "projectName": "wj-config by WJ Software",
+        "projectHome": "https://github.com/WJSoftware/wj-config",
+        "inputDelay": 800,
+        "dramaticPause": 7000,
+        "mockarooText": "Mockaroo, your data-mocking site",
+        "mockarooUrl": "https://www.mockaroo.com/"
+    },
+    "logging": {
+        "minLevel": "information",
+        "outputPropertiesInConsole": true
+    },
+    "personApi": {
+        "defaultMinBday": "2000-01-01",
+        "initialPeopleCount": 0,
+        "maxPeopleCount": 0,
+        "peopleCountStep": 0,
+        "pills": [
+            0
+        ]
+    },
+    "flagsApi": {
+        "anonymousCrossOrigin": true,
+        "lowerCaseCodes": false,
+        "name": "CountryFlagsApi.com",
+        "backLink": "https://countryflagsapi.com"
+    },
+    "api": {
+        "options": {
+            "mockaroo": {
+                "key": "a53dac10"
+            }
+        },
+        "mockaroo": {
+            "host": "my.api.mockaroo.com",
+            "scheme": "https",
+            "person": {
+                "all": "/persons.json?records={numRecords}"
+            }
+        },
+        "flags": {
+            "host": "countryflagsapi.com",
+            "scheme": "https",
+            "flag": "/svg/{countryCode}"
+        },
+        "countries": {
+            "host": "restcountries.com",
+            "scheme": "https",
+            "search": "/v3.1/alpha?codes={codes}"
+        }
+    }
+}

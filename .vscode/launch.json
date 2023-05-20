@@ -89,6 +89,14 @@
             "preLaunchTask": "npm: run dev - examples/VueJS v3.2.45/v2.0.0"
         },
         {
+            "type": "chrome",
+            "request": "launch",
+            "name": "Launch Svelte Example v1.6.0 - v2.0.0",
+            "url": "http://localhost:3008",
+            "webRoot": "${workspaceFolder}/examples/react/v18.2.0/v2.0.0",
+            "preLaunchTask": "npm: run dev - examples/Svelte v1.6.0/v2.0.0"
+        },
+        {
             "type": "node",
             "request": "launch",
             "name": "Launch Express Example v4.16.1 - v1.0.2",
