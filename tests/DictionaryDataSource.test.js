@@ -161,11 +161,11 @@ describe('DictionaryDataSource', () => {
                 dic: { prop1: 'abc', prop2: 123 },
                 expected: { prop1: 'abc', prop2: 123 }
             }
-        ]
-        it('Should return the inflat', () => );
-        it('', () => );
-        it('', () => );
-        it('', () => );
-        it('', () => );
+        ];
+        // it('Should return the inflat', () => );
+        // it('', () => );
+        // it('', () => );
+        // it('', () => );
+        // it('', () => );
     });
 });
