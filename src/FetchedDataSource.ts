@@ -33,17 +33,24 @@ export default class FetchedDataSource extends DataSource {
         if (typeof input === 'function') {
             input = await input();
         }
-        const response = await fetch(input, this._init);
         let data: ICoreConfig = {};
         try {
-            data = await this._processFn(response);
+            const response = await fetch(input, this._init);
+            try {
+                data = await this._processFn(response);
+            }
+            catch (err) {
+                console.debug('Error processing fetched response: %o', err);
+                if (this._required) {
+                    // Strange.  While navigating to the TS definition I clearly see that the cause property is of type unknown,
+                    // but tsc actually throws an error saying it is of type Error | undefined, so casting as Error.
+                    throw new Error(`${this.name}: An error occurred while processing the fetched response.`, { cause: err as Error });
+                }
+            }
         }
         catch (err) {
-            console.debug('Error processing fetched response: %o', err);
             if (this._required) {
-                // Strange.  While navigating to the TS definition I clearly see that the cause property is of type unknown,
-                // but tsc actually throws an error saying it is of type Error | undefined, so casting as Error.
-                throw new Error(`${this.name}: An error occurred while processing the fetched response.`, { cause: err as Error });
+                throw err;
             }
         }
         return data;
