@@ -55,7 +55,9 @@ begin {
         Write-Verbose "Version upgrade was not specified.  The package's version will not be modified."
     }
     $path = Resolve-Path .\
-    Remove-Item -Path .\out -Recurse
+    if (Test-Path .\out) {
+        Remove-Item -Path .\out -Recurse
+    }
     if ($PSCmdlet.ShouldProcess($path, "TypeScript compilation")) {
         npx tsc
     }
