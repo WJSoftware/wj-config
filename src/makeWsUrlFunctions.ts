@@ -1,5 +1,5 @@
-import type { ICoreConfig, IWsParent, IWsPath, QueryString, RouteValues, RouteValuesFunction } from "wj-config";
-import { forEachProperty, isArray, isFunction, isConfig } from "./helpers.js";
+import type { ConfigurationNode, QueryStringArg, RouteReplacementArg, RouteValuesFn, UrlNode, UrlRoot } from "wj-config";
+import { forEachProperty, isArray, isConfigNode, isFunction } from "./helpers.js";
 
 const noop = (x?: any) => '';
 
@@ -8,17 +8,17 @@ const rootUrlObjectProps = ['host', 'rootPath'];
 const rootUrlObjectPropsForBrowser = ['host', 'rootPath', 'scheme', 'port'];
 
 function buildUrlImpl(
-    this: IWsPath,
+    this: UrlNode,
     path: string,
-    routeValues?: RouteValues,
+    routeValues?: RouteReplacementArg,
     routeRegex?: RegExp,
-    queryString?: QueryString
+    queryString?: QueryStringArg
 ) {
-    let routeValuesFn: RouteValuesFunction | undefined = undefined;
+    let routeValuesFn: RouteValuesFn | undefined = undefined;
     let index = 0;
     if (routeValues) {
-        if (isFunction(routeValues)) {
-            routeValuesFn = routeValues;
+        if (typeof routeValues === 'function') {
+            routeValuesFn = routeValues as RouteValuesFn;
         }
         else if (isArray(routeValues)) {
             routeValuesFn = n => routeValues[index++];
@@ -41,7 +41,7 @@ function buildUrlImpl(
         } else if (url.length - qmPos - 1) {
             url += '&'
         }
-        let qsValue: string | ICoreConfig | undefined;
+        let qsValue: string | Record<string, any> | undefined;
         if (typeof queryString === 'function') {
             qsValue = queryString();
         }
@@ -65,7 +65,14 @@ function buildUrlImpl(
     return url;
 }
 
-function parentRootPath(this: IWsParent, isBrowser: boolean) {
+/**
+ * Builds a relative, absolute or full URL using the information found in the root node and taking into account if the 
+ * code is running in the browser.
+ * @param this URL root node holding the URL information.
+ * @param isBrowser A Boolean value that indicates if code is running in the browser.
+ * @returns The relative, absolute or full URL, product of the information in the root node.
+ */
+function parentRootPath(this: UrlRoot, isBrowser: boolean) {
     if ((!this.host && !isBrowser) || (!this.host && !this.port && !this.scheme)) {
         // When no host outside the browser, or no host, port or scheme in the browser,
         // build a relative URL starting with the root path.
@@ -74,16 +81,22 @@ function parentRootPath(this: IWsParent, isBrowser: boolean) {
     return `${(this.scheme ?? 'http')}://${(this.host ?? globalThis.window?.location?.hostname ?? '')}${(this.port ? `:${this.port}` : '')}${(this.rootPath ?? '')}`;
 }
 
-function pathRootPath(this: IWsPath, parent: IWsPath) {
+/**
+ * Builds a relative, absolute or full URL by appending path information to the generated URL from the parent node.
+ * @param this URL node holding path information.
+ * @param parent Parent node.
+ * @returns The relative, absolute or full URL built by appending path information to the parent's generated URL.
+ */
+function pathRootPath(this: UrlNode, parent: UrlNode) {
     const rp = (parent[rootPathFn] ?? noop)();
     return `${rp}${(this.rootPath ?? '')}`;
 }
 
-function makeWsUrlFunctions(ws: IWsParent | ICoreConfig, routeValuesRegExp: RegExp, isBrowser: boolean, parent?: IWsParent) {
+function makeWsUrlFunctions(ws: UrlRoot | ConfigurationNode, routeValuesRegExp: RegExp, isBrowser: boolean, parent?: UrlRoot) {
     if (!ws) {
         return;
     }
-    if (!isConfig(ws)) {
+    if (!isConfigNode(ws)) {
         throw new Error(`Cannot operate on a non-object value (provided value is of type ${typeof ws}).`);
     }
     const shouldConvert = (name: string) => {
@@ -97,46 +110,46 @@ function makeWsUrlFunctions(ws: IWsParent | ICoreConfig, routeValuesRegExp: RegE
         ];
         return !name.startsWith('_') && !exceptions.includes(name);
     };
-    const isRoot = (obj: object) => {
+    const isUrlRoot = (obj: object): obj is UrlRoot => {
         // An object is a root object if it has host or rootPath, or if code is running in a browser, an object is a
         // root object if it has any of the reserved properties.
         let yes = false;
         forEachProperty(obj, k => yes = rootUrlObjectProps.includes(k) || (isBrowser && rootUrlObjectPropsForBrowser.includes(k)));
         return yes;
     };
+    const isUrlNode = (obj: unknown, parent: UrlNode | undefined): obj is UrlNode => {
+        return !!parent?.[rootPathFn] || !!(obj as UrlNode)._rootPath;
+    }
     // Add the _rootPath() function.
-    let canBuildUrl = true;
-    if (isRoot(ws) && (!parent?.buildUrl)) {
+    if (isUrlRoot(ws) && (!parent?.buildUrl)) {
         ws[rootPathFn] = function () {
-            return parentRootPath.bind((ws as IWsPath))(isBrowser);
+            return parentRootPath.bind(ws)(isBrowser);
         };
     }
-    else if (parent !== undefined && parent[rootPathFn] !== undefined) {
+    else if (isUrlNode(ws, parent)) {
         ws[rootPathFn] = function () {
-            return pathRootPath.bind((ws as IWsPath))(parent);
+            return pathRootPath.bind(ws)(parent!);
         };
     }
-    else {
-        canBuildUrl = false;
-    }
-    if (canBuildUrl) {
+    if (isUrlNode(ws, parent)) {
         // Add the buildUrl function.
-        ws.buildUrl = function (path: string, routeValues?: RouteValues, queryString?: QueryString) {
-            return buildUrlImpl.bind((ws as IWsPath))(path, routeValues, routeValuesRegExp, queryString);
+        ws.buildUrl = function (path: string, routeValues?: RouteReplacementArg, queryString?: QueryStringArg) {
+            return buildUrlImpl.bind((ws as UrlNode))(path, routeValues, routeValuesRegExp, queryString);
         };
     }
+    const canServeAsParent = isUrlNode(ws, undefined);
     // For every non-object property in the object, make it a function.
     // Properties that have an object are recursively configured.
     forEachProperty(ws, (key, value) => {
         const sc = shouldConvert(key);
-        if (sc && canBuildUrl && typeof value === 'string') {
-            ws[key] = function (routeValues?: RouteValues, queryString?: QueryString) {
-                return ((ws as IWsPath).buildUrl ?? noop)(value, routeValues, queryString);
+        if (sc && canServeAsParent && typeof value === 'string') {
+            (ws as UrlNode)[key] = function (routeValues?: RouteReplacementArg, queryString?: QueryStringArg) {
+                return (ws.buildUrl ?? noop)(value, routeValues, queryString);
             };
         }
-        else if (sc && isConfig(value)) {
+        else if (sc && isConfigNode(value)) {
             // Object value.
-            makeWsUrlFunctions(value as IWsParent, routeValuesRegExp, isBrowser, (ws as IWsParent));
+            makeWsUrlFunctions(value, routeValuesRegExp, isBrowser, canServeAsParent ? ws : undefined);
         }
     });
 };

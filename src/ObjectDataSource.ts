@@ -1,18 +1,18 @@
-import type { ICoreConfig, IDataSource } from "wj-config";
+import type { IDataSource } from "wj-config";
 import { DataSource } from "./DataSource.js";
-import { isConfig } from "./helpers.js";
+import { isConfigNode } from "./helpers.js";
 
 /**
  * Configuration data source class that injects a pre-build JavaScript object into the configuration build chain.
  */
-export class ObjectDataSource extends DataSource implements IDataSource {
+export class ObjectDataSource<T extends Record<string, any>> extends DataSource implements IDataSource<T> {
     /**
      * The object to inject.
      */
-    private _obj: ICoreConfig | (() => Promise<ICoreConfig>);
+    private _obj: T | (() => Promise<T>);
 
-    #validateObject(obj: ICoreConfig) {
-        if (!isConfig(obj)) {
+    #validateObject(obj: T) {
+        if (!isConfigNode(obj)) {
             throw new Error('The provided object is not suitable as configuration data source.');
         }
     }
@@ -21,7 +21,7 @@ export class ObjectDataSource extends DataSource implements IDataSource {
      * Initializes a new instance of this class.
      * @param obj Data object to inject into the configuration build chain.
      */
-    constructor(obj: ICoreConfig | (() => Promise<ICoreConfig>)) {
+    constructor(obj: T | (() => Promise<T>)) {
         super('Object');
         if (typeof obj !== 'function') {
             this.#validateObject(obj);
@@ -29,7 +29,7 @@ export class ObjectDataSource extends DataSource implements IDataSource {
         this._obj = obj;
     }
 
-    async getObject(): Promise<ICoreConfig> {
+    async getObject(): Promise<T> {
         let obj = this._obj;
         if (typeof obj === 'function') {
             obj = await obj();

@@ -1,10 +1,10 @@
 import type { IEnvironmentDefinition, Traits } from "wj-config";
 
-export class EnvironmentDefinition implements IEnvironmentDefinition {
-    public readonly name: string;
+export class EnvironmentDefinition<TEnvironments extends string> implements IEnvironmentDefinition<TEnvironments> {
+    public readonly name: TEnvironments;
     public readonly traits: Traits;
 
-    constructor(name: string, traits?: Traits) {
+    constructor(name: TEnvironments, traits?: Traits) {
         this.name = name;
         this.traits = traits ?? 0;
     }

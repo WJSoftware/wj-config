@@ -1,18 +1,18 @@
-import type { ConfigurationValue, IBuilder, IConfig, ICoreConfig, IDataSource, IEnvironment, Predicate, ProcessFetchResponse, Traits } from "wj-config";
-import DictionaryDataSource from "./DictionaryDataSource.js"
-import { Environment } from "./Environment.js"
-import EnvironmentDataSource from "./EnvironmentDataSource.js"
+import type { ConfigurationValue, IBuilder, IDataSource, IEnvironment, IncludeEnvironment, Predicate, ProcessFetchResponse, Traits, UrlBuilderSectionWithCheck } from "wj-config";
+import DictionaryDataSource from "./DictionaryDataSource.js";
+import { buildEnvironment } from "./Environment.js";
+import EnvironmentDataSource from "./EnvironmentDataSource.js";
 import FetchedDataSource from "./FetchedDataSource.js";
-import { isConfig } from "./helpers.js"
+import { isConfigNode } from "./helpers.js";
 import JsonDataSource from "./JsonDataSource.js";
-import makeWsUrlFunctions from "./makeWsUrlFunctions.js"
-import merge from "./Merge.js"
-import { ObjectDataSource } from "./ObjectDataSource.js"
+import makeWsUrlFunctions from "./makeWsUrlFunctions.js";
+import merge from "./Merge.js";
+import { ObjectDataSource } from "./ObjectDataSource.js";
 import SingleValueDataSource from "./SingleValueDataSource.js";
 
-interface IEnvironmentSource {
+interface IEnvironmentSource<TEnvironments extends string | undefined> {
     name?: string,
-    environment: IEnvironment
+    environment: IEnvironment<Exclude<TEnvironments, undefined>>;
 }
 
 interface IUrlData {
@@ -20,26 +20,21 @@ interface IUrlData {
     routeValuesRegExp: RegExp;
 }
 
-interface IDataSourceDef {
-    dataSource: IDataSource,
-    predicate?: Predicate<IEnvironment | undefined>
+interface IDataSourceDef<TEnvironments extends string | undefined> {
+    dataSource: IDataSource<Record<string, any>>,
+    predicate?: Predicate<IEnvironment<Exclude<TEnvironments, undefined>> | undefined>
 }
 
-export default class Builder implements IBuilder {
-    /**
-     * Default list of property names that undergo the URL functions transformation.
-     */
-    static readonly defaultWsPropertyNames = ['ws'];
-
+export default class Builder<T extends Record<string, any>= {}, TEnvironments extends string | undefined = undefined> implements IBuilder<T, TEnvironments> {
     /**
      * Collection of data sources added to the builder.
      */
-    private _dsDefs: IDataSourceDef[] = [];
+    private _dsDefs: IDataSourceDef<TEnvironments>[] = [];
 
     /**
      * Environment source.
      */
-    private _envSource?: IEnvironmentSource;
+    private _envSource?: IEnvironmentSource<TEnvironments>;
 
     /**
      * Boolean flag used to raise an error if there was no call to includeEnvironment() when it is known to be needed.
@@ -50,7 +45,7 @@ export default class Builder implements IBuilder {
      * Dictionary of environment names that have been configured with a data source using the addPerEnvironment() 
      * helper function.  The value is the number of times the environment name has been used.
      */
-    private _perEnvDsCount: { [x: string]: number } | null = null;
+    private _perEnvDsCount: Record<Exclude<TEnvironments, undefined>, number> | null = null;
 
     /**
      * URL data used to create URL functions out of specific property values in the resulting configuration object.
@@ -62,40 +57,40 @@ export default class Builder implements IBuilder {
      */
     private _lastCallWasDsAdd: boolean = false;
 
-    add(dataSource: IDataSource): IBuilder {
+    add<NewT extends Record<string, any>>(dataSource: IDataSource<NewT>) {
         this._dsDefs.push({
             dataSource: dataSource
         });
         dataSource.index = this._dsDefs.length - 1;
         this._lastCallWasDsAdd = true;
-        return this;
+        return this as unknown as IBuilder<Omit<T, keyof NewT> & NewT, TEnvironments>;
     }
 
-    addObject(obj: ICoreConfig | (() => Promise<ICoreConfig>)): IBuilder {
+    addObject<NewT extends Record<string, any>>(obj: NewT | (() => Promise<NewT>)) {
         return this.add(new ObjectDataSource(obj));
     }
 
-    addDictionary(dictionary: ICoreConfig | (() => Promise<ICoreConfig>), hierarchySeparator: string = ':', prefixOrPredicate?: string | Predicate<string>): IBuilder {
-        return this.add(new DictionaryDataSource(dictionary, hierarchySeparator, prefixOrPredicate));
+    addDictionary<NewT extends Record<string, any>>(dictionary: Record<string, ConfigurationValue> | (() => Promise<Record<string, ConfigurationValue>>), hierarchySeparator: string = ':', prefixOrPredicate?: string | Predicate<string>) {
+        return this.add<NewT>(new DictionaryDataSource(dictionary, hierarchySeparator, prefixOrPredicate));
     }
 
-    addEnvironment(env: ICoreConfig | (() => Promise<ICoreConfig>), prefix: string = 'OPT_'): IBuilder {
-        return this.add(new EnvironmentDataSource(env, prefix));
+    addEnvironment<NewT extends Record<string, any>>(env: Record<string, ConfigurationValue> | (() => Promise<Record<string, ConfigurationValue>>), prefix: string = 'OPT_') {
+        return this.add<NewT>(new EnvironmentDataSource(env, prefix));
     }
 
-    addFetched(input: URL | RequestInfo | (() => Promise<URL | RequestInfo>), required: boolean = true, init?: RequestInit, procesFn?: ProcessFetchResponse): IBuilder {
-        return this.add(new FetchedDataSource(input, required, init, procesFn));
+    addFetched<NewT extends Record<string, any>>(input: URL | RequestInfo | (() => Promise<URL | RequestInfo>), required: boolean = true, init?: RequestInit, procesFn?: ProcessFetchResponse<NewT>) {
+        return this.add<NewT>(new FetchedDataSource(input, required, init, procesFn));
     }
 
-    addJson(json: string | (() => Promise<string>), jsonParser?: JSON, reviver?: (this: any, key: string, value: any) => any) {
-        return this.add(new JsonDataSource(json, jsonParser, reviver));
+    addJson<NewT extends Record<string, any>>(json: string | (() => Promise<string>), jsonParser?: JSON, reviver?: (this: any, key: string, value: any) => any) {
+        return this.add<NewT>(new JsonDataSource(json, jsonParser, reviver));
     }
 
-    addSingleValue(path: string | (() => Promise<[string, ConfigurationValue]>), valueOrHierarchySeparator?: ConfigurationValue | string, hierarchySeparator?: string): IBuilder {
-        return this.add(new SingleValueDataSource(path, valueOrHierarchySeparator, typeof path === 'function' ? valueOrHierarchySeparator as string : hierarchySeparator));
+    addSingleValue<NewT extends Record<string, any>>(path: string | (() => Promise<[string, ConfigurationValue]>), valueOrHierarchySeparator?: ConfigurationValue | string, hierarchySeparator?: string) {
+        return this.add<NewT>(new SingleValueDataSource<NewT>(path, valueOrHierarchySeparator, typeof path === 'function' ? valueOrHierarchySeparator as string : hierarchySeparator));
     }
 
-    addPerEnvironment(addDs: (builder: IBuilder, envName: string) => boolean | string): IBuilder {
+    addPerEnvironment<NewT extends Record<string, any>>(addDs: (builder: IBuilder<T, TEnvironments>, envName: TEnvironments) => boolean | string) {
         if (!this._envSource) {
             throw new Error('Using addPerEnvironment() requires a prior call to includeEnvironment().');
         }
@@ -105,18 +100,18 @@ export default class Builder implements IBuilder {
                 this.forEnvironment(n, typeof result === 'string' ? result : undefined);
             }
         });
-        return this;
+        return this as unknown as IBuilder<Omit<T, keyof NewT> & NewT, TEnvironments>;
     }
 
-    name(name: string): IBuilder {
+    name(name: string) {
         if (!this._lastCallWasDsAdd) {
             throw new Error('Names for data sources must be set immediately after adding the data source or setting its conditional.');
         }
         this._dsDefs[this._dsDefs.length - 1].dataSource.name = name;
-        return this;
+        return this as unknown as IBuilder<T, TEnvironments>;
     }
 
-    when(predicate: Predicate<IEnvironment | undefined>, dataSourceName?: string): IBuilder {
+    when(predicate: Predicate<IEnvironment<Exclude<TEnvironments, undefined>> | undefined>, dataSourceName?: string) {
         if (!this._lastCallWasDsAdd) {
             throw new Error('Conditionals for data sources must be set immediately after adding the data source or setting its name.');
         }
@@ -128,26 +123,26 @@ export default class Builder implements IBuilder {
         if (dataSourceName != undefined) {
             this.name(dataSourceName);
         }
-        return this;
+        return this as unknown as IBuilder<T, TEnvironments>;
     }
 
-    whenAllTraits(traits: Traits, dataSourceName?: string): IBuilder {
+    whenAllTraits(traits: Traits, dataSourceName?: string) {
         this._envIsRequired = true;
         return this.when(env => {
-            return (env as IEnvironment).hasTraits(traits);
+            return env!.hasTraits(traits) ?? false;
         }, dataSourceName);
     }
 
-    whenAnyTrait(traits: Traits, dataSourceName?: string): IBuilder {
+    whenAnyTrait(traits: Traits, dataSourceName?: string) {
         this._envIsRequired = true;
         return this.when(env => {
-            return (env as IEnvironment).hasAnyTrait(traits);
+            return env!.hasAnyTrait(traits);
         }, dataSourceName);
     }
 
-    forEnvironment(envName: string, dataSourceName?: string): IBuilder {
+    forEnvironment(envName: Exclude<TEnvironments, undefined>, dataSourceName?: string) {
         this._envIsRequired = true;
-        this._perEnvDsCount = this._perEnvDsCount ?? {};
+        this._perEnvDsCount = this._perEnvDsCount ?? {} as Record<Exclude<TEnvironments, undefined>, number>;
         let count = this._perEnvDsCount[envName] ?? 0;
         this._perEnvDsCount[envName] = ++count;
         dataSourceName =
@@ -156,46 +151,49 @@ export default class Builder implements IBuilder {
         return this.when(e => e?.current.name === envName, dataSourceName);
     }
 
-    includeEnvironment(valueOrEnv: string | IEnvironment, propNameOrEnvNames?: string[] | string, propertyName?: string): IBuilder {
+    includeEnvironment<TEnvironmentKey extends string = "environment">(
+        valueOrEnv: Exclude<TEnvironments, undefined> | IEnvironment<Exclude<TEnvironments, undefined>>,
+        propNameOrEnvNames?: Exclude<TEnvironments, undefined>[] | TEnvironmentKey, propertyName?: TEnvironmentKey
+    ) {
         this._lastCallWasDsAdd = false;
-        const propName = typeof propNameOrEnvNames === 'string' ? propNameOrEnvNames : propertyName;
-        const envNames = propNameOrEnvNames && typeof propNameOrEnvNames !== 'string' ? propNameOrEnvNames : Environment.defaultNames;
-        let env: IEnvironment | undefined = undefined;
-        if (typeof valueOrEnv === 'string') {
-            env = new Environment(valueOrEnv, envNames);
+        const propName = (typeof propNameOrEnvNames === 'string' ? propNameOrEnvNames : propertyName) ?? 'environment';
+        const envNames = (propNameOrEnvNames && typeof propNameOrEnvNames !== 'string') ? propNameOrEnvNames : undefined;
+        let env: IEnvironment<Exclude<TEnvironments, undefined>>;
+        if (typeof valueOrEnv === 'object') {
+            env = valueOrEnv;
         }
         else {
-            env = valueOrEnv;
+            env = buildEnvironment(valueOrEnv, envNames);
         }
         this._envSource = {
             name: propName,
             environment: env
         };
-        return this;
+        return this as unknown as IBuilder<Omit<T, TEnvironmentKey> & IncludeEnvironment<TEnvironmentKey>, TEnvironments>;
     }
 
-    createUrlFunctions(wsPropertyNames?: string | string[], routeValuesRegExp?: RegExp): IBuilder {
+    createUrlFunctions<TUrl extends keyof T>(wsPropertyNames: TUrl | TUrl[], routeValuesRegExp?: RegExp) {
         this._lastCallWasDsAdd = false;
-        let propNames = null;
+        let propNames: TUrl[];
         if (typeof wsPropertyNames === 'string') {
             if (wsPropertyNames !== '') {
                 propNames = [wsPropertyNames];
             }
         }
-        else if (wsPropertyNames && wsPropertyNames.length > 0) {
+        else if (Array.isArray(wsPropertyNames) && wsPropertyNames.length > 0) {
             propNames = wsPropertyNames
         }
         else {
-            propNames = Builder.defaultWsPropertyNames;
+            throw new Error("The 'wsPropertyNames' property now has no default value and must be provided.");
         }
         this._urlData = {
-            wsPropertyNames: propNames as string[],
+            wsPropertyNames: propNames! as string[],
             routeValuesRegExp: routeValuesRegExp ?? /\{(\w+)\}/g
         };
-        return this;
+        return this as unknown as IBuilder<Omit<T, TUrl> & UrlBuilderSectionWithCheck<T, TUrl>>;
     }
 
-    async build(traceValueSources: boolean = false, enforcePerEnvironmentCoverage: boolean = true): Promise<IConfig> {
+    async build(traceValueSources: boolean = false, enforcePerEnvironmentCoverage: boolean = true) {
         this._lastCallWasDsAdd = false;
         // See if environment is required.
         if (this._envIsRequired && !this._envSource) {
@@ -206,21 +204,21 @@ export default class Builder implements IBuilder {
             // Ensure all specified environments are part of the possible list of environments.
             let envCount = 0;
             for (const e in this._perEnvDsCount) {
-                if (!(this._envSource as IEnvironmentSource).environment.all.includes(e)) {
+                if (!this._envSource!.environment.all.includes(e as Exclude<TEnvironments, undefined>)) {
                     throw new Error(`The environment name "${e}" was used in a call to forEnvironment(), but said name is not part of the list of possible environment names.`);
                 }
                 ++envCount;
             }
             if (enforcePerEnvironmentCoverage) {
                 // Ensure all possible environment names were included.
-                const totalEnvs = (this._envSource as IEnvironmentSource).environment.all.length;
+                const totalEnvs = (this._envSource as IEnvironmentSource<TEnvironments>).environment.all.length;
                 if (envCount !== totalEnvs) {
                     throw new Error(`Only ${envCount} environment(s) were configured using forEnvironment() out of a total of ${totalEnvs} environment(s).  Either complete the list or disable this check when calling build().`);
                 }
             }
         }
-        const qualifyingDs: IDataSource[] = [];
-        let wjConfig: ICoreConfig;
+        const qualifyingDs: IDataSource<Record<string, any>>[] = [];
+        let wjConfig: Record<string, any>;
         if (this._dsDefs.length > 0) {
             // Prepare a list of qualifying data sources.  A DS qualifies if it has no predicate or
             // the predicate returns true.
@@ -230,7 +228,7 @@ export default class Builder implements IBuilder {
                 }
             });
             if (qualifyingDs.length > 0) {
-                const dsTasks: Promise<ICoreConfig>[] = [];
+                const dsTasks: Promise<Record<string, any>>[] = [];
                 qualifyingDs.forEach(ds => {
                     dsTasks.push(ds.getObject());
                 });
@@ -255,7 +253,7 @@ export default class Builder implements IBuilder {
         if (urlData) {
             urlData.wsPropertyNames.forEach((value) => {
                 const obj = wjConfig[value];
-                if (isConfig(obj)) {
+                if (isConfigNode(obj)) {
                     makeWsUrlFunctions(obj, urlData.routeValuesRegExp, globalThis.window && globalThis.window.location !== undefined);
                 }
                 else {
@@ -271,6 +269,7 @@ export default class Builder implements IBuilder {
                 wjConfig._qualifiedDs = [];
             }
         }
-        return wjConfig;
+        return wjConfig as T;
     }
 };
+
