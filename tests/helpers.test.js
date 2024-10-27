@@ -1,5 +1,5 @@
 import 'chai/register-expect.js';
-import { isArray, isConfig, isFunction, forEachProperty, attemptParse } from '../out/helpers.js'; 
+import { attemptParse, forEachProperty, isArray, isConfigNode, isFunction } from '../out/helpers.js';
 
 describe('helpers', () => {
     describe('isArray', () => {
@@ -23,17 +23,16 @@ describe('helpers', () => {
         it('Should return false if the given object is an empty object.', () => testFn({}, false));
         it('Should return false if the given object is an object.', () => testFn({ a: 'b' }, false));
     });
-    describe('isObject', () => {
+    describe('isConfigNode', () => {
         const testFn = (testObj, expectedResult) => {
             // Act.
-            const result = isConfig(testObj);
+            const result = isConfigNode(testObj);
 
             // Assert.
             expect(result).to.equal(expectedResult);
         };
         it('Should return false if the given object is an empty array.', () => testFn([], false));
         it('Should return false if the given object is an array.', () => testFn([1, 'A'], false));
-        it('Should return true if the given object is null.', () => testFn(null, true));
         it('Should return false if the given object is undefined.', () => testFn(undefined, false));
         it('Should return false if the given object is a number.', () => testFn(1, false));
         it('Should return false if the given object is a string.', () => testFn('ABC', false));

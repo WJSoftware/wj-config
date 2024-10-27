@@ -60,12 +60,6 @@ describe('DictionaryDataSource', () => {
             text: 'an array'
         },
         {
-            dic: () => false,
-            sep: ':',
-            target: 'dictionary',
-            text: 'a function'
-        },
-        {
             dic: null,
             sep: ':',
             target: 'dictionary',
@@ -76,6 +70,12 @@ describe('DictionaryDataSource', () => {
             sep: ':',
             target: 'dictionary',
             text: 'undefined'
+        },
+        {
+            dic: { a: { b: 1 }},
+            sep: ':',
+            target: 'dictionary',
+            text: 'a non-flat object'
         },
         {
             dic: { 'key': 'value' },
@@ -130,20 +130,26 @@ describe('DictionaryDataSource', () => {
         it(`Should throw an error if constructed with ${t.text} for ${t.target}.`, () => failedConstructionTest(t.dic, t.sep));
     });
     describe('getObject', () => {
-        it('Should throw an error if the provided dictionary was not a flat object.', () => {
+        it('Should throw an error if the provided dictionary function returns a non-flat object.', async () => {
             // Arrange.
             const dic = {
                 prop1: 123, prop2: {
                     prop3: 'abc'
                 }
             };
-            const ds = new DictionaryDataSource(dic, ':');
+            const ds = new DictionaryDataSource(() => dic, ':');
+            let didThrow = false;
 
             // Act.
-            const act = async () => await ds.getObject();
+            try {
+                await ds.getObject();
+            }
+            catch {
+                didThrow = true;
+            }
 
             // Assert.
-            expect(act).to.throw(Error);
+            expect(didThrow).to.equal(true);
         });
         const successfulResultsTest = async (dic, expectedResult, prefix) => {
             // Arrange.

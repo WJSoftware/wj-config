@@ -1,11 +1,11 @@
 import 'chai/register-expect.js';
-import Builder from '../out/Builder.js';
+import { Builder } from '../out/Builder.js';
 import * as allExports from '../out/index.js';
 
 describe('All Exports', () => {
-    it('Should export the Environment class.', () => {
+    it('Should export buildEnvironment function.', () => {
         // Assert.
-        expect(allExports.Environment).to.exist;
+        expect(allExports.buildEnvironment).to.exist;
     });
     it('Should export the EnvironmentDefinition class.', () => {
         // Assert.
