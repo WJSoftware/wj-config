@@ -81,24 +81,23 @@ export interface Trace {
     [x: string]: IDataSourceInfo | Trace;
 }
 
-
 /**
  * Defines the capabilities required from configuration builders.
  */
-export interface IBuilder<T extends Record<string, any> = {}, TEnvironments extends string | undefined = undefined> {
+export interface IBuilder<T extends Record<string, any> = {}> {
     /**
      * Adds the provided data source to the collection of data sources that will be used to build the 
      * configuration object.
      * @param dataSource The data source to include.
      */
-    add<NewT extends Record<string, any>>(dataSource: IDataSource<NewT>): IBuilder<Omit<T, keyof NewT> & NewT, TEnvironments>;
+    add<NewT extends Record<string, any>>(dataSource: IDataSource<NewT>): IBuilder<Omit<T, keyof NewT> & NewT>;
     /**
      * Adds the specified object to the collection of data sources that will be used to build the configuration 
      * object.
      * @param obj Data object to include as part of the final configuration data, or a function that returns said 
      * object.
      */
-    addObject<NewT extends Record<string, any>>(obj: NewT | (() => Promise<NewT>)): IBuilder<Omit<T, keyof NewT> & NewT, TEnvironments>;
+    addObject<NewT extends Record<string, any>>(obj: NewT | (() => Promise<NewT>)): IBuilder<Omit<T, keyof NewT> & NewT>;
     /**
      * Adds the specified dictionary to the collection of data sources that will be used to build the configuration 
      * object.
@@ -109,7 +108,7 @@ export interface IBuilder<T extends Record<string, any> = {}, TEnvironments exte
      * prefix is always removed after the dictionary is processed.  If no prefix is provided, then all dictionary 
      * entries will contribute to the configuration data.
      */
-    addDictionary<NewT extends Record<string, any>>(dictionary: Record<string, ConfigurationValue> | (() => Promise<Record<string, ConfigurationValue>>), hierarchySeparator?: string, prefix?: string): IBuilder<Omit<T, keyof NewT> & NewT, TEnvironments>;
+    addDictionary<NewT extends Record<string, any>>(dictionary: Record<string, ConfigurationValue> | (() => Promise<Record<string, ConfigurationValue>>), hierarchySeparator?: string, prefix?: string): IBuilder<Omit<T, keyof NewT> & NewT>;
     /**
      * Adds the specified dictionary to the collection of data sources that will be used to build the configuration 
      * object.
@@ -119,7 +118,7 @@ export interface IBuilder<T extends Record<string, any> = {}, TEnvironments exte
      * @param predicate Optional predicate function that is called for every property in the dictionary.  Only when 
      * the return value of the predicate is true the property is included in configuration.
      */
-    addDictionary<NewT extends Record<string, any>>(dictionary: Record<string, ConfigurationValue> | (() => Promise<Record<string, ConfigurationValue>>), hierarchySeparator?: string, predicate?: Predicate<string>): IBuilder<Omit<T, keyof NewT> & NewT, TEnvironments>;
+    addDictionary<NewT extends Record<string, any>>(dictionary: Record<string, ConfigurationValue> | (() => Promise<Record<string, ConfigurationValue>>), hierarchySeparator?: string, predicate?: Predicate<string>): IBuilder<Omit<T, keyof NewT> & NewT>;
     /**
      * Adds the qualifying environment variables to the collection of data sources that will be used to build the 
      * configuration object.
@@ -129,7 +128,7 @@ export interface IBuilder<T extends Record<string, any> = {}, TEnvironments exte
      * prefix is always removed after processing.  To avoid exposing non-application data as configuration, a prefix 
      * is always used.  If none is specified, the default prefix is OPT_.
      */
-    addEnvironment<NewT extends Record<string, any>>(env: Record<string, ConfigurationValue> | (() => Promise<Record<string, ConfigurationValue>>), prefix?: string): IBuilder<Omit<T, keyof NewT> & NewT, TEnvironments>;
+    addEnvironment<NewT extends Record<string, any>>(env: Record<string, ConfigurationValue> | (() => Promise<Record<string, ConfigurationValue>>), prefix?: string): IBuilder<Omit<T, keyof NewT> & NewT>;
     /**
      * Adds a fetch operation to the collection of data sources that will be used to build the configuration object.
      * @param url URL to fetch.
@@ -137,7 +136,7 @@ export interface IBuilder<T extends Record<string, any> = {}, TEnvironments exte
      * @param init Optional fetch init data.  Refer to the fecth() documentation for information.
      * @param processFn Optional processing function that must return the configuration data as an object.
      */
-    addFetched<NewT extends Record<string, any>>(url: URL | (() => Promise<URL>), required?: boolean, init?: RequestInit, processFn?: ProcessFetchResponse<NewT>): IBuilder<Omit<T, keyof NewT> & NewT, TEnvironments>;
+    addFetched<NewT extends Record<string, any>>(url: URL | (() => Promise<URL>), required?: boolean, init?: RequestInit, processFn?: ProcessFetchResponse<NewT>): IBuilder<Omit<T, keyof NewT> & NewT>;
     /**
      * Adds a fetch operation to the collection of data sources that will be used to build the configuration 
      * object.
@@ -146,7 +145,7 @@ export interface IBuilder<T extends Record<string, any> = {}, TEnvironments exte
      * @param init Optional fetch init data.  Refer to the fecth() documentation for information.
      * @param processFn Optional processing function that must return the configuration data as an object.
      */
-    addFetched<NewT extends Record<string, any>>(request: RequestInfo | (() => Promise<RequestInfo>), required?: boolean, init?: RequestInit, processFn?: ProcessFetchResponse<NewT>): IBuilder<Omit<T, keyof NewT> & NewT, TEnvironments>;
+    addFetched<NewT extends Record<string, any>>(request: RequestInfo | (() => Promise<RequestInfo>), required?: boolean, init?: RequestInit, processFn?: ProcessFetchResponse<NewT>): IBuilder<Omit<T, keyof NewT> & NewT>;
     /**
      * Adds the specified JSON string to the collection of data sources that will be used to build the 
      * configuration object.
@@ -154,35 +153,25 @@ export interface IBuilder<T extends Record<string, any> = {}, TEnvironments exte
      * @param jsonParser Optional JSON parser.  If not specified, the built-in JSON object will be used.
      * @param reviver Optional reviver function.  For more information see the JSON.parse() documentation.
      */
-    addJson<NewT extends Record<string, any>>(json: string | (() => Promise<string>), jsonParser?: IJsonParser<NewT>, reviver?: (this: any, key: string, value: any) => any): IBuilder<Omit<T, keyof NewT> & NewT, TEnvironments>;
+    addJson<NewT extends Record<string, any>>(json: string | (() => Promise<string>), jsonParser?: IJsonParser<NewT>, reviver?: (this: any, key: string, value: any) => any): IBuilder<Omit<T, keyof NewT> & NewT>;
     /**
      * Adds a single value to the collection of data sources that will be used to build the configuration object.
      * @param path Key comprised of names that determine the hierarchy of the value.
      * @param value Value of the property.
      * @param hierarchySeparator Optional hierarchy separator.  If not specified, colon (:) is assumed.
      */
-    addSingleValue<NewT extends Record<string, any>>(path: string, value?: ConfigurationValue, hierarchySeparator?: string): IBuilder<Omit<T, keyof NewT> & NewT, TEnvironments>;
+    addSingleValue<NewT extends Record<string, any>>(path: string, value?: ConfigurationValue, hierarchySeparator?: string): IBuilder<Omit<T, keyof NewT> & NewT>;
     /**
      * Adds a single value to the collection of data sources that will be used to build the configuration object.
      * @param dataFn Function that returns the [key, value] tuple that needs to be added.
      * @param hierarchySeparator Optional hierarchy separator.  If not specified, colon (:) is assumed.
      */
-    addSingleValue<NewT extends Record<string, any>>(dataFn: () => Promise<[string, ConfigurationValue]>, hierarchySeparator?: string): IBuilder<Omit<T, keyof NewT> & NewT, TEnvironments>;
-    /**
-     * Special function that allows the developer the opportunity to add one data source per defined environment.
-     * 
-     * The function iterates through all possible environments and calls the addDs function for each one.  It is 
-     * assumed that the addDs function will add zero or one data source.  To signal no data source was added, 
-     * addDs must return the boolean value "false".
-     * @param addDs Function that is meant to add a single data source of any type that is associated to the 
-     * provided environment name.
-     */
-    addPerEnvironment<NewT extends Record<string, any>>(addDs: (builder: IBuilder<T, TEnvironments>, envName: TEnvironments) => boolean | string): IBuilder<Omit<T, keyof NewT> & NewT, TEnvironments>;
+    addSingleValue<NewT extends Record<string, any>>(dataFn: () => Promise<[string, ConfigurationValue]>, hierarchySeparator?: string): IBuilder<Omit<T, keyof NewT> & NewT>;
     /**
      * Sets the data source name of the last data source added to the builder.
      * @param name Name for the data source.
      */
-    name(name: string): IBuilder<T, TEnvironments>;
+    name(name: string): IBuilder<T>;
     /**
      * Makes the last-added data source conditionally inclusive.
      * @param predicate Predicate function that is run whenever the build function runs.  If the predicate returns 
@@ -190,46 +179,13 @@ export interface IBuilder<T extends Record<string, any> = {}, TEnvironments exte
      * @param dataSourceName Optional data source name.  Provided to simplify the build chain and is merely a 
      * shortcut to include a call to the name() function.  Equivalent to when().name().
      */
-    when(predicate: Predicate<IEnvironment<Exclude<TEnvironments, undefined>> | undefined>, dataSourceName?: string): IBuilder<T, TEnvironments>;
-    /**
-     * Makes the last-added data source conditionally included only if the current environment possesses all of 
-     * the listed traits.
-     * @param traits The traits the current environment must have for the data source to be added.
-     * @param dataSourceName Optional data source name.  Provided to simplify the build chain and is merely a 
-     * shortcut to include a call to the name() function.  Equivalent to whenAllTraits().name().
-     */
-    whenAllTraits(traits: Traits, dataSourceName?: string): IBuilder<T, TEnvironments>;
-    /**
-     * Makes the last-added data source conditionally included if the current environment possesses any of the 
-     * listed traits.  Only one coincidence is necessary.
-     * @param traits The list of possible traits the current environment may have in order for the data source to 
-     * be included.
-     * @param dataSourceName Optional data source name.  Provided to simplify the build chain and is merely a 
-     * shortcut to include a call to the name() function.  Equivalent to whenAnyTrait().name().
-     */
-    whenAnyTrait(traits: Traits, dataSourceName?: string): IBuilder<T, TEnvironments>;
-    /**
-     * Makes the last-added data source conditionally included if the current environment's name is equal to the 
-     * provided environment name.
-     * @param envName The environment name to use to conditionally include the last-added data source.
-     * @param dataSourceName Optional data source name.  Provided to simplify the build chain and is 
-     * merely a shortcut to include a call to the name() function.
-     */
-    forEnvironment(envName: Exclude<TEnvironments, undefined>, dataSourceName?: string): IBuilder<T, TEnvironments>;
+    when(predicate: () => boolean, dataSourceName?: string): IBuilder<T>;
     /**
     * Adds the provided environment object as a property of the final configuration object.
     * @param env Previously created environment object.
     * @param propertyName Optional property name for the environment object.
     */
-    includeEnvironment<TEnvironmentKey extends string = "environment">(env: IEnvironment<Exclude<TEnvironments, undefined>>, propertyName?: TEnvironmentKey): IBuilder<Omit<T, TEnvironmentKey> & IncludeEnvironment<TEnvironmentKey>, TEnvironments>;
-    /**
-     * Adds an environment object created with the provided value and names as a property of the final configuration 
-     * object.
-     * @param value Current environment name.
-     * @param envNames List of possible environment names.
-     * @param propertyName Optional property name for the environment object.
-     */
-    includeEnvironment<TEnvironmentKey extends string = "environment">(value: Exclude<TEnvironments, undefined>, envNames?: TEnvironments[], propertyName?: TEnvironmentKey): IBuilder<Omit<T, TEnvironmentKey> & IncludeEnvironment<TEnvironmentKey>, TEnvironments>;
+    includeEnvironment<TEnvironments extends string, TEnvironmentKey extends string = "environment">(env: IEnvironment<TEnvironments>, propertyName?: TEnvironmentKey): IEnvAwareBuilder<TEnvironments, Omit<T, TEnvironmentKey> & IncludeEnvironment<TEnvironments, TEnvironmentKey>>;
     /**
      * Creates URL functions in the final configuration object for URL's defined according to the wj-config standard.
      * @param wsPropertyNames Optional list of property names whose values are expected to be objects that contain 
@@ -240,6 +196,153 @@ export interface IBuilder<T extends Record<string, any> = {}, TEnvironments exte
      * {code} or {id}.
      */
     createUrlFunctions<TUrl extends keyof T>(wsPropertyNames: TUrl | TUrl[], routeValueRegExp?: RegExp): IBuilder<Omit<T, TUrl> & UrlBuilderSectionWithCheck<T, TUrl>>;
+    /**
+     * Asynchronously builds the final configuration object.
+     */
+    build(traceValueSources?: boolean, enforcePerEnvironmentCoverage?: boolean): Promise<T>;
+}
+
+export interface IEnvAwareBuilder<TEnvironments extends string, T extends Record<string, any> = {}> {
+    /**
+     * Adds the provided data source to the collection of data sources that will be used to build the 
+     * configuration object.
+     * @param dataSource The data source to include.
+     */
+    add<NewT extends Record<string, any>>(dataSource: IDataSource<NewT>): IEnvAwareBuilder<TEnvironments, Omit<T, keyof NewT> & NewT>;
+    /**
+     * Adds the specified object to the collection of data sources that will be used to build the configuration 
+     * object.
+     * @param obj Data object to include as part of the final configuration data, or a function that returns said 
+     * object.
+     */
+    addObject<NewT extends Record<string, any>>(obj: NewT | (() => Promise<NewT>)): IEnvAwareBuilder<TEnvironments, Omit<T, keyof NewT> & NewT>;
+    /**
+     * Adds the specified dictionary to the collection of data sources that will be used to build the configuration 
+     * object.
+     * @param dictionary Dictionary object to include (after processing) as part of the final configuration data, 
+     * or a function that returns said object.
+     * @param hierarchySeparator Optional hierarchy separator.  If none is specified, a colon (:) is assumed.
+     * @param prefix Optional prefix.  Only properties that start with the specified prefix are included, and the 
+     * prefix is always removed after the dictionary is processed.  If no prefix is provided, then all dictionary 
+     * entries will contribute to the configuration data.
+     */
+    addDictionary<NewT extends Record<string, any>>(dictionary: Record<string, ConfigurationValue> | (() => Promise<Record<string, ConfigurationValue>>), hierarchySeparator?: string, prefix?: string): IEnvAwareBuilder<TEnvironments, Omit<T, keyof NewT> & NewT>;
+    /**
+     * Adds the specified dictionary to the collection of data sources that will be used to build the configuration 
+     * object.
+     * @param dictionary Dictionary object to include (after processing) as part of the final configuration data, 
+     * or a function that returns said object.
+     * @param hierarchySeparator Optional hierarchy separator.  If none is specified, a colon (:) is assumed.
+     * @param predicate Optional predicate function that is called for every property in the dictionary.  Only when 
+     * the return value of the predicate is true the property is included in configuration.
+     */
+    addDictionary<NewT extends Record<string, any>>(dictionary: Record<string, ConfigurationValue> | (() => Promise<Record<string, ConfigurationValue>>), hierarchySeparator?: string, predicate?: Predicate<string>): IEnvAwareBuilder<TEnvironments, Omit<T, keyof NewT> & NewT>;
+    /**
+     * Adds the qualifying environment variables to the collection of data sources that will be used to build the 
+     * configuration object.
+     * @param env Environment object containing the environment variables to include in the configuration, or a 
+     * function that returns said object.
+     * @param prefix Optional prefix.  Only properties that start with the specified prefix are included, and the 
+     * prefix is always removed after processing.  To avoid exposing non-application data as configuration, a prefix 
+     * is always used.  If none is specified, the default prefix is OPT_.
+     */
+    addEnvironment<NewT extends Record<string, any>>(env: Record<string, ConfigurationValue> | (() => Promise<Record<string, ConfigurationValue>>), prefix?: string): IEnvAwareBuilder<TEnvironments, Omit<T, keyof NewT> & NewT>;
+    /**
+     * Adds a fetch operation to the collection of data sources that will be used to build the configuration object.
+     * @param url URL to fetch.
+     * @param required Optional Boolean value indicating if the fetch must produce an object.
+     * @param init Optional fetch init data.  Refer to the fecth() documentation for information.
+     * @param processFn Optional processing function that must return the configuration data as an object.
+     */
+    addFetched<NewT extends Record<string, any>>(url: URL | (() => Promise<URL>), required?: boolean, init?: RequestInit, processFn?: ProcessFetchResponse<NewT>): IEnvAwareBuilder<TEnvironments, Omit<T, keyof NewT> & NewT>;
+    /**
+     * Adds a fetch operation to the collection of data sources that will be used to build the configuration 
+     * object.
+     * @param request Request object to use when fetching.  Refer to the fetch() documentation for information.
+     * @param required Optional Boolean value indicating if the fetch must produce an object.
+     * @param init Optional fetch init data.  Refer to the fecth() documentation for information.
+     * @param processFn Optional processing function that must return the configuration data as an object.
+     */
+    addFetched<NewT extends Record<string, any>>(request: RequestInfo | (() => Promise<RequestInfo>), required?: boolean, init?: RequestInit, processFn?: ProcessFetchResponse<NewT>): IEnvAwareBuilder<TEnvironments, Omit<T, keyof NewT> & NewT>;
+    /**
+     * Adds the specified JSON string to the collection of data sources that will be used to build the 
+     * configuration object.
+     * @param json The JSON string to parse into a JavaScript object, or a function that returns said string.
+     * @param jsonParser Optional JSON parser.  If not specified, the built-in JSON object will be used.
+     * @param reviver Optional reviver function.  For more information see the JSON.parse() documentation.
+     */
+    addJson<NewT extends Record<string, any>>(json: string | (() => Promise<string>), jsonParser?: IJsonParser<NewT>, reviver?: (this: any, key: string, value: any) => any): IEnvAwareBuilder<TEnvironments, Omit<T, keyof NewT> & NewT>;
+    /**
+     * Adds a single value to the collection of data sources that will be used to build the configuration object.
+     * @param path Key comprised of names that determine the hierarchy of the value.
+     * @param value Value of the property.
+     * @param hierarchySeparator Optional hierarchy separator.  If not specified, colon (:) is assumed.
+     */
+    addSingleValue<NewT extends Record<string, any>>(path: string, value?: ConfigurationValue, hierarchySeparator?: string): IEnvAwareBuilder<TEnvironments, Omit<T, keyof NewT> & NewT>;
+    /**
+     * Adds a single value to the collection of data sources that will be used to build the configuration object.
+     * @param dataFn Function that returns the [key, value] tuple that needs to be added.
+     * @param hierarchySeparator Optional hierarchy separator.  If not specified, colon (:) is assumed.
+     */
+    addSingleValue<NewT extends Record<string, any>>(dataFn: () => Promise<[string, ConfigurationValue]>, hierarchySeparator?: string): IEnvAwareBuilder<TEnvironments, Omit<T, keyof NewT> & NewT>;
+    /**
+     * Sets the data source name of the last data source added to the builder.
+     * @param name Name for the data source.
+     */
+    name(name: string): IEnvAwareBuilder<TEnvironments, T>;
+    /**
+     * Special function that allows the developer the opportunity to add one data source per defined environment.
+     * 
+     * The function iterates through all possible environments and calls the addDs function for each one.  It is 
+     * assumed that the addDs function will add zero or one data source.  To signal no data source was added, 
+     * addDs must return the boolean value "false".
+     * @param addDs Function that is meant to add a single data source of any type that is associated to the 
+     * provided environment name.
+     */
+    addPerEnvironment<NewT extends Record<string, any>>(addDs: (builder: IEnvAwareBuilder<TEnvironments, T>, envName: TEnvironments) => boolean | string): IEnvAwareBuilder<TEnvironments, Omit<T, keyof NewT> & NewT>;
+    /**
+     * Makes the last-added data source conditionally inclusive.
+     * @param predicate Predicate function that is run whenever the build function runs.  If the predicate returns 
+     * true, then the data source will be included; if it returns false, then the data source is skipped.
+     * @param dataSourceName Optional data source name.  Provided to simplify the build chain and is merely a 
+     * shortcut to include a call to the name() function.  Equivalent to when().name().
+     */
+    when(predicate: Predicate<IEnvironment<TEnvironments> | undefined>, dataSourceName?: string): IEnvAwareBuilder<TEnvironments, T>;
+    /**
+     * Makes the last-added data source conditionally included only if the current environment possesses all of 
+     * the listed traits.
+     * @param traits The traits the current environment must have for the data source to be added.
+     * @param dataSourceName Optional data source name.  Provided to simplify the build chain and is merely a 
+     * shortcut to include a call to the name() function.  Equivalent to whenAllTraits().name().
+     */
+    whenAllTraits(traits: Traits, dataSourceName?: string): IEnvAwareBuilder<TEnvironments, T>;
+    /**
+     * Makes the last-added data source conditionally included if the current environment possesses any of the 
+     * listed traits.  Only one coincidence is necessary.
+     * @param traits The list of possible traits the current environment may have in order for the data source to 
+     * be included.
+     * @param dataSourceName Optional data source name.  Provided to simplify the build chain and is merely a 
+     * shortcut to include a call to the name() function.  Equivalent to whenAnyTrait().name().
+     */
+    whenAnyTrait(traits: Traits, dataSourceName?: string): IEnvAwareBuilder<TEnvironments, T>;
+    /**
+     * Makes the last-added data source conditionally included if the current environment's name is equal to the 
+     * provided environment name.
+     * @param envName The environment name to use to conditionally include the last-added data source.
+     * @param dataSourceName Optional data source name.  Provided to simplify the build chain and is 
+     * merely a shortcut to include a call to the name() function.
+     */
+    forEnvironment(envName: TEnvironments, dataSourceName?: string): IEnvAwareBuilder<TEnvironments, T>;
+    /**
+     * Creates URL functions in the final configuration object for URL's defined according to the wj-config standard.
+     * @param wsPropertyNames Optional list of property names whose values are expected to be objects that contain 
+     * host, port, scheme or root path data at some point in their child hierarchy.  If not provided, then the default 
+     * list will be used.  It can also be a single string, which is the same as a 1-element array.
+     * @param routeValueRegExp Optional regular expression used to identify replaceable route values.  If this is not 
+     * provided, then the default regular expression will match route values of the form {<route value name>}, such as 
+     * {code} or {id}.
+     */
+    createUrlFunctions<TUrl extends keyof T>(wsPropertyNames: TUrl | TUrl[], routeValueRegExp?: RegExp): IEnvAwareBuilder<TEnvironments, Omit<T, TUrl> & UrlBuilderSectionWithCheck<T, TUrl>>;
     /**
      * Asynchronously builds the final configuration object.
      */
