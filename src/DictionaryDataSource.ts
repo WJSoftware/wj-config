@@ -102,7 +102,7 @@ export default class DictionaryDataSource<T extends Record<string, any>> extends
             throw new Error('The provided prefix value cannot be an empty string.');
         }
         this.#prefixOrPredicate = prefixOrPredicate;
-        if (dictionary && typeof dictionary !== 'function') {
+        if (typeof dictionary !== 'function') {
             this.#validateDictionary(dictionary);
         }
         this.#dictionary = dictionary;
