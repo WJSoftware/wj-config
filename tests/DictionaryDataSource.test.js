@@ -233,6 +233,27 @@ describe('DictionaryDataSource', () => {
     prefixTests.forEach(t => {
         it(`Should ${t.succeeds ? 'succeed' : 'fail'} when trying to construct the data source with "${t.text ?? t.prefix}" as prefix.`, () => prefixTest(t.prefix, t.succeeds));
     });
+    const validationWithPrefixTests = [
+        {
+            dic: { p_a: 1, b: 2, c: { c_p: true } },
+            prefix: 'p_',
+        },
+        {
+            dic: { a: 1, b: 2, invalid: { c_p: true } },
+            prefix: (n) => n !== 'invalid',
+            text: 'a function'
+        },
+    ];
+    const validationWithPrefixTest = (dic, prefix) => {
+        // Act.
+        const act = () => new DictionaryDataSource(dic, ':', prefix);
+
+        // Assert.
+        expect(act).not.to.throw();
+    };
+    validationWithPrefixTests.forEach(t => {
+        it(`Should validate the dictionary using "${t.text ?? t.prefix}" as prefix.`, () => validationWithPrefixTest(t.dic, t.prefix));
+    });
     describe('getObject', () => {
         it('Should throw an error if the provided dictionary function returns a non-flat object.', async () => {
             // Arrange.
