@@ -98,8 +98,16 @@ export default class DictionaryDataSource<T extends Record<string, any>> extends
             throw new Error('The hierarchy separator must be a string.');
         }
         this.#hierarchySeparator = hierarchySeparator;
-        if (typeof prefixOrPredicate === 'string' && prefixOrPredicate.length === 0) {
-            throw new Error('The provided prefix value cannot be an empty string.');
+        if (prefixOrPredicate !== undefined) {
+            if (typeof prefixOrPredicate === 'string' && prefixOrPredicate.length === 0) {
+                throw new Error('The provided prefix value cannot be an empty string.');
+            }
+            if (typeof prefixOrPredicate !== 'string' && typeof prefixOrPredicate !== 'function') {
+                throw new Error('The prefix argument can only be a string or a function.');
+            }
+            if (typeof prefixOrPredicate === 'string' && prefixOrPredicate.length === 0) {
+                throw new Error('An empty string cannot be used as prefix.');
+            }
         }
         this.#prefixOrPredicate = prefixOrPredicate;
         if (typeof dictionary !== 'function') {

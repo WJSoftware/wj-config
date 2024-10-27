@@ -129,6 +129,110 @@ describe('DictionaryDataSource', () => {
     failedConstructionTests.forEach(t => {
         it(`Should throw an error if constructed with ${t.text} for ${t.target}.`, () => failedConstructionTest(t.dic, t.sep));
     });
+    const successfulConstructionTests = [
+        {
+            dic: { a: 'b' },
+            sep: ':',
+            text: 'a flat object',
+            target: 'dictionary',
+        },
+        {
+            dic: { a: 'b' },
+            sep: ':',
+            text: '":"',
+            target: 'hierarchy separator',
+        },
+        {
+            dic: { a: 'b' },
+            sep: '_',
+            text: '"_"',
+            target: 'hierarchy separator',
+        },
+        {
+            dic: { a: 'b' },
+            sep: '__',
+            text: '"__"',
+            target: 'hierarchy separator',
+        },
+        {
+            dic: { a: 'b' },
+            sep: '_sep_',
+            text: '"_sep_"',
+            target: 'hierarchy separator',
+        },
+    ];
+    const successfulConstructionTest = (dic, sep) => {
+        // Act.
+        const dds = new DictionaryDataSource(dic, sep);
+
+        // Assert.
+        expect(!!dds).to.be.true;
+    };
+    successfulConstructionTests.forEach(t => {
+        it(`Should successfully construct with ${t.text} for ${t.target}.`, () => successfulConstructionTest(t.dic, t.sep));
+    });
+    const prefixTests = [
+        {
+            prefix: 'ThePrefix_',
+            succeeds: true,
+        },
+        {
+            prefix: (n) => !!n,
+            text: 'a function',
+            succeeds: true,
+        },
+        {
+            prefix: true,
+            succeeds: false,
+        },
+        {
+            prefix: false,
+            succeeds: false,
+        },
+        {
+            prefix: 1,
+            succeeds: false,
+        },
+        {
+            prefix: new Date(),
+            text: 'a date object',
+            succeeds: false,
+        },
+        {
+            prefix: new Map(),
+            text: 'a map object',
+            succeeds: false,
+        },
+        {
+            prefix: new Set(),
+            text: 'a set object',
+            succeeds: false,
+        },
+        {
+            prefix: new WeakMap(),
+            text: 'a weak map object',
+            succeeds: false,
+        },
+        {
+            prefix: '',
+            text: 'an empty string',
+            succeeds: false,
+        },
+    ];
+    const prefixTest = (prefix, succeeds) => {
+        // Act.
+        const act = () => new DictionaryDataSource({ a: 1 }, ':', prefix);
+
+        // Assert.
+        let expectation = expect(act);
+        if (succeeds) {
+            expectation = expectation.not;
+        }
+        expectation.to.throw();
+    };
+    prefixTests.forEach(t => {
+        it(`Should ${t.succeeds ? 'succeed' : 'fail'} when trying to construct the data source with "${t.text ?? t.prefix}" as prefix.`, () => prefixTest(t.prefix, t.succeeds));
+    });
     describe('getObject', () => {
         it('Should throw an error if the provided dictionary function returns a non-flat object.', async () => {
             // Arrange.
