@@ -17,6 +17,7 @@ export function isArray(obj: unknown): obj is any[] { return Array.isArray(obj);
  */
 export function isConfigNode(obj: unknown): obj is ConfigurationNode {
     return typeof obj === 'object'
+        && obj !== null
         && !isArray(obj)
         && !(obj instanceof Date)
         && !(obj instanceof Set)
