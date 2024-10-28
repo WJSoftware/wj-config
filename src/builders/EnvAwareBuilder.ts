@@ -1,11 +1,11 @@
+import { DictionaryDataSource } from "../dataSources/DictionaryDataSource.js";
+import { EnvironmentDataSource } from "../dataSources/EnvironmentDataSource.js";
+import { FetchedDataSource } from "../dataSources/FetchedDataSource.js";
+import { JsonDataSource } from "../dataSources/JsonDataSource.js";
+import { ObjectDataSource } from "../dataSources/ObjectDataSource.js";
+import { SingleValueDataSource } from "../dataSources/SingleValueDataSource.js";
+import type { ConfigurationValue, IDataSource, IEnvAwareBuilder, IEnvironment, Predicate, ProcessFetchResponse, Traits, UrlBuilderSectionWithCheck } from "../wj-config.js";
 import { BuilderImpl } from "./BuilderImpl.js";
-import DictionaryDataSource from "./DictionaryDataSource.js";
-import EnvironmentDataSource from "./EnvironmentDataSource.js";
-import FetchedDataSource from "./FetchedDataSource.js";
-import JsonDataSource from "./JsonDataSource.js";
-import { ObjectDataSource } from "./ObjectDataSource.js";
-import SingleValueDataSource from "./SingleValueDataSource.js";
-import type { ConfigurationValue, IDataSource, IEnvAwareBuilder, IEnvironment, Predicate, ProcessFetchResponse, Traits, UrlBuilderSectionWithCheck } from "./wj-config";
 
 export interface IEnvironmentSource<TEnvironments extends string> {
     name?: string,

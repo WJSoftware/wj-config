@@ -1,7 +1,7 @@
-import type { ConfigurationNode, ProcessFetchResponse } from "wj-config";
+import type { ProcessFetchResponse } from "../wj-config.js";
 import { DataSource } from "./DataSource.js";
 
-export default class FetchedDataSource<T extends Record<string, any>> extends DataSource {
+export class FetchedDataSource<T extends Record<string, any>> extends DataSource {
     private _input: URL | RequestInfo | (() => Promise<URL | RequestInfo>);
     private _required: boolean;
     private _init?: RequestInit;

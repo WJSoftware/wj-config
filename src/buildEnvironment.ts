@@ -1,7 +1,7 @@
-import type { EnvironmentTestFn, IEnvironment, IEnvironmentDefinition, Trait, Traits } from "wj-config";
 import { InvalidEnvNameError } from "./EnvConfigError.js";
 import { EnvironmentDefinition } from "./EnvironmentDefinition.js";
 import { isArray } from "./helpers.js";
+import type { EnvironmentTestFn, IEnvironment, IEnvironmentDefinition, Trait, Traits } from "./wj-config.js";
 
 function ensureEnvDefinition<TEnvironments extends string>(env: string | IEnvironmentDefinition<TEnvironments>): IEnvironmentDefinition<TEnvironments> {
     if (typeof env === 'string') {
@@ -14,6 +14,12 @@ function capitalize(text: string) {
     return text[0].toLocaleUpperCase() + text.slice(1);
 }
 
+/**
+ * Builds an environment object with the provided environment information.
+ * @param currentEnvironment The application's current environment.
+ * @param possibleEnvironments The complete list of all possible environments.
+ * @returns The newly created `IEnvironment<TEnvironments>` object.
+ */
 export function buildEnvironment<TEnvironments extends string>(currentEnvironment: TEnvironments | IEnvironmentDefinition<TEnvironments>, possibleEnvironments?: TEnvironments[]): IEnvironment<TEnvironments> {
     const defaultNames: string[] = ['Development', 'PreProduction', 'Production'];
     const env = {

@@ -1,6 +1,6 @@
-import type { IDataSource } from "wj-config";
+import { isConfigNode } from "../helpers.js";
+import type { IDataSource } from "../wj-config.js";
 import { DataSource } from "./DataSource.js";
-import { isConfigNode } from "./helpers.js";
 
 /**
  * Configuration data source class that injects a pre-build JavaScript object into the configuration build chain.

@@ -1,6 +1,6 @@
-import type { ConfigurationNode, ConfigurationValue, Dictionary, IDataSource, Predicate } from "wj-config";
+import { attemptParse, forEachProperty, isConfigNode } from "../helpers.js";
+import type { ConfigurationNode, ConfigurationValue, Dictionary, IDataSource, Predicate } from "../wj-config.js";
 import { DataSource } from "./DataSource.js";
-import { attemptParse, forEachProperty, isConfigNode } from "./helpers.js";
 
 const processKey = (key: string, hierarchySeparator: string, prefix?: string) => {
     if (prefix) {
@@ -16,7 +16,7 @@ const ensurePropertyValue = (obj: ConfigurationNode, name: string) => {
     return obj[name];
 }
 
-export default class DictionaryDataSource<T extends Record<string, any>> extends DataSource implements IDataSource<T> {
+export class DictionaryDataSource<T extends Record<string, any>> extends DataSource implements IDataSource<T> {
     #dictionary: Record<string, ConfigurationValue> | (() => Promise<Record<string, ConfigurationValue>>);
     #hierarchySeparator: string;
     #prefixOrPredicate?: string | Predicate<string>;

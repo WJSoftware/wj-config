@@ -1,8 +1,11 @@
 /**
- * Possible values in a configuration object.
+ * Possible value types in properties of a configuration object.
  */
 export type SingleConfigurationValue = string | number | Date | boolean | undefined | null;
 
+/**
+ * Defines the type of configuration leaf properties.
+ */
 export type ConfigurationValue = SingleConfigurationValue | SingleConfigurationValue[];
 
 /**
@@ -41,7 +44,14 @@ export type IncludeEnvironment<TEnvironments extends string, Key extends string 
     [K in Key as `${K}`]: IEnvironment<TEnvironments>;
 }
 
+/**
+ * Defines the requirements of objects that wish to provide JSON-parsing services.
+ */
 export interface IJsonParser<T extends Record<string, any>> {
+    /**
+     * Parses the provided JSON string data and returns a JavaScript object.
+     * @param json The JSON string to parse.
+     */
     parse(json: string): T;
 }
 
@@ -77,6 +87,9 @@ export interface IDataSource<T extends Record<string, any> = Record<string, any>
     trace(): IDataSourceInfo;
 }
 
+/**
+ * Defines the shape of configuration-tracing objects.
+ */
 export interface Trace {
     [x: string]: IDataSourceInfo | Trace;
 }
@@ -387,14 +400,23 @@ export type IEnvironment<TEnvironments extends string> = {
     hasAnyTrait(traits: Traits): boolean;
 }
 
+/**
+ * Type used to determine if a configuration node is an appropriate URL root node.
+ */
 export type HasHost = {
     host: string;
 }
 
+/**
+ * Type used to determine if a configuration node holds path information.
+ */
 export type HasRootPath = {
     rootPath: string;
 }
 
+/**
+ * Defines the reserved property names for the URL-building feature of the builders.
+ */
 export type UrlSectionReserved = {
     host?: string;
     port?: number;
@@ -422,10 +444,25 @@ export type QueryStringArg = Record<string, any> | string | (() => string | Reco
  */
 export type UrlBuilderFn = (routeValues?: RouteReplacementArg, queryString?: QueryStringArg) => string;
 
+/**
+ * Defines the signature of the `buildUrl` functions that get created in the configuration object when using the 
+ * builder's `createUrlFunctions()` method.
+ * @param path The extra path to add to the built URL.
+ * @param routeValues Optional argument used to perform route value replacement.
+ * @param queryString Optional argument used to append query string data to the generated URL.
+ */
 export type BuildUrlFn = (path: string, routeValues?: RouteReplacementArg, queryString?: QueryStringArg) => string;
 
+/**
+ * Defines the shape of nodes in the configuration object that have been successfully processed and converted to 
+ * provide URL-building functions.
+ */
 export type UrlNode = Partial<HasRootPath> & {
     buildUrl: BuildUrlFn;
+    /**
+     * Calculates the accumulated root path for this node.
+     * @returns The accumulated root path for this node as a string.
+     */
     _rootPath: () => string;
 } & {
     [x: string]: UrlBuilderFn;
@@ -459,30 +496,6 @@ export type UrlBuilderSectionWithCheck<T, TUrl extends keyof T> = T extends HasH
         [K in TUrl]: UrlBuilderSectionWithCheck<T[K], keyof T[K]>
     }
     : T;
-
-/**
- * Builds an environment object with the provided environment information.
- * @param currentEnvironment The application's current environment.
- * @param possibleEnvironments The complete list of all possible environments.
- */
-export declare function buildEnvironment<TEnvironments extends string>(
-    currentEnvironment: string | IEnvironmentDefinition<TEnvironments>,
-    possibleEnvironments?: TEnvironments[]
-): IEnvironment<TEnvironments>;
-
-/**
- * Environment definition class used to specify the current environment as an object.
- */
-export class EnvironmentDefinition {
-    public readonly name: string;
-    public readonly traits: Traits;
-    /**
-     * Initializes a new instance of this class.
-     * @param name The name of the current environment.
-     * @param traits The traits assigned to the current environment.
-     */
-    constructor(name: string, traits?: Traits);
-}
 
 /**
  * Type that defines the acceptable trait types for a single trait.  It is encouraged to use number-based traits.

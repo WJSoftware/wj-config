@@ -1,13 +1,13 @@
-import type { ConfigurationValue, IBuilder, IDataSource, IEnvironment, IncludeEnvironment, Predicate, ProcessFetchResponse, UrlBuilderSectionWithCheck } from "wj-config";
+import { buildEnvironment } from "../buildEnvironment.js";
+import { DictionaryDataSource } from "../dataSources/DictionaryDataSource.js";
+import { EnvironmentDataSource } from "../dataSources/EnvironmentDataSource.js";
+import { FetchedDataSource } from "../dataSources/FetchedDataSource.js";
+import { JsonDataSource } from "../dataSources/JsonDataSource.js";
+import { ObjectDataSource } from "../dataSources/ObjectDataSource.js";
+import { SingleValueDataSource } from "../dataSources/SingleValueDataSource.js";
+import type { ConfigurationValue, IBuilder, IDataSource, IEnvironment, IncludeEnvironment, Predicate, ProcessFetchResponse, UrlBuilderSectionWithCheck } from "../wj-config.js";
 import { BuilderImpl } from "./BuilderImpl.js";
-import DictionaryDataSource from "./DictionaryDataSource.js";
 import { EnvAwareBuilder, type IEnvironmentSource } from "./EnvAwareBuilder.js";
-import { buildEnvironment } from "./Environment.js";
-import EnvironmentDataSource from "./EnvironmentDataSource.js";
-import FetchedDataSource from "./FetchedDataSource.js";
-import JsonDataSource from "./JsonDataSource.js";
-import { ObjectDataSource } from "./ObjectDataSource.js";
-import SingleValueDataSource from "./SingleValueDataSource.js";
 
 export class Builder<T extends Record<string, any> = {}> implements IBuilder<T> {
     #impl: BuilderImpl = new BuilderImpl();

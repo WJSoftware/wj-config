@@ -1,7 +1,7 @@
-import type { Dictionary } from "wj-config";
-import DictionaryDataSource from "./DictionaryDataSource.js";
+import type { Dictionary } from "../wj-config.js";
+import { DictionaryDataSource } from "./DictionaryDataSource.js";
 
-export default class EnvironmentDataSource<T extends Record<string, any>> extends DictionaryDataSource<T> {
+export class EnvironmentDataSource<T extends Record<string, any>> extends DictionaryDataSource<T> {
     constructor(env: Dictionary | (() => Promise<Dictionary>), prefix?: string) {
         super(env, '__', prefix);
         if (!prefix) {

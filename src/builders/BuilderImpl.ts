@@ -1,7 +1,7 @@
-import { isConfigNode } from "./helpers.js";
-import makeWsUrlFunctions from "./makeWsUrlFunctions.js";
-import merge from "./Merge.js";
-import { IDataSource, Predicate } from "./wj-config";
+import { isConfigNode } from "../helpers.js";
+import makeWsUrlFunctions from "../makeWsUrlFunctions.js";
+import merge from "../Merge.js";
+import { IDataSource, Predicate } from "../wj-config.js";
 
 interface IUrlData {
     wsPropertyNames: string[];

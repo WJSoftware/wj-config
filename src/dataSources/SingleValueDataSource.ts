@@ -1,5 +1,5 @@
-import type { ConfigurationValue, Dictionary } from "wj-config";
-import DictionaryDataSource from "./DictionaryDataSource.js";
+import type { ConfigurationValue, Dictionary } from "../wj-config.js";
+import { DictionaryDataSource } from "./DictionaryDataSource.js";
 
 function buildDictionary(key: string | (() => Promise<[string, ConfigurationValue]>), value?: ConfigurationValue) {
     if (!key) {
@@ -19,7 +19,7 @@ function buildDictionary(key: string | (() => Promise<[string, ConfigurationValu
     return dicFn(key, value);
 }
 
-export default class SingleValueDataSource<T extends Record<string, any>> extends DictionaryDataSource<T> {
+export class SingleValueDataSource<T extends Record<string, any>> extends DictionaryDataSource<T> {
     constructor(
         path: string | (() => Promise<[string, ConfigurationValue]>),
         value?: ConfigurationValue,

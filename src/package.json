@@ -41,9 +41,14 @@
     "types": "wj-config.d.ts",
     "exports": {
         ".": {
-            "types": "./wj-config.d.ts",
+            "types": "./index.d.ts",
             "import": "./index.js",
             "default": "./index.js"
+        },
+        "./sources": {
+            "types": "./dataSources/index.d.ts",
+            "import": "./dataSources/index.js",
+            "default": "./dataSources/index.js"
         }
     },
     "scripts": {
