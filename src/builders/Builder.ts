@@ -5,7 +5,7 @@ import { FetchedDataSource } from "../dataSources/FetchedDataSource.js";
 import { JsonDataSource } from "../dataSources/JsonDataSource.js";
 import { ObjectDataSource } from "../dataSources/ObjectDataSource.js";
 import { SingleValueDataSource } from "../dataSources/SingleValueDataSource.js";
-import type { ConfigurationValue, IBuilder, IDataSource, IEnvironment, IncludeEnvironment, Predicate, ProcessFetchResponse, UrlBuilderSectionWithCheck } from "../wj-config.js";
+import type { ConfigurationValue, IBuilder, IDataSource, IEnvironment, IncludeEnvironment, MergeResult, Predicate, ProcessFetchResponse, UrlBuilderSectionWithCheck } from "../wj-config.js";
 import { BuilderImpl } from "./BuilderImpl.js";
 import { EnvAwareBuilder, type IEnvironmentSource } from "./EnvAwareBuilder.js";
 
@@ -13,7 +13,7 @@ export class Builder<T extends Record<string, any> = {}> implements IBuilder<T> 
     #impl: BuilderImpl = new BuilderImpl();
     add<NewT extends Record<string, any>>(dataSource: IDataSource<NewT>) {
         this.#impl.add(dataSource);
-        return this as unknown as IBuilder<Omit<T, keyof NewT> & NewT>;
+        return this as unknown as IBuilder<MergeResult<T, NewT>>;
     }
 
     addObject<NewT extends Record<string, any>>(obj: NewT | (() => Promise<NewT>)) {
@@ -65,11 +65,11 @@ export class Builder<T extends Record<string, any> = {}> implements IBuilder<T> 
         else {
             env = buildEnvironment(valueOrEnv, envNames);
         }
-        const _envSource: IEnvironmentSource<TEnvironments> = {
+        const envSource: IEnvironmentSource<TEnvironments> = {
             name: propName,
             environment: env
         };
-        return new EnvAwareBuilder<TEnvironments, Omit<T, TEnvironmentKey> & IncludeEnvironment<TEnvironments, TEnvironmentKey>>(_envSource, this.#impl);
+        return new EnvAwareBuilder<TEnvironments, Omit<T, TEnvironmentKey> & IncludeEnvironment<TEnvironments, TEnvironmentKey>>(envSource, this.#impl);
     }
 
     createUrlFunctions<TUrl extends keyof T>(wsPropertyNames: TUrl | TUrl[], routeValuesRegExp?: RegExp) {
@@ -77,7 +77,7 @@ export class Builder<T extends Record<string, any> = {}> implements IBuilder<T> 
         return this as unknown as IBuilder<Omit<T, TUrl> & UrlBuilderSectionWithCheck<T, TUrl>>;
     }
 
-    async build(traceValueSources: boolean = false, enforcePerEnvironmentCoverage: boolean = true) {
-        return this.#impl.build(traceValueSources, p => p()) as unknown as T;
+    build(traceValueSources: boolean = false) {
+        return this.#impl.build(traceValueSources, p => p()) as unknown as Promise<T>;
     }
 };

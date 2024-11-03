@@ -4,7 +4,7 @@ import { FetchedDataSource } from "../dataSources/FetchedDataSource.js";
 import { JsonDataSource } from "../dataSources/JsonDataSource.js";
 import { ObjectDataSource } from "../dataSources/ObjectDataSource.js";
 import { SingleValueDataSource } from "../dataSources/SingleValueDataSource.js";
-import type { ConfigurationValue, IDataSource, IEnvAwareBuilder, IEnvironment, Predicate, ProcessFetchResponse, Traits, UrlBuilderSectionWithCheck } from "../wj-config.js";
+import type { ConfigurationValue, IDataSource, IEnvAwareBuilder, IEnvironment, MergeResult, Predicate, ProcessFetchResponse, Traits, UrlBuilderSectionWithCheck } from "../wj-config.js";
 import { BuilderImpl } from "./BuilderImpl.js";
 
 export interface IEnvironmentSource<TEnvironments extends string> {
@@ -26,7 +26,7 @@ export class EnvAwareBuilder<TEnvironments extends string, T extends Record<stri
 
     add<NewT extends Record<string, any>>(dataSource: IDataSource<NewT>) {
         this.#impl.add(dataSource);
-        return this as unknown as IEnvAwareBuilder<TEnvironments, Omit<T, keyof NewT> & NewT>;
+        return this as unknown as IEnvAwareBuilder<TEnvironments, MergeResult<T, NewT>>;
     }
 
     addObject<NewT extends Record<string, any>>(obj: NewT | (() => Promise<NewT>)) {
@@ -84,7 +84,7 @@ export class EnvAwareBuilder<TEnvironments extends string, T extends Record<stri
                 this.forEnvironment(n, typeof result === 'string' ? result : undefined);
             }
         });
-        return this as unknown as IEnvAwareBuilder<TEnvironments, Omit<T, keyof NewT> & NewT>;
+        return this as unknown as IEnvAwareBuilder<TEnvironments, MergeResult<T, NewT>>;
     }
 
     when(predicate: Predicate<IEnvironment<TEnvironments> | undefined>, dataSourceName?: string) {

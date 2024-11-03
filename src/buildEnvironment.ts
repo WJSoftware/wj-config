@@ -20,7 +20,10 @@ function capitalize(text: string) {
  * @param possibleEnvironments The complete list of all possible environments.
  * @returns The newly created `IEnvironment<TEnvironments>` object.
  */
-export function buildEnvironment<TEnvironments extends string>(currentEnvironment: TEnvironments | IEnvironmentDefinition<TEnvironments>, possibleEnvironments?: TEnvironments[]): IEnvironment<TEnvironments> {
+export function buildEnvironment<TEnvironments extends string = 'Development' | 'PreProduction' | 'Production'>(
+    currentEnvironment: TEnvironments | IEnvironmentDefinition<TEnvironments>,
+    possibleEnvironments?: TEnvironments[]
+): IEnvironment<TEnvironments> {
     const defaultNames: string[] = ['Development', 'PreProduction', 'Production'];
     const env = {
         all: possibleEnvironments ?? defaultNames,
