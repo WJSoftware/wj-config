@@ -1,10 +1,13 @@
 {
     "name": "wj-config",
-    "version": "2.0.2",
+    "version": "3.0.0-beta.1",
     "main": "index.js",
     "type": "module",
     "description": "Javascript configuration module for NodeJS and browser frameworks such as React that works like ASP.net configuration where data sources are specified (usually JSON files) and environment variables can contribute/overwrite values by following a naming convention.",
-    "author": "José Pablo Ramírez Vargas <webJose@gmail.com>",
+    "author": {
+        "email": "webJose@gmail.com",
+        "name": "José Pablo Ramírez Vargas"
+    },
     "keywords": [
         "config",
         "wj",
@@ -33,9 +36,21 @@
     "license": "MIT-open-group",
     "homepage": "https://github.com/WJSoftware/wj-config#readme",
     "devDependencies": {
-        "typescript": "^4.7.4"
+        "typescript": "^5.6.2"
     },
     "types": "wj-config.d.ts",
+    "exports": {
+        ".": {
+            "types": "./index.d.ts",
+            "import": "./index.js",
+            "default": "./index.js"
+        },
+        "./sources": {
+            "types": "./dataSources/index.d.ts",
+            "import": "./dataSources/index.js",
+            "default": "./dataSources/index.js"
+        }
+    },
     "scripts": {
         "build": "npx tsc"
     },

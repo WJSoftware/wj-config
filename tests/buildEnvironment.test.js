@@ -1,6 +1,6 @@
 import 'chai/register-expect.js';
-import { isFunction, forEachProperty, isConfig } from '../out/helpers.js';
-import { Environment } from '../out/Environment.js';
+import { buildEnvironment } from '../out/buildEnvironment.js';
+import { forEachProperty, isConfigNode, isFunction } from '../out/helpers.js';
 
 const testEnvNames = [
     'Dev',
@@ -8,13 +8,13 @@ const testEnvNames = [
     'Prod'
 ];
 
-describe('Environment', () => {
+describe('buildEnvironment', () => {
     const testErrorFn = (envNames) => {
         // Arrange.
         const envName = 'Dev';
 
         // Act.
-        const act = () => new Environment(envName, envNames);
+        const act = () => buildEnvironment(envName, envNames);
 
         // Assert.
         expect(act).to.throw(Error);
@@ -28,10 +28,10 @@ describe('Environment', () => {
         const envName = 'Dev';
 
         // Act.
-        const env = new Environment(envName, testEnvNames);
+        const env = buildEnvironment(envName, testEnvNames);
 
         // Assert.
-        expect(isConfig(env.current)).to.be.true;
+        expect(isConfigNode(env.current)).to.be.true;
         expect(env.current.name).to.equal(envName);
     });
     it('Should save the provided environment names in the all property.', () => {
@@ -39,7 +39,7 @@ describe('Environment', () => {
         const envName = 'Dev';
 
         // Act.
-        const env = new Environment(envName, testEnvNames);
+        const env = buildEnvironment(envName, testEnvNames);
 
         // Assert.
         expect(env.all).to.have.same.members(testEnvNames);
@@ -49,7 +49,7 @@ describe('Environment', () => {
         const envName = 'Dev';
 
         // Act.
-        const env = new Environment(envName, testEnvNames);
+        const env = buildEnvironment(envName, testEnvNames);
 
         // Assert.
         const foundFns = [];
@@ -63,7 +63,7 @@ describe('Environment', () => {
     });
     const missingEnvNameTest = (envDef) => {
         // Act.
-        const act = () => new Environment(envDef, testEnvNames);
+        const act = () => buildEnvironment(envDef, testEnvNames);
 
         // Assert.
         expect(act).to.throw(Error);
@@ -73,7 +73,7 @@ describe('Environment', () => {
     describe('hasTraits', () => {
         const traitMismatchTest = (envDef, testTraits) => {
             // Arrange.
-            const env = new Environment(envDef, testEnvNames);
+            const env = buildEnvironment(envDef, testEnvNames);
 
             // Act.
             const act = () => env.hasTraits(testTraits);
@@ -86,7 +86,7 @@ describe('Environment', () => {
         it('Should throw if given an array of string test traits when the current environment traits are of the numeric kind.', () => traitMismatchTest({ name: 'Dev', traits: 3 }, ['abc', 'def']));
         const runTestFn = (envDef, testTraits, expectedResult) => {
             // Arrange.
-            const env = new Environment(envDef, testEnvNames);
+            const env = buildEnvironment(envDef, testEnvNames);
 
             // Act.
             const result = env.hasTraits(testTraits);
@@ -108,7 +108,7 @@ describe('Environment', () => {
     describe('hasAnyTrait', () => {
         const traitMismatchTest = (envDef, testTraits) => {
             // Arrange.
-            const env = new Environment(envDef, testEnvNames);
+            const env = buildEnvironment(envDef, testEnvNames);
 
             // Act.
             const act = () => env.hasAnyTrait(testTraits);
@@ -120,7 +120,7 @@ describe('Environment', () => {
         it('Should throw if given a string test trait when the current environment traits are of the numeric kind.', () => traitMismatchTest({ name: 'Dev', traits: 3 }, ['abc', 'def']));
         const runTestFn = (envDef, testTraits, expectedResult) => {
             // Arrange.
-            const env = new Environment(envDef, testEnvNames);
+            const env = buildEnvironment(envDef, testEnvNames);
 
             // Act.
             const result = env.hasAnyTrait(testTraits);

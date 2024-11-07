@@ -1,6 +1,6 @@
 'use strict';
 
-import { IConfig } from "wj-config";
+import { ConfigurationNode, Dictionary } from "./wj-config.js";
 
 /**
  * Tests the provided object to determine if it is an array.
@@ -15,8 +15,34 @@ export function isArray(obj: unknown): obj is any[] { return Array.isArray(obj);
  * @param obj Object to test.
  * @returns True if the object is a non-leaf object; false otherwise.
  */
-export function isConfig(obj: unknown): obj is IConfig {
-    return typeof obj === 'object' && !isArray(obj) && !(obj instanceof Date);
+export function isConfigNode(obj: unknown): obj is ConfigurationNode {
+    return typeof obj === 'object'
+        && obj !== null
+        && !isArray(obj)
+        && !(obj instanceof Date)
+        && !(obj instanceof Set)
+        && !(obj instanceof Map)
+        && !(obj instanceof WeakMap)
+        && !(obj instanceof WeakRef)
+        && !(obj instanceof WeakSet)
+        ;
+}
+
+/**
+ * Tests a particular object to determine if it is a dictionary.
+ * @param obj Object to test.
+ * @returns `true` if the object is a dictionary, or `false` otherwise.
+ */
+export function isDictionary(obj: unknown): obj is Dictionary {
+    if (typeof obj === 'object' && obj !== null && !isArray(obj) && !(obj instanceof Date)) {
+        for (let key in obj) {
+            if (isConfigNode((obj as Record<string, any>)[key])) {
+                return false;
+            }
+        }
+        return true;
+    }
+    return false;
 }
 
 /**
@@ -79,7 +105,7 @@ export const attemptParse = (value: (string | undefined | null)) => {
     else if (isFloat.test(value)) {
         parsedValue = Number.parseFloat(value);
     }
-    if (parsedValue !== NaN && parsedValue !== null) {
+    if (parsedValue !== null && !isNaN(parsedValue)) {
         return parsedValue;
     }
     // Return as string.

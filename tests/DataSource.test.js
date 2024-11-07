@@ -1,5 +1,5 @@
 import 'chai/register-expect.js';
-import { DataSource } from '../out/DataSource.js';
+import { DataSource } from '../out/dataSources/DataSource.js';
 
 describe('DataSource', () => {
     it('Should make the name given during construction available through the "name" property.', () => {

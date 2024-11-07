@@ -1,5 +1,5 @@
 import 'chai/register-expect.js';
-import { isConfig, forEachProperty } from '../out/helpers.js';
+import { forEachProperty, isConfigNode } from '../out/helpers.js';
 import makeWsUrlFunctions from '../out/makeWsUrlFunctions.js';
 
 const propertyInHierarchy = (obj, propertyName, result, resultKey) => {
@@ -7,7 +7,7 @@ const propertyInHierarchy = (obj, propertyName, result, resultKey) => {
         result = {};
     }
     forEachProperty(obj, (key, value) => {
-        if (isConfig(value)) {
+        if (isConfigNode(value)) {
             const newKey = resultKey ? `${resultKey}_${key}` : key;
             propertyInHierarchy(value, propertyName, result, newKey);
         }

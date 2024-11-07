@@ -1,6 +1,6 @@
 import { DataSource } from "./DataSource.js";
 
-export default class JsonDataSource extends DataSource {
+export class JsonDataSource<T extends Record<string, any>> extends DataSource {
     private _json: string | (() => Promise<string>);
     private _jsonParser: JSON;
     private _reviver?: (this: any, key: string, value: any) => any;
@@ -16,6 +16,6 @@ export default class JsonDataSource extends DataSource {
         if (typeof json === 'function') {
             json = await json();
         }
-        return this._jsonParser.parse(json, this._reviver);
+        return this._jsonParser.parse(json, this._reviver) as T;
     }
 }
