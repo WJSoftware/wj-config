@@ -1,5 +1,5 @@
 import 'chai/register-expect.js';
-import DictionaryDataSource from '../out/DictionaryDataSource.js';
+import { DictionaryDataSource } from '../out/dataSources/DictionaryDataSource.js';
 
 describe('DictionaryDataSource', () => {
     it('Should name itself as "Dictionary" upon construction.', () => {

@@ -4,7 +4,7 @@ import { FetchedDataSource } from "../dataSources/FetchedDataSource.js";
 import { JsonDataSource } from "../dataSources/JsonDataSource.js";
 import { ObjectDataSource } from "../dataSources/ObjectDataSource.js";
 import { SingleValueDataSource } from "../dataSources/SingleValueDataSource.js";
-import type { ConfigurationValue, IDataSource, IEnvAwareBuilder, IEnvironment, MergeResult, Predicate, ProcessFetchResponse, Traits, UrlBuilderSectionWithCheck } from "../wj-config.js";
+import type { ConfigurationValue, IDataSource, IEnvAwareBuilder, IEnvironment, InflateDictionary, InflateKey, MergeResult, Predicate, ProcessFetchResponse, Traits, UrlBuilderSectionWithCheck } from "../wj-config.js";
 import { BuilderImpl } from "./BuilderImpl.js";
 
 export interface IEnvironmentSource<TEnvironments extends string> {
@@ -33,12 +33,13 @@ export class EnvAwareBuilder<TEnvironments extends string, T extends Record<stri
         return this.add(new ObjectDataSource(obj));
     }
 
-    addDictionary<NewT extends Record<string, any>>(dictionary: Record<string, ConfigurationValue> | (() => Promise<Record<string, ConfigurationValue>>), hierarchySeparator: string = ':', prefixOrPredicate?: string | Predicate<string>) {
-        return this.add<NewT>(new DictionaryDataSource(dictionary, hierarchySeparator, prefixOrPredicate));
+    addDictionary<TDic extends Record<string, ConfigurationValue>, TSep extends string = ':'>(dictionary: Record<string, ConfigurationValue> | (() => Promise<Record<string, ConfigurationValue>>), hierarchySeparator: string = ':', prefixOrPredicate?: string | Predicate<string>) {
+        // @ts-expect-error
+        return this.add<InflateDictionary<TDic, TSep>>(new DictionaryDataSource(dictionary, hierarchySeparator, prefixOrPredicate));
     }
 
-    addEnvironment<NewT extends Record<string, any>>(env: Record<string, ConfigurationValue> | (() => Promise<Record<string, ConfigurationValue>>), prefix: string = 'OPT_') {
-        return this.add<NewT>(new EnvironmentDataSource(env, prefix));
+    addEnvironment<TDic extends Record<string, ConfigurationValue>, TPrefix extends string = 'OPT_'>(env: Record<string, ConfigurationValue> | (() => Promise<Record<string, ConfigurationValue>>), prefix: string = 'OPT_') {
+        return this.add<MergeResult<T, InflateDictionary<TDic, '__', TPrefix>>>(new EnvironmentDataSource(env, prefix));
     }
 
     addFetched<NewT extends Record<string, any>>(input: URL | RequestInfo | (() => Promise<URL | RequestInfo>), required: boolean = true, init?: RequestInit, procesFn?: ProcessFetchResponse<NewT>) {
@@ -49,8 +50,8 @@ export class EnvAwareBuilder<TEnvironments extends string, T extends Record<stri
         return this.add<NewT>(new JsonDataSource(json, jsonParser, reviver));
     }
 
-    addSingleValue<NewT extends Record<string, any>>(path: string | (() => Promise<[string, ConfigurationValue]>), valueOrHierarchySeparator?: ConfigurationValue | string, hierarchySeparator?: string) {
-        return this.add<NewT>(new SingleValueDataSource<NewT>(path, valueOrHierarchySeparator, typeof path === 'function' ? valueOrHierarchySeparator as string : hierarchySeparator));
+    addSingleValue<TKey extends string, TValue extends ConfigurationValue, TSep extends string = ':'>(path: TKey | (() => Promise<[TKey, TValue]>), valueOrHierarchySeparator?: TValue | TSep, hierarchySeparator?: TSep) {
+        return this.add(new SingleValueDataSource<MergeResult<T, InflateKey<TKey, TValue, TSep>>>(path, valueOrHierarchySeparator, typeof path === 'function' ? valueOrHierarchySeparator as string : hierarchySeparator));
     }
 
     name(name: string) {

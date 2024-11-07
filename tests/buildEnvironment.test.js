@@ -1,5 +1,5 @@
 import 'chai/register-expect.js';
-import { buildEnvironment } from '../out/Environment.js';
+import { buildEnvironment } from '../out/buildEnvironment.js';
 import { forEachProperty, isConfigNode, isFunction } from '../out/helpers.js';
 
 const testEnvNames = [

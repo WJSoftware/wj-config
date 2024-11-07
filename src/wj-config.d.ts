@@ -18,7 +18,7 @@ export interface ConfigurationNode {
 /**
  * Types an object-merging operation's result.
  */
-export type MergeResult<T extends Record<string, any>, NewT extends Record<string, any>> = (Omit<T, keyof NewT> & {
+export type MergeResult<T extends Record<string, any>, NewT> = (Omit<T, keyof NewT> & {
     [K in keyof NewT]-?: K extends keyof T ?
     (
         T[K] extends Record<string, any> ?
@@ -26,6 +26,25 @@ export type MergeResult<T extends Record<string, any>, NewT extends Record<strin
             (NewT[K] extends Record<string, any> ? never : NewT[K])
     ) : NewT[K]
 }) extends infer R ? { [K in keyof R]: R[K] } : never;
+    
+/**
+ * Types individual dictionary values and inflates them.
+ */
+export type InflateKey<TKey extends string, TValue extends ConfigurationValue, TSep extends string, TPrefix extends string = ""> = TKey extends `${TPrefix}${infer FullKey}` ?
+    FullKey extends `${infer Key}${TSep}${infer Rest}` ?
+    {
+        [K in Key]: InflateKey<Rest, TValue, TSep>
+    } :
+    {
+        [K in TKey]: TValue;
+    } : never;
+
+/**
+ * Inflates entire dictionaries into their corresponding final objects.
+ */
+export type InflateDictionary<TDic extends Record<string, ConfigurationValue>, TSep extends string, TPrefix extends string = ""> = {
+    [K in keyof TDic]: (x: InflateKey<K & string, TDic[K], TSep, TPrefix>) => void
+} extends Record<keyof TDic, (x: infer I) => void> ? I : never;
 
 /**
  * Defines the shape of dictionaries.
@@ -133,7 +152,7 @@ export interface IBuilder<T extends Record<string, any> = {}> {
      * prefix is always removed after the dictionary is processed.  If no prefix is provided, then all dictionary 
      * entries will contribute to the configuration data.
      */
-    addDictionary<NewT extends Record<string, any>>(dictionary: Record<string, ConfigurationValue> | (() => Promise<Record<string, ConfigurationValue>>), hierarchySeparator?: string, prefix?: string): IBuilder<MergeResult<T, NewT>>;
+    addDictionary<TDic extends Record<string, ConfigurationValue>, TSep extends string = ':'>(dictionary: TDic | (() => Promise<TDic>), hierarchySeparator?: TSep, prefix?: string): IBuilder<MergeResult<T, InflateDictionary<TDic, TSep>>>;
     /**
      * Adds the specified dictionary to the collection of data sources that will be used to build the configuration 
      * object.
@@ -143,7 +162,7 @@ export interface IBuilder<T extends Record<string, any> = {}> {
      * @param predicate Optional predicate function that is called for every property in the dictionary.  Only when 
      * the return value of the predicate is true the property is included in configuration.
      */
-    addDictionary<NewT extends Record<string, any>>(dictionary: Record<string, ConfigurationValue> | (() => Promise<Record<string, ConfigurationValue>>), hierarchySeparator?: string, predicate?: Predicate<string>): IBuilder<MergeResult<T, NewT>>;
+    addDictionary<TDic extends Record<string, ConfigurationValue>, TSep extends string = ':'>(dictionary: TDic | (() => Promise<TDic>), hierarchySeparator?: TSep, predicate?: Predicate<string>): IBuilder<MergeResult<T, InflateDictionary<TDic, TSep>>>;
     /**
      * Adds the qualifying environment variables to the collection of data sources that will be used to build the 
      * configuration object.
@@ -153,7 +172,7 @@ export interface IBuilder<T extends Record<string, any> = {}> {
      * prefix is always removed after processing.  To avoid exposing non-application data as configuration, a prefix 
      * is always used.  If none is specified, the default prefix is OPT_.
      */
-    addEnvironment<NewT extends Record<string, any>>(env: Record<string, ConfigurationValue> | (() => Promise<Record<string, ConfigurationValue>>), prefix?: string): IBuilder<MergeResult<T, NewT>>;
+    addEnvironment<TDic extends Record<string, ConfigurationValue>, TPrefix extends string = 'OPT_'>(env: TDic | (() => Promise<TDic>), prefix?: TPrefix): IBuilder<MergeResult<T, InflateDictionary<TDic, '__', TPrefix>>>;
     /**
      * Adds a fetch operation to the collection of data sources that will be used to build the configuration object.
      * @param url URL to fetch.
@@ -185,13 +204,13 @@ export interface IBuilder<T extends Record<string, any> = {}> {
      * @param value Value of the property.
      * @param hierarchySeparator Optional hierarchy separator.  If not specified, colon (:) is assumed.
      */
-    addSingleValue<NewT extends Record<string, any>>(path: string, value?: ConfigurationValue, hierarchySeparator?: string): IBuilder<MergeResult<T, NewT>>;
+    addSingleValue<TKey extends string, TValue extends ConfigurationValue, TSep extends string = ':'>(path: TKey, value?: TValue, hierarchySeparator?: TSep): IBuilder<MergeResult<T, InflateKey<TKey, TValue, TSep>>>;
     /**
      * Adds a single value to the collection of data sources that will be used to build the configuration object.
      * @param dataFn Function that returns the [key, value] tuple that needs to be added.
      * @param hierarchySeparator Optional hierarchy separator.  If not specified, colon (:) is assumed.
      */
-    addSingleValue<NewT extends Record<string, any>>(dataFn: () => Promise<[string, ConfigurationValue]>, hierarchySeparator?: string): IBuilder<MergeResult<T, NewT>>;
+    addSingleValue<TKey extends string, TValue extends ConfigurationValue, TSep extends string = ':'>(dataFn: () => Promise<readonly [TKey, TValue]>, hierarchySeparator?: TSep): IBuilder<MergeResult<T, InflateKey<TKey, TValue, TSep>>>;
     /**
      * Sets the data source name of the last data source added to the builder.
      * @param name Name for the data source.
@@ -250,7 +269,7 @@ export interface IEnvAwareBuilder<TEnvironments extends string, T extends Record
      * prefix is always removed after the dictionary is processed.  If no prefix is provided, then all dictionary 
      * entries will contribute to the configuration data.
      */
-    addDictionary<NewT extends Record<string, any>>(dictionary: Record<string, ConfigurationValue> | (() => Promise<Record<string, ConfigurationValue>>), hierarchySeparator?: string, prefix?: string): IEnvAwareBuilder<TEnvironments, MergeResult<T, NewT>>;
+    addDictionary<TDic extends Record<string, ConfigurationValue>, TSep extends string = ':'>(dictionary: Record<string, ConfigurationValue> | (() => Promise<Record<string, ConfigurationValue>>), hierarchySeparator?: string, prefix?: string): IEnvAwareBuilder<TEnvironments, MergeResult<T, InflateDictionary<TDic, TSep>>>;
     /**
      * Adds the specified dictionary to the collection of data sources that will be used to build the configuration 
      * object.
@@ -260,7 +279,7 @@ export interface IEnvAwareBuilder<TEnvironments extends string, T extends Record
      * @param predicate Optional predicate function that is called for every property in the dictionary.  Only when 
      * the return value of the predicate is true the property is included in configuration.
      */
-    addDictionary<NewT extends Record<string, any>>(dictionary: Record<string, ConfigurationValue> | (() => Promise<Record<string, ConfigurationValue>>), hierarchySeparator?: string, predicate?: Predicate<string>): IEnvAwareBuilder<TEnvironments, MergeResult<T, NewT>>;
+    addDictionary<TDic extends Record<string, ConfigurationValue>, TSep extends string = ':'>(dictionary: Record<string, ConfigurationValue> | (() => Promise<Record<string, ConfigurationValue>>), hierarchySeparator?: string, predicate?: Predicate<string>): IEnvAwareBuilder<TEnvironments, MergeResult<T, InflateDictionary<TDic, TSep>>>;
     /**
      * Adds the qualifying environment variables to the collection of data sources that will be used to build the 
      * configuration object.
@@ -270,7 +289,7 @@ export interface IEnvAwareBuilder<TEnvironments extends string, T extends Record
      * prefix is always removed after processing.  To avoid exposing non-application data as configuration, a prefix 
      * is always used.  If none is specified, the default prefix is OPT_.
      */
-    addEnvironment<NewT extends Record<string, any>>(env: Record<string, ConfigurationValue> | (() => Promise<Record<string, ConfigurationValue>>), prefix?: string): IEnvAwareBuilder<TEnvironments, MergeResult<T, NewT>>;
+    addEnvironment<TDic extends Record<string, ConfigurationValue>, TPrefix extends string = 'OPT_'>(env: Record<string, ConfigurationValue> | (() => Promise<Record<string, ConfigurationValue>>), prefix?: string): IEnvAwareBuilder<TEnvironments, MergeResult<T, InflateDictionary<TDic, '__', TPrefix>>>;
     /**
      * Adds a fetch operation to the collection of data sources that will be used to build the configuration object.
      * @param url URL to fetch.
@@ -302,13 +321,13 @@ export interface IEnvAwareBuilder<TEnvironments extends string, T extends Record
      * @param value Value of the property.
      * @param hierarchySeparator Optional hierarchy separator.  If not specified, colon (:) is assumed.
      */
-    addSingleValue<NewT extends Record<string, any>>(path: string, value?: ConfigurationValue, hierarchySeparator?: string): IEnvAwareBuilder<TEnvironments, MergeResult<T, NewT>>;
+    addSingleValue<TKey extends string, TValue extends ConfigurationValue, TSep extends string = ':'>(path: string, value?: ConfigurationValue, hierarchySeparator?: string): IEnvAwareBuilder<TEnvironments, MergeResult<T, InflateKey<TKey, TValue, TSep>>>;
     /**
      * Adds a single value to the collection of data sources that will be used to build the configuration object.
      * @param dataFn Function that returns the [key, value] tuple that needs to be added.
      * @param hierarchySeparator Optional hierarchy separator.  If not specified, colon (:) is assumed.
      */
-    addSingleValue<NewT extends Record<string, any>>(dataFn: () => Promise<[string, ConfigurationValue]>, hierarchySeparator?: string): IEnvAwareBuilder<TEnvironments, MergeResult<T, NewT>>;
+    addSingleValue<TKey extends string, TValue extends ConfigurationValue, TSep extends string = ':'>(dataFn: () => Promise<[string, ConfigurationValue]>, hierarchySeparator?: string): IEnvAwareBuilder<TEnvironments, MergeResult<T, InflateKey<TKey, TValue, TSep>>>;
     /**
      * Sets the data source name of the last data source added to the builder.
      * @param name Name for the data source.
