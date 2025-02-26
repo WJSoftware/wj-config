@@ -5,8 +5,8 @@
 ![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/WJSoftware/wj-config?style=plastic&color=violet)
 ![npm bundle size](https://img.shields.io/bundlephobia/min/wj-config?color=red&label=minified&style=plastic)
 
-> JavaScript configuration module for **NodeJS** and **browser frameworks** that works like ASP.net configuration 
-> where any number of data sources are merged, and environment variables can contribute/overwrite values by following a 
+> JavaScript configuration module for **NodeJS** and **browser frameworks** that works like .Net configuration where 
+> any number of data sources are merged, and environment variables can contribute/overwrite values by following a 
 > naming convention.
 
 > [!IMPORTANT]
@@ -15,44 +15,8 @@
 > Version 3.0.0 is a full re-write on the TypeScript side of the package.  Its Intellisense is now fully accurate for 
 > almost everything and anything.  Read all about it in [the TypeScript Wiki page](https://github.com/WJSoftware/wj-config/wiki/English__Theory__TypeScript-and-wj-config).
 
-This JavaScript configuration library works everywhere, most likely.  The table below shows the frameworks or libraries 
-that have successful samples in the [examples](https://github.com/WJSoftware/wj-config/tree/main/examples) folder in the 
-left column.  The right column is pretty much anything else out there that looks like it supports **ES Modules**.
-
-<table style="margin-left: auto; margin-right: auto">
-    <thead>
-        <tr>
-            <th>Works With</th>
-            <th>Probably Works With</th>
-        </tr>
-    </thead>
-    <tbody>
-        <tr>
-            <td valign="top">
-                <img src="https://miro.medium.com/fit/c/192/192/1*APjYv_YDdw1J7WCT4uKh9Q.png" width="16px" height="16px" alt="JavaScript" />&nbsp;JavaScript<br />
-                <img src="https://www.typescriptlang.org/favicon-32x32.png?v=8944a05a8b601855de116c8a56d3b3ae" width="16px" height="16px" alt="TypeScript" />&nbsp;TypeScript<br />
-                <img src="https://nodejs.org/favicon.ico" width="16px" height="16px" alt="NodeJS" />&nbsp;NodeJS<br />
-                <img src="https://deno.com/logo.svg" width="16px" height="16px" alt="Deno" />&nbsp;Deno<br />
-                <img src="https://reactjs.org/favicon.ico" width="16px" height="16px" alt="ReactJS" />&nbsp;ReactJS<br />
-                <img src="https://vuejs.org/logo.svg" width="16px" height="16px" alt="VueJS" />&nbsp;VueJS<br />
-                <img src="https://svelte.dev/favicon.png" width="16px" height="16px" alt="Svelte" />&nbsp;Svelte
-            </td>
-            <td valign="top">
-                <img src="https://solidjs.com/img/favicons/favicon-32x32.png" width="16px" height="16px" />&nbsp;SolidJS<br />
-                <img src="https://preactjs.com/favicon.ico" width="16px" height="16px" alt="Preact" />&nbsp;Preact<br />
-                <img src="https://electronjs.org/assets/img/favicon.ico" width="16px" height="16px" alt="Electron" />&nbsp;Electron<br />
-                <img src="https://angular.io/assets/images/favicons/favicon-32x32.png" width="16px" height="16px" alt="Angular" />&nbsp;Angular<br />
-                <img src="https://remix.run/favicon-32.png" width="16px" height="16px" alt="Remix" />&nbsp;Remix<br />
-                <img src="https://emberjs.com/favicons/icon.svg" width="16px" height="16px" alt="EmberJS" />&nbsp;EmberJS<br />
-                <img src="https://sennajs.com/images/favicon.ico" width="16px" height="16px" alt="SennaJS" />&nbsp;SennaJS<br />
-                <img src="https://mithril.js.org/favicon.png" width="16px" height="16px" alt="MithrilJS" />&nbsp;MithrilJS<br />
-                <img src="https://www.slingjs.org/wp-content/uploads/2021/08/sling-48x48.png" width="16px" height="16px" alt="SlingJS" />&nbsp;SlingJS<br />
-                <img src="https://lit.dev/images/flame-favicon.svg" width="16px" height="16px" alt="Lit" />&nbsp;Lit<br />
-                <img src="data:image/png;base64, iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAACXBIWXMAAAI2AAACNgElQaYmAAACc0lEQVQ4jaVTXUiTURh+zlxrW21u7mtz6pa//alpXkgRiIGYZWA3XkRBdlMGQQZ1kd0EBVJdqDdZF0kRRRdCNwkFmlZCWhQMI2NDncvAOW1+c5vO7fve+E5taBhd+MID57w/z3PO+57DiAgbMdV6tYyx6pLi3W+KCgtC+bnOScZY07801pyAMZZrz7Q9rqjYV3n+TKMm22pAYF7Ek56XYu+r1965+WALEQ2uS5CTndUuSXLzowd31flZBrWUiEOr1/OYLEn4GYrh9NlL/inf9PNwJHqViBZ4UCHIMJt7Tp08EU8sTpN//APNeT+R98sABb+7UogvTHLcutG6pNNpfQBMSfHj9UfrYkpxMul/uNLSLOp0WrdCwATB4hsZ6nc4M9M525hnEm63Bw31tal7rufL2VEp+mcD11VOR47BaTenAr19w7h5pwuu0a98vyCGuO/ytbaUT7FjtYcYgAuqaCQSAcm/O7qYgG2ZsLcgD2Wle7jPlG6EVZuGqpIylNsL8adxEMzpGgAFTLCYfWOfBx1KokLAfsRAwibU1ByGUQKWpQQ6uu9hpyUPZEwD2TZDXo6h9GDdinvcq1HNzQe7b7d3iZzYoIa8awtI0GCr0QCdWoUoA4r2F0Mu0vNikiQMDLyDuBgOA3DxMer1Os/9zrbo390PTLnW7GOzbhrufUYWs2lJ0QPQxAkAbLdtE2YbG46E3R/7aSXgoXhwgkNZx2a+0czoELVePCfZM62KslL0kI8x+RgYYyYAL6xCRrkjO0tVU3VA6TK3vrfv5QmvLy0ohqIAlJF1ElFL6iWuBoBqAE8BJJWS8ALoAJC7On9j3xnAL9flh6V7H5YQAAAAAElFTkSuQmCC" width="16px" height="16px" alt="Bun" />&nbsp;Bun<br />
-            </td>
-        </tr>
-    </tbody>
-</table>
+This JavaScript configuration library works everywhere and has zero dependencies.  Use it in Node, Deno, Bun or the 
+browser equally.  One configuration package for all your JavaScript/TypeScript needs.
 
 Feel free to fork and pull request to include sample applications for your favorite library/framework.
 
@@ -66,7 +30,7 @@ Feel free to fork and pull request to include sample applications for your favor
 
 In a nutshell, this configuration package provides:
 
-+ The ability to merge any number of data sources as one, just like ASP.net configuration loads files and memory 
++ The ability to merge any number of data sources as one, just like .Net configuration loads files and memory 
 dictionaries.
 + 6 pre-defined data sources:  JSON string, POJO object, single value, fetched data, dictionary, and environment.
 + Condition the inclusion of a data source based on a predicate function's return value.
@@ -78,11 +42,13 @@ functions provide route replacement values, query string generation and URL enco
 conditionals based on the current environment, just like .Net's `IHostEnvironment` interface.
 + Configuration value tracing:  If needed for troubleshooting or debugging, the configuration builder will also create 
 a full trace of all configuration values in the `_trace` property of the resulting configuration object.
++ **Full IntelliSense**:  Version 3 of this package has had its TypeScript re-written and is now fully accurate.  Get 
+Intellisense on all your configuration data effortlessly.
 
 ## Examples
 
-There are working examples of use in GitHub [here](https://github.com/WJSoftware/wj-config/tree/main/examples).  Feel 
-free to explore them and to contribute.
+There are working examples of use [here](https://github.com/WJSoftware/wj-config/tree/main/examples).  Feel free to 
+explore them and to contribute.
 
 | Technology | wj-config Version | Technology Version | Development Port |
 | - | - | - | - |
@@ -108,7 +74,7 @@ The repository contains the necessary `launch.json` file to run each of the exam
 
 ### 1. Install the NPM Package
 
-```bat
+```bash
 npm install wj-config
 ```
 
@@ -149,7 +115,8 @@ Example configuration JSON:
 }
 ```
 
-> **NOTE**: The `ws` section is special.  See [URL-Building Functions](https://github.com/WJSoftware/wj-config/wiki/English__Theory__URL-Building-Functions)
+> [!NOTE]
+> The `ws` section is special.  See [URL-Building Functions](https://github.com/WJSoftware/wj-config/wiki/English__Theory__URL-Building-Functions)
 > in the **Wiki** for the details.
 
 Now write per-environment JSON files.  Example for development (would be named `config.Development.json`):
@@ -247,9 +214,10 @@ module.exports = (async function () {
 
 ##### Web Projects
 
-> **IMPORTANT**:  If your project is a React project created with *Create React App*, the recommendation is to eject 
-> or use the `@craco/craco` package (or similar one) in order to configure webpack to allow top-level awaits.  You 
-> can read the details in the [Top Level Await](https://github.com/WJSoftware/wj-config/wiki/English__JavaScript-Concepts__Top-Level-Await) 
+> [!IMPORTANT]
+> If your project is a React project created with *Create React App*, the recommendation is to eject or use the 
+> `@craco/craco` package (or similar one) in order to configure webpack to allow top-level awaits.  You can read the 
+> details in the [Top Level Await](https://github.com/WJSoftware/wj-config/wiki/English__JavaScript-Concepts__Top-Level-Await) 
 > section in the **Wiki**.  It can also work without top-level awaits, but in all honesty, I don't like it.  The 
 > **Wiki** also explains how to achieve this for Vite projects (Vue, Svelte, React, etc.).
 
@@ -331,7 +299,7 @@ It looks almost identical to the classic.  This one has a few advantages:
 2. Helps you avoid typos.
 3. Makes sure there's at least one data source per defined environment.
 
-**IMPORTANT**:  This conditional style requires the call to `includeEnvironment()` and to be made *before* calling 
+This conditional style requires the call to `includeEnvironment()` and to be made *before* calling 
 `addPerEnvironment()`.  Make sure you define your environment names when creating the environment object:
 
 ```javascript
@@ -370,7 +338,8 @@ This one has advantages 2 and 3 above, plus allows for the possiblity of having 
 per environment.  Furthermore, this allows you to add more environment-specific data sources if, for example, a 
 particular environment requires 2 or more data sources.  95% of the time you'll need the short one only.
 
-> **NOTE**:  This "long" version can be mixed with the "short" version, if you so desire.
+> [!NOTE]
+> This "long" version can be mixed with the "short" version, if you so desire.
 
 This works in **NodeJS** too.  There is a performance catch, though:  If in NodeJS you use `loadJsonFile()` with the 
 `addObject()` data source function, you'll be reading all per-environment configuration files, even the unqualified 
