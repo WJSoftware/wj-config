@@ -63,8 +63,7 @@ begin {
     }
     Copy-Item .\src\wj-config.d.ts .\out
     Copy-Item .\src\package.json .\out
-    Copy-Item .\PublishNote.md .\out\README.md -Force
-    Get-Content .\README.md | Add-Content .\out\README.md -Encoding UTF8
+    Copy-Item .\README.md .\out -Force
     if (!$Publish) {
         Write-Output "Running npm publish in dry run mode."
         npm publish .\out\ --dry-run
