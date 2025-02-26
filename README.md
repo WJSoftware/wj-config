@@ -9,6 +9,12 @@
 > where any number of data sources are merged, and environment variables can contribute/overwrite values by following a 
 > naming convention.
 
+> [!IMPORTANT]
+> ## v3.0.0
+> 
+> Version 3.0.0 is a full re-write on the TypeScript side of the package.  Its Intellisense is now fully accurate for 
+> almost everything and anything.  Read all about it in [the TypeScript Wiki page](https://github.com/WJSoftware/wj-config/wiki/English__Theory__TypeScript-and-wj-config).
+
 This JavaScript configuration library works everywhere, most likely.  The table below shows the frameworks or libraries 
 that have successful samples in the [examples](https://github.com/WJSoftware/wj-config/tree/main/examples) folder in the 
 left column.  The right column is pretty much anything else out there that looks like it supports **ES Modules**.
