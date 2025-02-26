@@ -1,5 +1,69 @@
 {
+  "name": "wj-config",
+  "version": "3.0.0-beta.1",
+  "type": "module",
+  "description": "Javascript configuration module for NodeJS and browser frameworks such as React that works like ASP.net configuration where data sources are specified (usually JSON files) and environment variables can contribute/overwrite values by following a naming convention.",
+  "author": {
+    "email": "webJose@gmail.com",
+    "name": "José Pablo Ramírez Vargas"
+  },
+  "keywords": [
+    "config",
+    "wj",
+    "wj-config",
+    "nodejs",
+    "node-config",
+    "config-node",
+    "env",
+    "environment",
+    "json",
+    "json-config",
+    "react",
+    "react-config",
+    "config-react",
+    "microservice",
+    "mife",
+    "microfrontend"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/WJSoftware/wj-config.git"
+  },
+  "bugs": {
+    "url": "https://github.com/WJSoftware/wj-config/issues"
+  },
+  "license": "MIT-open-group",
+  "homepage": "https://github.com/WJSoftware/wj-config#readme",
+  "main": "./out/index.js",
+  "types": "./out/wj-config.d.ts",
+  "exports": {
+    ".": {
+      "types": "./out/index.d.ts",
+      "import": "./out/index.js",
+      "default": "./out/index.js"
+    },
+    "./sources": {
+      "types": "./out/dataSources/index.d.ts",
+      "import": "./out/dataSources/index.js",
+      "default": "./out/dataSources/index.js"
+    }
+  },
+  "scripts": {
+    "build": "pwsh ./build-npm.ps1 && publint",
+    "test": "mocha ./tests/**/*.test.js"
+  },
+  "engines": {
+    "node": ">=16.9.0"
+  },
+  "files": [
+    "./out/**/*.js",
+    "./out/**/*.d.ts",
+    "./out/**/*.map"
+  ],
   "devDependencies": {
+    "@types/chai": "^5.0.0",
+    "chai": "^5.1.2",
+    "mocha": "^11.1.0",
     "publint": "^0.3.6",
     "typescript": "^5.7.3"
   }

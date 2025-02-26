@@ -38,23 +38,20 @@ param (
 )
 begin {
     $ErrorActionPreference = 'Stop'
-    [string] $path = Resolve-Path .\src\package.json
+    [string] $path = Resolve-Path .\
     if ($VerUpgrade -ne '') {
         if ($PSCmdlet.ShouldProcess($path, "Package version increment: $VerUpgrade")) {
-            Set-Location .\src
             if ($PreId -ne '') {
                 npm version $VerUpgrade --preid $PreId --no-git-tag-version
             }
             else {
                 npm version $VerUpgrade --no-git-tag-version
             }
-            Set-Location ..\
         }
     }
     else {
         Write-Verbose "Version upgrade was not specified.  The package's version will not be modified."
     }
-    $path = Resolve-Path .\
     if (Test-Path .\out) {
         Remove-Item -Path .\out -Recurse
     }
@@ -62,14 +59,12 @@ begin {
         npx tsc
     }
     Copy-Item .\src\wj-config.d.ts .\out
-    Copy-Item .\src\package.json .\out
-    Copy-Item .\README.md .\out -Force
     if (!$Publish) {
         Write-Output "Running npm publish in dry run mode."
-        npm publish .\out\ --dry-run
+        npm publish --dry-run
     }
     elseif ($PSCmdlet.ShouldProcess($path, "Publish NPM package")) {
-        npm publish .\out\
+        npm publish
     }
     elseif ($WhatIfPreference) {
         Write-Verbose "NOTE: Running npm publish in dry run mode using sample data for illustration purposes only."
@@ -79,7 +74,6 @@ begin {
         if (-not (Test-Path .\out\test.js)) {
             New-Item -Path .\out\test.js -ItemType File -WhatIf:$false
         }
-        Copy-Item .\src\package.json .\out -WhatIf:$false
-        npm publish .\out\ --dry-run
+        npm publish --dry-run
     }
 }
