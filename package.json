@@ -64,7 +64,7 @@
     "@types/chai": "^5.0.0",
     "chai": "^5.1.2",
     "mocha": "^11.1.0",
-    "publint": "^0.3.6",
+    "publint": "^0.3.9",
     "rollup": "^4.35.0",
     "rollup-plugin-esbuild-minify": "^1.2.0",
     "tslib": "^2.8.1",
