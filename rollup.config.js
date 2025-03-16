@@ -6,7 +6,8 @@ const config = {
     input: 'src/index.ts',
     output: {
         file: './dist/index.min.js',
-		format: 'esm',
+        format: 'esm',
+        sourcemap: true
     },
     plugins: [
         typescript({
