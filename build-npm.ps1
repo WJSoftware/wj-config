@@ -52,6 +52,12 @@ begin {
     else {
         Write-Verbose "Version upgrade was not specified.  The package's version will not be modified."
     }
+    [string] $pkgVersion = Get-Content -Path .\package.json | Where-Object { $_ -match '^\s*"version":' }
+    if ($pkgVersion -match '"version":\s*"\d+\.\d+\.\d+-(.+)"') {
+        $tag = $matches[1]
+    } else {
+        $tag = $null
+    }
     if (Test-Path .\out) {
         Remove-Item -Path .\out -Recurse
     }
@@ -61,10 +67,20 @@ begin {
     Copy-Item .\src\wj-config.d.ts .\out
     if (!$Publish) {
         Write-Output "Running npm publish in dry run mode."
-        npm publish --dry-run
+        if ($null -ne $tag) {
+            npm publish --tag $tag --dry-run
+        }
+        else {
+            npm publish --dry-run
+        }
     }
     elseif ($PSCmdlet.ShouldProcess($path, "Publish NPM package")) {
-        npm publish
+        if ($null -ne $tag) {
+            npm publish --tag $tag
+        }
+        else {
+            npm publish
+        }
     }
     elseif ($WhatIfPreference) {
         Write-Verbose "NOTE: Running npm publish in dry run mode using sample data for illustration purposes only."
@@ -74,6 +90,11 @@ begin {
         if (-not (Test-Path .\out\test.js)) {
             New-Item -Path .\out\test.js -ItemType File -WhatIf:$false
         }
-        npm publish --dry-run
+        if ($null -ne $tag) {
+            npm publish --tag $tag --dry-run
+        }
+        else {
+            npm publish --dry-run
+        }
     }
 }
