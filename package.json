@@ -43,7 +43,7 @@
       "default": "./out/index.js"
     },
     "./dist": {
-      "types": "./dist/index.min.d.ts",
+      "types": "./dist/index.d.ts",
       "import": "./dist/index.min.js",
       "default": "./dist/index.min.js"
     }
