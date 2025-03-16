@@ -1,6 +1,6 @@
 {
   "name": "wj-config",
-  "version": "3.0.0-rc.1",
+  "version": "3.0.0-rc.2",
   "type": "module",
   "description": "Javascript configuration module for NodeJS and browser frameworks such as React that works like ASP.net configuration where data sources are specified (usually JSON files) and environment variables can contribute/overwrite values by following a naming convention.",
   "author": {
@@ -42,14 +42,10 @@
       "import": "./out/index.js",
       "default": "./out/index.js"
     },
-    "./sources": {
-      "types": "./out/dataSources/index.d.ts",
-      "import": "./out/dataSources/index.js",
-      "default": "./out/dataSources/index.js"
-    },
     "./dist": {
-      "types": "./dist/index.d.ts",
-      "browser": "./dist/index.min.js"
+      "types": "./dist/index.min.d.ts",
+      "import": "./dist/index.min.js",
+      "default": "./dist/index.min.js"
     }
   },
   "scripts": {
@@ -61,7 +57,7 @@
   },
   "files": [
     "out",
-    "dist"
+    "dist/index.*"
   ],
   "devDependencies": {
     "@rollup/plugin-typescript": "^12.1.2",
