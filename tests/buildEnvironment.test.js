@@ -14,7 +14,7 @@ describe('buildEnvironment', () => {
         const envName = 'Dev';
 
         // Act.
-        const act = () => buildEnvironment(envName, envNames);
+        const act = () => buildEnvironment(envNames, envName);
 
         // Assert.
         expect(act).to.throw(Error);
@@ -28,7 +28,7 @@ describe('buildEnvironment', () => {
         const envName = 'Dev';
 
         // Act.
-        const env = buildEnvironment(envName, testEnvNames);
+        const env = buildEnvironment(testEnvNames, envName);
 
         // Assert.
         expect(isConfigNode(env.current)).to.be.true;
@@ -39,7 +39,7 @@ describe('buildEnvironment', () => {
         const envName = 'Dev';
 
         // Act.
-        const env = buildEnvironment(envName, testEnvNames);
+        const env = buildEnvironment(testEnvNames, envName);
 
         // Assert.
         expect(env.all).to.have.same.members(testEnvNames);
@@ -49,7 +49,7 @@ describe('buildEnvironment', () => {
         const envName = 'Dev';
 
         // Act.
-        const env = buildEnvironment(envName, testEnvNames);
+        const env = buildEnvironment(testEnvNames, envName);
 
         // Assert.
         const foundFns = [];
@@ -63,7 +63,7 @@ describe('buildEnvironment', () => {
     });
     const missingEnvNameTest = (envDef) => {
         // Act.
-        const act = () => buildEnvironment(envDef, testEnvNames);
+        const act = () => buildEnvironment(testEnvNames, envDef);
 
         // Assert.
         expect(act).to.throw(Error);
@@ -73,7 +73,7 @@ describe('buildEnvironment', () => {
     describe('hasTraits', () => {
         const traitMismatchTest = (envDef, testTraits) => {
             // Arrange.
-            const env = buildEnvironment(envDef, testEnvNames);
+            const env = buildEnvironment(testEnvNames, envDef);
 
             // Act.
             const act = () => env.hasTraits(testTraits);
@@ -86,7 +86,7 @@ describe('buildEnvironment', () => {
         it('Should throw if given an array of string test traits when the current environment traits are of the numeric kind.', () => traitMismatchTest({ name: 'Dev', traits: 3 }, ['abc', 'def']));
         const runTestFn = (envDef, testTraits, expectedResult) => {
             // Arrange.
-            const env = buildEnvironment(envDef, testEnvNames);
+            const env = buildEnvironment(testEnvNames, envDef);
 
             // Act.
             const result = env.hasTraits(testTraits);
@@ -108,7 +108,7 @@ describe('buildEnvironment', () => {
     describe('hasAnyTrait', () => {
         const traitMismatchTest = (envDef, testTraits) => {
             // Arrange.
-            const env = buildEnvironment(envDef, testEnvNames);
+            const env = buildEnvironment(testEnvNames, envDef);
 
             // Act.
             const act = () => env.hasAnyTrait(testTraits);
@@ -120,7 +120,7 @@ describe('buildEnvironment', () => {
         it('Should throw if given a string test trait when the current environment traits are of the numeric kind.', () => traitMismatchTest({ name: 'Dev', traits: 3 }, ['abc', 'def']));
         const runTestFn = (envDef, testTraits, expectedResult) => {
             // Arrange.
-            const env = buildEnvironment(envDef, testEnvNames);
+            const env = buildEnvironment(testEnvNames, envDef);
 
             // Act.
             const result = env.hasAnyTrait(testTraits);

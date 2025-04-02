@@ -165,12 +165,13 @@ module.  If you write one yourself using async `fs`, please pull request and sha
 
 ##### NodeJS ES Modules (Recommended)
 
-```js
-import wjConfig, { buildEnvironment } from 'wj-config';
+```ts
+import wjConfig, { buildEnvironment, type EnvironmentName } from 'wj-config';
 import mainConfig from "./config.json" assert {type: 'json'}; // Importing data is a thing in NodeJS.
 
 // Obtain an environment object ahead of time to help setting configuration up.
-const env = buildEnvironment(process.env.NODE_ENV /*, ['my', 'own', 'environment', 'list'] */);
+const environments = ['Test', 'Staging', 'Production'] as const;
+const env = buildEnvironment(environments, process.env.NODE_ENV as EnvironmentName<typeof environments>);
 
 const configPromise = wjConfig()
     .addObject(mainConfig) // Main configuration JSON file.
@@ -199,7 +200,8 @@ use of [URL-Building Functions](https://github.com/WJSoftware/wj-config/wiki/Eng
 // This is why CommonJS is discouraged.  It makes things more complex.
 module.exports = (async function () {
     const { default: wjConfig, buildEnvironment } = await import('wj-config');
-    const env = buildEnvironment(process.env.NODE_ENV /*, ['my', 'own', 'environment', 'list'] */);
+    const environments = ['Test', 'Staging', 'Production'];
+    const env = buildEnvironment(environments, process.env.NODE_ENV);
     return wjConfig()
         .addObject(loadJsonFile('./config.json', true))
         .name('Main')
@@ -221,11 +223,12 @@ module.exports = (async function () {
 > section in the **Wiki**.  It can also work without top-level awaits, but in all honesty, I don't like it.  The 
 > **Wiki** also explains how to achieve this for Vite projects (Vue, Svelte, React, etc.).
 
-```js
-import wjConfig, { buildEnvironment } from 'wj-config';
+```ts
+import wjConfig, { buildEnvironment, type EnvironmentName } from 'wj-config';
 import mainConfig from './config.json'; // One may import data like this, or fetch it.
 
-const env = buildEnvironment(window.env.REACT_ENVIRONMENT /*, ['my', 'own', 'environment', 'list'] */);
+const environments = ['Test', 'Staging', 'Production'] as const;
+const env = buildEnvironment(environments, window.env.REACT_ENVIRONMENT as EnvironmentName<typeof environments>);
 const configPromise = wjConfig()
     .addObject(mainConfig)
     .name('Main') // Give data sources a meaningful name for value tracing purposes.
@@ -276,11 +279,12 @@ console.log(config.app.title);
 There are two possible ways to do conditional style per-environment configuration.  The shortest first using the 
 **Web Projects** sample:
 
-```javascript
-import wjConfig, { buildEnvironment } from 'wj-config';
+```ts
+import wjConfig, { buildEnvironment, type EnvironmentName } from 'wj-config';
 import mainConfig from './config.json';
 
-const env = buildEnvironment(window.env.REACT_ENVIRONMENT /*, ['my', 'own', 'environment', 'list'] */);
+const environments = ['Test', 'Staging', 'Production'] as const;
+const env = buildEnvironment(environments, window.env.REACT_ENVIRONMENT as EnvironmentName<typeof environments>);
 const config = wjConfig()
     .addObject(mainConfig)
     .name('Main')
@@ -302,19 +306,25 @@ It looks almost identical to the classic.  This one has a few advantages:
 This conditional style requires the call to `includeEnvironment()` and to be made *before* calling 
 `addPerEnvironment()`.  Make sure you define your environment names when creating the environment object:
 
-```javascript
-const env = buildEnvironment(window.env.REACT_ENVIRONMENT, ['myDev', 'myTest', 'myProd']);
+```ts
+const environments = ['myDev', 'myTest', 'myProd'] as const;
+const env = buildEnvironment(environments, window.env.REACT_ENVIRONMENT as EnvironmentName<typeof environments>);
 ```
 
 This way `addPerEnvironment()` knows your environment names.
 
 The longer way of the conditional style looks like this:
 
-```javascript
-import wjConfig, { buildEnvironment } from 'wj-config';
+```ts
+import wjConfig, { buildEnvironment, type EnvironmentName } from 'wj-config';
 import mainConfig from './config.json';
 
-const env = buildEnvironment(window.env.REACT_ENVIRONMENT);
+const environments = [
+    'Development',
+    'PreProduction',
+    'Production'
+] as const;
+const env = buildEnvironment(environments, window.env.REACT_ENVIRONMENT as EnvironmentName<typeof environments>);
 const config = wjConfig()
     .addObject(mainConfig)
     .name('Main')
@@ -332,8 +342,6 @@ const config = wjConfig()
 export default await config;
 ```
 
-> When not specified, the list of environments is `'Development'`, `'PreProduction'`, and `'Production'`.
-
 This one has advantages 2 and 3 above, plus allows for the possiblity of having completely different data source types 
 per environment.  Furthermore, this allows you to add more environment-specific data sources if, for example, a 
 particular environment requires 2 or more data sources.  95% of the time you'll need the short one only.
@@ -345,11 +353,12 @@ This works in **NodeJS** too.  There is a performance catch, though:  If in Node
 `addObject()` data source function, you'll be reading all per-environment configuration files, even the unqualified 
 ones.  To avoid this performance hit, pass a function to `addObject()` that, in turn, calls `loadJsonFile()`:
 
-```js
-import wjConfig, { buildEnvironment } from 'wj-config';
+```ts
+import wjConfig, { buildEnvironment, EnvironmentName } from 'wj-config';
 import mainConfig from "./config.json" assert {type: 'json'};
 
-const env = buildEnvironment(process.env.NODE_ENV);
+const environments = ['Test', 'Staging', 'Production'] as const;
+const env = buildEnvironment(environments, process.env.NODE_ENV as EnvironmentName<typeof environments>);
 
 const config = wjConfig()
     .addObject(mainConfig)
