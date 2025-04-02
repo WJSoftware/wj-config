@@ -20,15 +20,19 @@ function capitalize(text: string) {
  * @param possibleEnvironments The complete list of all possible environments.
  * @returns The newly created `IEnvironment<TEnvironments>` object.
  */
-export function buildEnvironment<TEnvironments extends string = 'Development' | 'PreProduction' | 'Production'>(
-    currentEnvironment: TEnvironments | IEnvironmentDefinition<TEnvironments>,
-    possibleEnvironments?: TEnvironments[]
-): IEnvironment<TEnvironments> {
-    const defaultNames: string[] = ['Development', 'PreProduction', 'Production'];
+export function buildEnvironment<TEnvironment extends string>(
+    possibleEnvironments: readonly TEnvironment[],
+    currentEnvironment: TEnvironment | IEnvironmentDefinition<TEnvironment>,
+): IEnvironment<TEnvironment> {
+    const envDef = ensureEnvDefinition(currentEnvironment);
     const env = {
-        all: possibleEnvironments ?? defaultNames,
-        current: ensureEnvDefinition(currentEnvironment),
-    } as IEnvironment<TEnvironments>;
+        get all() {
+            return possibleEnvironments;
+        },
+        get current() {
+            return envDef;
+        }
+    } as IEnvironment<TEnvironment>;
     env.hasAnyTrait = hasAnyTrait.bind(env);
     env.hasTraits = hasTraits.bind(env);
     let validCurrentEnvironment = false;
@@ -44,7 +48,7 @@ export function buildEnvironment<TEnvironments extends string = 'Development' | 
     }
     return env;
 
-    function normalizeTestTraits(this: IEnvironment<TEnvironments>, traits: Trait | Traits): Trait | Traits {
+    function normalizeTestTraits(this: IEnvironment<TEnvironment>, traits: Trait | Traits): Trait | Traits {
         if (typeof traits === 'number' && typeof this.current.traits !== 'number') {
             throw new TypeError('Cannot test a numeric trait against string traits.');
         }
@@ -57,7 +61,7 @@ export function buildEnvironment<TEnvironments extends string = 'Development' | 
         return traits;
     }
 
-    function hasTraits(this: IEnvironment<TEnvironments>, traits: Trait | Traits): boolean {
+    function hasTraits(this: IEnvironment<TEnvironment>, traits: Trait | Traits): boolean {
         traits = normalizeTestTraits.call(this, traits);
         const hasBitwiseTraits = (t: number) => ((this.current.traits as number) & t) === t && t > 0;
         const hasStringTraits = (t: string[]) => {
@@ -73,7 +77,7 @@ export function buildEnvironment<TEnvironments extends string = 'Development' | 
         return hasStringTraits(traits as string[]);
     }
 
-    function hasAnyTrait(this: IEnvironment<TEnvironments>, traits: Trait | Traits): boolean {
+    function hasAnyTrait(this: IEnvironment<TEnvironment>, traits: Trait | Traits): boolean {
         traits = normalizeTestTraits.call(this, traits);
         const hasAnyBitwiseTrait = (t: number) => ((this.current.traits as number) & t) > 0;
         const hasAnyStringTrait = (t: string[]) => {

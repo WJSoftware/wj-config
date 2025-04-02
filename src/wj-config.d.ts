@@ -229,7 +229,10 @@ export interface IBuilder<T extends Record<string, any> = {}> {
     * @param env Previously created environment object.
     * @param propertyName Optional property name for the environment object.
     */
-    includeEnvironment<TEnvironments extends string, TEnvironmentKey extends string = "environment">(env: IEnvironment<TEnvironments>, propertyName?: TEnvironmentKey): IEnvAwareBuilder<TEnvironments, Omit<T, TEnvironmentKey> & IncludeEnvironment<TEnvironments, TEnvironmentKey>>;
+    includeEnvironment<TEnvironments extends string, TEnvironmentKey extends string = "environment">(
+        env: IEnvironment<TEnvironments>,
+        propertyName?: TEnvironmentKey
+    ): IEnvAwareBuilder<TEnvironments, Omit<T, TEnvironmentKey> & IncludeEnvironment<TEnvironments, TEnvironmentKey>>;
     /**
      * Creates URL functions in the final configuration object for URL's defined according to the wj-config standard.
      * @param wsPropertyNames Optional list of property names whose values are expected to be objects that contain 
@@ -552,3 +555,22 @@ export interface IEnvironmentDefinition<TEnvironments extends string> {
      */
     readonly traits: Traits
 }
+
+/**
+ * Utility type that extracts the environment names from a constant list of possible names.
+ * 
+ * @example
+ * ```ts
+ * const envs = ['Development', 'Staging', 'Production'] as const;
+ * type EnvName = EnvironmentName<typeof envs>; // 'Development' | 'Staging' | 'Production'
+ * 
+ * const env = buildEnvironment(process.env.NODE_ENV as EnvName, envs);
+ * env.isDevelopment(); // true if the current environment is 'Development'
+ * env.isStaging(); // true if the current environment is 'Staging'
+ * env.isProduction(); // true if the current environment is 'Production'
+ * ```
+ * 
+ * Without the type casting (`as EnvName`), the `isXXX()` functions would not show up in Intellisense, as the type of 
+ * `env` would be`IEnvironment<string>`.
+ */
+export type EnvironmentName<T extends readonly string[]> = T[number];

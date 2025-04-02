@@ -52,22 +52,12 @@ export class Builder<T extends Record<string, any> = {}> implements IBuilder<T> 
     }
 
     includeEnvironment<TEnvironments extends string, TEnvironmentKey extends string = "environment">(
-        valueOrEnv: TEnvironments | IEnvironment<TEnvironments>,
-        propNameOrEnvNames?: TEnvironments[] | TEnvironmentKey,
-        propertyName?: TEnvironmentKey
+        env: IEnvironment<TEnvironments>,
+        propertyName: TEnvironmentKey = 'environment' as TEnvironmentKey,
     ) {
         this.#impl._lastCallWasDsAdd = false;
-        const propName = (typeof propNameOrEnvNames === 'string' ? propNameOrEnvNames : propertyName) ?? 'environment';
-        const envNames = (propNameOrEnvNames && typeof propNameOrEnvNames !== 'string') ? propNameOrEnvNames : undefined;
-        let env: IEnvironment<TEnvironments>;
-        if (typeof valueOrEnv === 'object') {
-            env = valueOrEnv;
-        }
-        else {
-            env = buildEnvironment(valueOrEnv, envNames);
-        }
         const envSource: IEnvironmentSource<TEnvironments> = {
-            name: propName,
+            name: propertyName,
             environment: env
         };
         return new EnvAwareBuilder<TEnvironments, Omit<T, TEnvironmentKey> & IncludeEnvironment<TEnvironments, TEnvironmentKey>>(envSource, this.#impl);
