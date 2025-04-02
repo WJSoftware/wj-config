@@ -23,8 +23,12 @@ Specify a version change.  See the documentation for the command 'npm version' f
 Specify the pre-release ID to use.  Common examples would be 'alpha', 'beta' or 'rc'.  See the documentation for the command 'npm version' for detailed information.
 
 .PARAMETER Publish
-.  Useful to examine the end results.  Note that 'npm publish' will be run in dry mode.
+Publishes the package.
 
+.PARAMETER NpmTag
+Specifies the tag to use when publishing the package.  This is useful for pre-release versions.  See the documentation for the command 'npm publish' for detailed information.
+
+It cannot be used when the package version contains a pre-release tag, and is only used when publishing.
 #>
 [CmdletBinding(SupportsShouldProcess = $true)]
 param (
@@ -34,7 +38,9 @@ param (
     [Parameter(Mandatory = $false)]
     [string] $PreId,
     [Parameter(Mandatory = $false)]
-    [switch] $Publish
+    [switch] $Publish,
+    [Parameter(Mandatory = $false)]
+    [string] $NpmTag
 )
 begin {
     $ErrorActionPreference = 'Stop'
@@ -52,12 +58,6 @@ begin {
     else {
         Write-Verbose "Version upgrade was not specified.  The package's version will not be modified."
     }
-    [string] $pkgVersion = Get-Content -Path .\package.json | Where-Object { $_ -match '^\s*"version":' }
-    if ($pkgVersion -match '"version":\s*"\d+\.\d+\.\d+-(.+)"') {
-        $tag = $matches[1]
-    } else {
-        $tag = $null
-    }
     if (Test-Path .\out) {
         Remove-Item -Path .\out -Recurse
     }
@@ -65,36 +65,22 @@ begin {
         npx tsc
     }
     Copy-Item .\src\wj-config.d.ts .\out
+    [string] $publishTag = $NpmTag -eq "" ? "latest" : $NpmTag
     if (!$Publish) {
-        Write-Output "Running npm publish in dry run mode."
-        if ($null -ne $tag) {
-            npm publish --tag $tag --dry-run
-        }
-        else {
-            npm publish --dry-run
-        }
+        Write-Output "Running npm publish in dry run mode using tag '$publishTag'."
+        npm publish --tag $publishTag --dry-run
     }
     elseif ($PSCmdlet.ShouldProcess($path, "Publish NPM package")) {
-        if ($null -ne $tag) {
-            npm publish --tag $tag
-        }
-        else {
-            npm publish
-        }
+        npm publish --tag $publishTag
     }
     elseif ($WhatIfPreference) {
-        Write-Verbose "NOTE: Running npm publish in dry run mode using sample data for illustration purposes only."
+        Write-Verbose "NOTE: Running npm publish in dry run mode using tag '$publishTag' and sample data for illustration purposes only."
         if (-not (Test-Path .\out)) {
             New-Item -Path .\out -ItemType Directory -WhatIf:$false
         }
         if (-not (Test-Path .\out\test.js)) {
             New-Item -Path .\out\test.js -ItemType File -WhatIf:$false
         }
-        if ($null -ne $tag) {
-            npm publish --tag $tag --dry-run
-        }
-        else {
-            npm publish --dry-run
-        }
+        npm publish --tag $publishTag --dry-run
     }
 }
