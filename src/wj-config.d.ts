@@ -292,7 +292,7 @@ export interface IEnvAwareBuilder<TEnvironments extends string, T extends Record
      * prefix is always removed after processing.  To avoid exposing non-application data as configuration, a prefix 
      * is always used.  If none is specified, the default prefix is OPT_.
      */
-    addEnvironment<TDic extends Record<string, ConfigurationValue>, TPrefix extends string = 'OPT_'>(env: Record<string, ConfigurationValue> | (() => Promise<Record<string, ConfigurationValue>>), prefix?: string): IEnvAwareBuilder<TEnvironments, MergeResult<T, InflateDictionary<TDic, '__', TPrefix>>>;
+    addEnvironment<TDic extends Record<string, ConfigurationValue>, TPrefix extends string = 'OPT_'>(env: TDic | (() => Promise<TDic>), prefix?: TPrefix): IEnvAwareBuilder<TEnvironments, MergeResult<T, InflateDictionary<TDic, '__', TPrefix>>>;
     /**
      * Adds a fetch operation to the collection of data sources that will be used to build the configuration object.
      * @param url URL to fetch.
