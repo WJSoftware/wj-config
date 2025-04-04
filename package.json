@@ -49,7 +49,7 @@
     }
   },
   "scripts": {
-    "build": "rollup -c && pwsh ./build-npm.ps1 && publint",
+    "build": "pwsh ./build-npm.ps1 && publint",
     "test": "mocha ./tests/**/*.test.js"
   },
   "engines": {
