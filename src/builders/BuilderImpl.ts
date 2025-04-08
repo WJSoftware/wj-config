@@ -78,7 +78,7 @@ export class BuilderImpl {
     async build(traceValueSources: boolean = false, evaluatePredicate: Predicate<Function>) {
         this._lastCallWasDsAdd = false;
         const qualifyingDs: IDataSource<Record<string, any>>[] = [];
-        let wjConfig: Record<string, any>;
+        let wjConfig: Record<string, any> = {};
         if (this._dsDefs.length > 0) {
             // Prepare a list of qualifying data sources.  A DS qualifies if it has no predicate or
             // the predicate returns true.
@@ -93,14 +93,9 @@ export class BuilderImpl {
                     dsTasks.push(ds.getObject());
                 });
                 const sources = await Promise.all(dsTasks);
+                sources.unshift(wjConfig);
                 wjConfig = merge(sources, traceValueSources ? qualifyingDs : undefined);
             }
-            else {
-                wjConfig = {};
-            }
-        }
-        else {
-            wjConfig = {};
         }
         const urlData = this._urlData;
         if (urlData) {
