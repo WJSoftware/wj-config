@@ -48,10 +48,10 @@ begin {
     if ($VerUpgrade -ne '') {
         if ($PSCmdlet.ShouldProcess($path, "Package version increment: $VerUpgrade")) {
             if ($PreId -ne '') {
-                npm version $VerUpgrade --preid $PreId --no-git-tag-version
+                npm version $VerUpgrade --preid $PreId
             }
             else {
-                npm version $VerUpgrade --no-git-tag-version
+                npm version $VerUpgrade
             }
         }
     }
