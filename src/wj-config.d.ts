@@ -345,7 +345,7 @@ export interface IEnvAwareBuilder<TEnvironments extends string, T extends Record
      * @param addDs Function that is meant to add a single data source of any type that is associated to the 
      * provided environment name.
      */
-    addPerEnvironment<NewT extends Record<string, any>>(addDs: (builder: IEnvAwareBuilder<TEnvironments, T>, envName: TEnvironments) => boolean | string): IEnvAwareBuilder<TEnvironments, MergeResult<T, NewT>>;
+    addPerEnvironment<NewT extends Record<string, any> = {}>(addDs: (builder: IEnvAwareBuilder<TEnvironments, T>, envName: TEnvironments) => boolean | string): IEnvAwareBuilder<TEnvironments, MergeResult<T, NewT>>;
     /**
      * Makes the last-added data source conditionally inclusive.
      * @param predicate Predicate function that is run whenever the build function runs.  If the predicate returns 
