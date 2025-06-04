@@ -247,6 +247,51 @@ export interface IBuilder<T extends Record<string, any> = {}> {
      * Asynchronously builds the final configuration object.
      */
     build(traceValueSources?: boolean): Promise<T>;
+    /**
+     * Defines a post-merge operation.  Post-merge operations are run after all the data sources have been merged and 
+     * after all URL functions have been created, and allow the developer to perform additional processing on the final 
+     * configuration object.
+     * 
+     * Any number of post-merge operations can be defined; these are run in the order they are provided, each being fed 
+     * the configuration object that the previous post-merge operation returns.
+     * 
+     * This is useful for things like creating composite values.  The use-case that inspired this feature is the 
+     * creation of scopes for Azure SSO.
+     * 
+     * @example
+     * 
+     * A configuration JSON file containing SSO configuration might look like this:
+     * 
+     * ```json
+     * {
+     *   "sso": {
+     *     "auth": {
+     *       "clientId": "12345678-1234-1234-1234-123456789012",
+     *       "redirectUri": "/",
+     *       "authority": "https://login.microsoftonline.com/common",
+     *       "clientCapabilities": [ "CP1" ]
+     *     },
+     *     "scopes": [ "some.api.access" ]
+*        }
+     * }
+     * ```
+     * 
+     * Scopes are usually in the form `"api://{clientId}/{scope}"`, so the post-merge function can be used to replace 
+     * the scopes in the config JSON file with scopes of the above form.  The advantage over just typing them already 
+     * in this format?  You don't have to repeat the client ID on every scope.  We are all about DRY configuration.
+     * 
+     * ```ts
+     * export default await wjConfig()
+     *     ...
+     *     .postMerge(c => c.sso.scopes = c.sso.scopes.map(s => `api://${c.sso.auth.clientId}/${s}`))
+     *     .build();
+     * ```
+     * 
+     * @param fn Function that receives the (otherwise) final configuration object and allows the developer to perform 
+     * additional processing on it.  The function must return the modified object, which is passed to the next post 
+     * merge function.
+     */
+    postMerge<U extends Record<string, any> = T>(fn: (config: T) => U | Promise<U>): IBuilder<U>;
 }
 
 export interface IEnvAwareBuilder<TEnvironments extends string, T extends Record<string, any> = {}> {
@@ -393,6 +438,51 @@ export interface IEnvAwareBuilder<TEnvironments extends string, T extends Record
      * Asynchronously builds the final configuration object.
      */
     build(traceValueSources?: boolean, enforcePerEnvironmentCoverage?: boolean): Promise<T>;
+    /**
+     * Defines a post-merge operation.  Post-merge operations are run after all the data sources have been merged and 
+     * after all URL functions have been created, and allow the developer to perform additional processing on the final 
+     * configuration object.
+     * 
+     * Any number of post-merge operations can be defined; these are run in the order they are provided, each being fed 
+     * the configuration object that the previous post-merge operation returns.
+     * 
+     * This is useful for things like creating composite values.  The use-case that inspired this feature is the 
+     * creation of scopes for Azure SSO.
+     * 
+     * @example
+     * 
+     * A configuration JSON file containing SSO configuration might look like this:
+     * 
+     * ```json
+     * {
+     *   "sso": {
+     *     "auth": {
+     *       "clientId": "12345678-1234-1234-1234-123456789012",
+     *       "redirectUri": "/",
+     *       "authority": "https://login.microsoftonline.com/common",
+     *       "clientCapabilities": [ "CP1" ]
+     *     },
+     *     "scopes": [ "some.api.access" ]
+*        }
+     * }
+     * ```
+     * 
+     * Scopes are usually in the form `"api://{clientId}/{scope}"`, so the post-merge function can be used to replace 
+     * the scopes in the config JSON file with scopes of the above form.  The advantage over just typing them already 
+     * in this format?  You don't have to repeat the client ID on every scope.  We are all about DRY configuration.
+     * 
+     * ```ts
+     * export default await wjConfig()
+     *     ...
+     *     .postMerge(c => c.sso.scopes = c.sso.scopes.map(s => `api://${c.sso.auth.clientId}/${s}`))
+     *     .build();
+     * ```
+     * 
+     * @param fn Function that receives the (otherwise) final configuration object and allows the developer to perform 
+     * additional processing on it.  The function must return the modified object, which is passed to the next post 
+     * merge function.
+     */
+    postMerge<U extends Record<string, any> = T>(fn: (config: T) => U | Promise<U>): IEnvAwareBuilder<TEnvironments, U>;
 }
 
 /**

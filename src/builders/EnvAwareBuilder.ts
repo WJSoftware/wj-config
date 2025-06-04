@@ -54,6 +54,11 @@ export class EnvAwareBuilder<TEnvironments extends string, T extends Record<stri
         return this.add(new SingleValueDataSource<MergeResult<T, InflateKey<TKey, TValue, TSep>>>(path, valueOrHierarchySeparator, typeof path === 'function' ? valueOrHierarchySeparator as string : hierarchySeparator));
     }
 
+    postMerge<U extends Record<string, any> = T>(fn: (config: T) => U | Promise<U>): IEnvAwareBuilder<TEnvironments, U> {
+        this.#impl.postMerge(fn);
+        return this as unknown as IEnvAwareBuilder<TEnvironments, U>;
+    }
+
     name(name: string) {
         this.#impl.name(name);
         return this;

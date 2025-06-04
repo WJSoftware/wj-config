@@ -41,6 +41,11 @@ export class Builder<T extends Record<string, any> = {}> implements IBuilder<T> 
         return this.add<InflateKey<TKey, TValue, TSep>>(new SingleValueDataSource<InflateKey<TKey, TValue, TSep>>(path, valueOrHierarchySeparator, typeof path === 'function' ? valueOrHierarchySeparator as string : hierarchySeparator));
     }
 
+    postMerge<U extends Record<string, any> = T>(fn: (config: T) => U | Promise<U>): IBuilder<U> {
+        this.#impl.postMerge(fn);
+        return this as unknown as IBuilder<U>;
+    }
+
     name(name: string) {
         this.#impl.name(name);
         return this;

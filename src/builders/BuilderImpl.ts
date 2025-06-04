@@ -13,6 +13,8 @@ interface IDataSourceDef {
     predicate?: (env?: any) => boolean;
 }
 
+type PostMergeFn = (config: any) => any;
+
 export class BuilderImpl {
     /**
      * Collection of data sources added to the builder.
@@ -26,6 +28,12 @@ export class BuilderImpl {
      * Flag to determine if the last call in the builder was the addition of a data source.
      */
     _lastCallWasDsAdd: boolean = false;
+    #postMergeFns: PostMergeFn[] = [];
+
+    postMerge(fn: PostMergeFn) {
+        this._lastCallWasDsAdd = false;
+        this.#postMergeFns.push(fn);
+    }
 
     add(dataSource: IDataSource<Record<string, any>>) {
         this._dsDefs.push({
@@ -116,6 +124,9 @@ export class BuilderImpl {
             else {
                 wjConfig._qualifiedDs = [];
             }
+        }
+        for (let fn of this.#postMergeFns) {
+            wjConfig = await fn(wjConfig);
         }
         return wjConfig;
     }
