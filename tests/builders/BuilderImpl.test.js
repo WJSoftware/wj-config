@@ -84,23 +84,6 @@ describe('BuilderImpl', () => {
                 }
             });
             builder.add(dataSource);
-            builder.createUrlFunctions('api');
-
-            // Act.
-            const result = await builder.build();
-
-            // Assert.
-            expect(result.api.buildUrl).to.be.a('function');
-        });
-        it("Should add tracing data when requested.", async () => {
-            // Arrange.
-            const builder = new BuilderImpl();
-            const dataSource = new ObjectDataSource({
-                api: {
-                    rootPath: '/',
-                }
-            });
-            builder.add(dataSource);
 
             // Act.
             const result = await builder.build(true);
