@@ -7,6 +7,9 @@ function ensureEnvDefinition<TEnvironments extends string>(env: string | IEnviro
     if (typeof env === 'string') {
         return new EnvironmentDefinition(env) as IEnvironmentDefinition<TEnvironments>;
     }
+    else if (env === null || env === undefined) {
+        throw new TypeError('Environment cannot be null or undefined.');
+    }
     return env;
 }
 

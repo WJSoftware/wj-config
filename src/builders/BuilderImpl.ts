@@ -19,11 +19,11 @@ export class BuilderImpl {
     /**
      * Collection of data sources added to the builder.
      */
-    _dsDefs: IDataSourceDef[] = [];
+    #dsDefs: IDataSourceDef[] = [];
     /**
      * URL data used to create URL functions out of specific property values in the resulting configuration object.
      */
-    _urlData?: IUrlData;
+    #urlData?: IUrlData;
     /**
      * Flag to determine if the last call in the builder was the addition of a data source.
      */
@@ -36,27 +36,27 @@ export class BuilderImpl {
     }
 
     add(dataSource: IDataSource<Record<string, any>>) {
-        this._dsDefs.push({
+        this.#dsDefs.push({
             dataSource: dataSource
         });
-        dataSource.index = this._dsDefs.length - 1;
+        dataSource.index = this.#dsDefs.length - 1;
         this._lastCallWasDsAdd = true;
     }
     name(name: string) {
         if (!this._lastCallWasDsAdd) {
             throw new Error('Names for data sources must be set immediately after adding the data source or setting its conditional.');
         }
-        this._dsDefs[this._dsDefs.length - 1].dataSource.name = name;
+        this.#dsDefs[this.#dsDefs.length - 1].dataSource.name = name;
     }
 
     when(predicate: Predicate<any>, dataSourceName?: string) {
         if (!this._lastCallWasDsAdd) {
             throw new Error('Conditionals for data sources must be set immediately after adding the data source or setting its name.');
         }
-        if (this._dsDefs[this._dsDefs.length - 1].predicate) {
+        if (this.#dsDefs[this.#dsDefs.length - 1].predicate) {
             throw new Error('Cannot set more than one predicate (conditional) per data source, and the last-added data source already has a predicate.');
         }
-        const dsDef = this._dsDefs[this._dsDefs.length - 1];
+        const dsDef = this.#dsDefs[this.#dsDefs.length - 1];
         dsDef.predicate = predicate;
         if (dataSourceName != undefined) {
             this.name(dataSourceName);
@@ -77,20 +77,20 @@ export class BuilderImpl {
         else {
             throw new Error("The 'wsPropertyNames' property now has no default value and must be provided.");
         }
-        this._urlData = {
+        this.#urlData = {
             wsPropertyNames: propNames! as string[],
             routeValuesRegExp: routeValuesRegExp ?? /\{(\w+)\}/g
         };
     }
 
-    async build(traceValueSources: boolean = false, evaluatePredicate: Predicate<Function>) {
+    async build(traceValueSources: boolean, evaluatePredicate: Predicate<Function>) {
         this._lastCallWasDsAdd = false;
         const qualifyingDs: IDataSource<Record<string, any>>[] = [];
         let wjConfig: Record<string, any> = {};
-        if (this._dsDefs.length > 0) {
+        if (this.#dsDefs.length > 0) {
             // Prepare a list of qualifying data sources.  A DS qualifies if it has no predicate or
             // the predicate returns true.
-            this._dsDefs.forEach(ds => {
+            this.#dsDefs.forEach(ds => {
                 if (!ds.predicate || evaluatePredicate(ds.predicate)) {
                     qualifyingDs.push(ds.dataSource);
                 }
@@ -105,12 +105,11 @@ export class BuilderImpl {
                 wjConfig = merge(sources, traceValueSources ? qualifyingDs : undefined);
             }
         }
-        const urlData = this._urlData;
-        if (urlData) {
-            urlData.wsPropertyNames.forEach((value) => {
+        if (this.#urlData) {
+            this.#urlData.wsPropertyNames.forEach((value) => {
                 const obj = wjConfig[value];
                 if (isConfigNode(obj)) {
-                    makeWsUrlFunctions(obj, urlData.routeValuesRegExp, globalThis.window && globalThis.window.location !== undefined);
+                    makeWsUrlFunctions(obj, this.#urlData!.routeValuesRegExp, globalThis.window && globalThis.window.location !== undefined);
                 }
                 else {
                     throw new Error(`The level 1 property "${value}" is not a node value (object), but it was specified as being an object containing URL-building information.`);
