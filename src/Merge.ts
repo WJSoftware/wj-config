@@ -72,28 +72,25 @@ export default function merge(objects: ConfigurationNode[], dataSources?: IDataS
     if (dataSources && objects.length !== dataSources?.length) {
         throw new Error('The number of provided objects differs from the number of provided data sources.');
     }
-    let result: ConfigurationNode = objects[0];
-    let initialIndex = 1;
+    let result: ConfigurationNode = {};
     let trace: TraceRequest | undefined;
     if (dataSources) {
-        result = {};
-        initialIndex = 0;
         trace = {
             trace: {},
             dataSource: dataSources[0]
         };
     }
-    for (let idx = initialIndex; idx < objects.length; ++idx) {
+    for (let idx = 0; idx < objects.length; ++idx) {
         let nextObject = objects[idx];
         // If null or undefined, just substitute for an empty object.
         if (nextObject === null || nextObject === undefined) {
             nextObject = {};
         }
-        if (!isConfigNode(nextObject)) {
+        else if (!isConfigNode(nextObject)) {
             throw new Error(`Configuration object at index ${idx} is not of the appropriate type.`);
         }
         if (trace) {
-            trace.dataSource = (dataSources as IDataSource[])[idx];
+            trace.dataSource = dataSources![idx];
         }
         mergeTwo(result, nextObject, trace);
     }

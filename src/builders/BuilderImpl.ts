@@ -101,7 +101,6 @@ export class BuilderImpl {
                     dsTasks.push(ds.getObject());
                 });
                 const sources = await Promise.all(dsTasks);
-                sources.unshift(wjConfig);
                 wjConfig = merge(sources, traceValueSources ? qualifyingDs : undefined);
             }
         }

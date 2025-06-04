@@ -92,22 +92,22 @@ describe('BuilderImpl', () => {
             // Assert.
             expect(result.api.buildUrl).to.be.a('function');
         });
-        // it("Should add tracing data when requested.", async () => {
-        //     // Arrange.
-        //     const builder = new BuilderImpl();
-        //     const dataSource = new ObjectDataSource({
-        //         api: {
-        //             rootPath: '/',
-        //         }
-        //     });
-        //     builder.add(dataSource);
+        it("Should add tracing data when requested.", async () => {
+            // Arrange.
+            const builder = new BuilderImpl();
+            const dataSource = new ObjectDataSource({
+                api: {
+                    rootPath: '/',
+                }
+            });
+            builder.add(dataSource);
 
-        //     // Act.
-        //     const result = await builder.build(true);
+            // Act.
+            const result = await builder.build(true);
 
-        //     // Assert.
-        //     expect(result._qualifiedDs).to.be.an('array');
-        //     expect(result._trace).to.be.an('object');
-        // });
+            // Assert.
+            expect(result._qualifiedDs).to.be.an('array');
+            expect(result._trace).to.be.an('object');
+        });
     });
 });
