@@ -7,6 +7,18 @@ on:
         description: 'Perform a dry run (true/false)'
         required: false
         default: 'false'
+        type: choice
+        options:
+          - 'true'
+          - 'false'
+      debug:
+        description: 'Enable debug mode (true/false)'
+        required: false
+        default: 'false'
+        type: choice
+        options:
+          - 'true'
+          - 'false'
 
 jobs:
   build-test-publish:
@@ -27,7 +39,12 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Build package (Debug Mode)
+        if: github.event.inputs.debug == 'true'
+        run: pwsh ./build-npm.ps1 -Verbose
+
       - name: Build package
+        if: github.event.inputs.debug == 'false'
         run: pwsh ./build-npm.ps1
 
       - name: Run unit tests
