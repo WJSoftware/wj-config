@@ -1,6 +1,6 @@
 {
   "name": "wj-config",
-  "version": "3.1.0",
+  "version": "3.1.1",
   "type": "module",
   "description": "Javascript configuration module for NodeJS and browser frameworks such as React that works like ASP.net configuration where data sources are specified (usually JSON files) and environment variables can contribute/overwrite values by following a naming convention.",
   "author": {
