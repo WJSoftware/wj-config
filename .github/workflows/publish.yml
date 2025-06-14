@@ -3,6 +3,11 @@ name: Build, Test, and Publish NPM Package
 on:
   workflow_dispatch:
     inputs:
+      npm_tag:
+        description: 'NPM tag to publish the package (e.g., latest, beta, etc.)'
+        required: false
+        default: 'latest'
+        type: string
       dry_run:
         description: 'Perform a dry run (true/false)'
         required: false
@@ -55,10 +60,10 @@ jobs:
         if: github.ref == 'refs/heads/main' && success() && github.event.inputs.dry_run == 'true'
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-        run: npm publish --access public --dry-run
+        run: npm publish --access public --tag ${{ github.event.inputs.npm_tag }} --dry-run
 
       - name: Publish to NPM
         if: github.ref == 'refs/heads/main' && success() && github.event.inputs.dry_run == 'false'
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-        run: npm publish --access public
+        run: npm publish --access public --tag ${{ github.event.inputs.npm_tag }}
