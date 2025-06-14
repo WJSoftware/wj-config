@@ -50,7 +50,7 @@
   },
   "scripts": {
     "build": "pwsh ./build-npm.ps1 && publint",
-    "test": "mocha ./tests/**/*.test.js"
+    "test": "mocha tests/**/*.test.js"
   },
   "engines": {
     "node": ">=16.9.0"
