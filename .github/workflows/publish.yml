@@ -41,22 +41,22 @@ jobs:
 
       - name: Build package (Debug Mode)
         if: github.event.inputs.debug == 'true'
-        run: pwsh ./build-npm.ps1 -Verbose
+        run: npm run build:debug
 
       - name: Build package
-        if: github.event.inputs.debug == 'false'
-        run: pwsh ./build-npm.ps1
+        run: npm run build
 
       - name: Run unit tests
         run: npm test
 
-      - name: Publish to NPM
-        if: github.ref == 'refs/heads/main' && success()
+      - name: Publish to NPM (Dry Run)
+        if: github.ref == 'refs/heads/main' && success() && github.event.inputs.dry_run == 'true'
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-        run: |
-          if [[ "${{ github.event.inputs.dry_run }}" == "true" ]]; then
-            npm publish --access public --dry-run
-          else
-            npm publish --access public
-          fi
+        run: npm publish --access public --dry-run
+
+      - name: Publish to NPM
+        if: github.ref == 'refs/heads/main' && success() && github.event.inputs.dry_run == 'false'
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: npm publish --access public
