@@ -44,6 +44,7 @@ jobs:
         run: npm run build:debug
 
       - name: Build package
+        if: github.event.inputs.debug == 'false'
         run: npm run build
 
       - name: Run unit tests
