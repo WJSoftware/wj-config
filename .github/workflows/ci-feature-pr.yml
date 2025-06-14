@@ -29,8 +29,5 @@ jobs:
       - name: Build
         run: npm run build
 
-      - name: Debugging Information
-        run: pwd && ls -la && ls -la out
-
       - name: Run unit tests
         run: npm test
