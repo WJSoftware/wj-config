@@ -50,6 +50,7 @@
   },
   "scripts": {
     "build": "pwsh ./build-npm.ps1 && publint",
+    "build:debug": "pwsh ./build-npm.ps1 -Verbose && publint",
     "test": "mocha \"./tests/**/*.test.js\""
   },
   "engines": {
