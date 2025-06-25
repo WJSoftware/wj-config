@@ -41,7 +41,7 @@ jobs:
             Write-Host "$title" -ForegroundColor Cyan
             Write-Host ("-" * $title.Length) -ForegroundColor Cyan
             $props = $obj.PSObject.Properties
-            if ($null -eq $obj -or $props.Length -eq 0) {
+            if ($null -eq $obj -or $null -eq $props -or $props.Length -eq 0) {
               Write-Host "No properties found in $title.`n" -ForegroundColor Yellow
               return
             }
