@@ -38,7 +38,7 @@ jobs:
         shell: pwsh
         run: |
           $context = '${{ toJSON(github) }}' | ConvertFrom-Json
-          $context | Format-Table -AutoSize
+          $context.PSObject.Properties | Format-Table Name,Value -AutoSize
 
   test:
     name: Unit Testing
