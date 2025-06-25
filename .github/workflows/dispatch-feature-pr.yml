@@ -28,12 +28,17 @@ jobs:
     runs-on: ubuntu-latest
     if: ${{ inputs.debug == 'true' }}
     steps:
-      - name: Dump GitHub context
+      - name: GitHub Context JSON
         shell: pwsh
         run: |
           $json = '${{ toJSON(github) }}'
-          $escaped = $json -replace '"', '`"'
-          Write-Host "GitHub Context`n`n$($escaped)" -BackgroundColor DarkYellow -foregroundColor Black
+          Write-Host "GitHub Context`n`n$($json)" -BackgroundColor DarkYellow -foregroundColor Black
+      
+      - name: GitHub Context (Table)
+        shell: pwsh
+        run: |
+          $context = '${{ toJSON(github) }}' | ConvertFrom-Json
+          $context | Format-Table -AutoSize
 
   test:
     name: Unit Testing
