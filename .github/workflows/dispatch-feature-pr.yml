@@ -38,8 +38,8 @@ jobs:
         shell: pwsh
         run: |
           function Output-Object($obj, $title = 'Root Level (github)') {
-            Write-Information "$title" -ForegroundColor Cyan
-            Write-Information ("-" * $title.Length) -ForegroundColor Cyan
+            Write-Information "$title"
+            Write-Information ("-" * $title.Length)
             $props = $obj.PSObject.Properties
             if ($null -eq $obj -or $null -eq $props -or $props.Length -eq 0) {
               Write-Warning "No properties found in $title.`n"
