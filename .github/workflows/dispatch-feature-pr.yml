@@ -1,0 +1,43 @@
+name: Test Pull Request
+
+on:
+  workflow_dispatch:
+    inputs:
+      node-version:
+        description: Node.js version to use.
+        required: false
+        type: choice
+        options:
+          - '18'
+          - '20'
+          - '22'
+          - '24'
+        default: '24'
+      debug:
+        description: Enable debug logging.
+        required: false
+        type: choice
+        default: 'false'
+        options:
+          - 'true'
+          - 'false'
+
+jobs:
+  log-context:
+    name: Log GitHub Context
+    runs-on: ubuntu-latest
+    if: ${{ inputs.debug == 'true' }}
+    steps:
+      - name: Dump GitHub context
+        uses: actions/github-script@v7
+        with:
+          script: |
+            console.log(JSON.stringify(github, null, 2))
+
+  test:
+    name: Unit Testing
+    uses: WJSoftware/cicd/.github/workflows/npm-test.yml@v0.4
+    secrets: inherit
+    with:
+      node-version: ${{ inputs.node-version }}
+      build-script: ${{ inputs.debug == 'true' && 'build:debug' || 'build' }}
