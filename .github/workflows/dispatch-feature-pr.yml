@@ -38,15 +38,16 @@ jobs:
         shell: pwsh
         run: |
           function Output-Object($obj, $title = 'Root Level') {
-            Write-Host "$title`n" -ForegroundColor Cyan
+            Write-Host "$title" -ForegroundColor Cyan
+            Write-Host ("-" * $title.Length) -ForegroundColor Cyan
             $obj.PSObject.Properties | Sort-Object Name | Format-Table Name,Value -AutoSize
           }
 
-          function Explore-Object($obj) {
+          function Explore-Object($obj, $parentTitle = '') {
             foreach ($prop in $obj.PSObject.Properties) {
               if ($prop.Value -is [System.Management.Automation.PSObject]) {
-                Output-Object $prop.Value "$pad$($prop.Name)"
-                Explore-Object $prop.Value ($level + 1)
+                Output-Object $prop.Value "$($parentTitle).$($prop.Name)"
+                Explore-Object $prop.Value "$($parentTitle).$($prop.Name)"
               }
             }
           }
