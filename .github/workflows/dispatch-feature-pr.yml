@@ -37,8 +37,23 @@ jobs:
       - name: GitHub Context (Table)
         shell: pwsh
         run: |
+          function Output-Object($obj, $title = 'Root Level') {
+            Write-Host "$title`n" -ForegroundColor Cyan
+            $obj.PSObject.Properties | Sort-Object Name | Format-Table Name,Value -AutoSize
+          }
+
+          function Explore-Object($obj) {
+            foreach ($prop in $obj.PSObject.Properties) {
+              if ($prop.Value -is [System.Management.Automation.PSObject]) {
+                Output-Object $prop.Value "$pad$($prop.Name)"
+                Explore-Object $prop.Value ($level + 1)
+              }
+            }
+          }
+
           $context = '${{ toJSON(github) }}' | ConvertFrom-Json
-          $context.PSObject.Properties | Format-Table Name,Value -AutoSize
+          Output-Object $context
+          Explore-Object $context
 
   test:
     name: Unit Testing
