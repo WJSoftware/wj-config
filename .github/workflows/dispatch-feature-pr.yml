@@ -31,7 +31,9 @@ jobs:
       - name: Dump GitHub context
         shell: pwsh
         run: |
-            Write-Host "GitHub Context`n`n$(${{ toJSON(github) }})" -BackgroundColor DarkYellow -foregroundColor Black
+          $json = '${{ toJSON(github) }}'
+          $escaped = $json -replace '"', '`"'
+          Write-Host "GitHub Context`n`n$($escaped)" -BackgroundColor DarkYellow -foregroundColor Black
 
   test:
     name: Unit Testing
