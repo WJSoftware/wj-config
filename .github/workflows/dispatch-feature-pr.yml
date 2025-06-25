@@ -1,4 +1,4 @@
-name: Test Pull Request
+name: 'Dispatch: Feature PR Workflow'
 
 on:
   workflow_dispatch:
