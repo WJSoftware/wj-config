@@ -1,0 +1,12 @@
+name: Test Pull Request
+
+on:
+  pull_request:
+    branches:
+    - '**'
+
+jobs:
+  test:
+    name: Unit Testing
+    uses: WJSoftware/cicd/.github/workflows/npm-test.yml@v0.4
+    secrets: inherit

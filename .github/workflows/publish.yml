@@ -1,69 +1,35 @@
-name: Build, Test, and Publish NPM Package
+name: Publish NPM Package
 
 on:
   workflow_dispatch:
     inputs:
-      npm_tag:
-        description: 'NPM tag to publish the package (e.g., latest, beta, etc.)'
+      node-version:
+        description: Node.js version to use.
         required: false
-        default: 'latest'
+        type: choice
+        options:
+          - '18'
+          - '20'
+          - '22'
+          - '24'
+        default: '24'
+      npm-tag:
+        description: NPM tag to publish the package under.
+        required: false
         type: string
-      dry_run:
-        description: 'Perform a dry run (true/false)'
+        default: latest
+      dry-run:
+        description: Performs a dry run of the publish.
         required: false
-        default: 'false'
-        type: choice
-        options:
-          - 'true'
-          - 'false'
-      debug:
-        description: 'Enable debug mode (true/false)'
-        required: false
-        default: 'false'
-        type: choice
-        options:
-          - 'true'
-          - 'false'
+        type: boolean
+        default: false
 
 jobs:
-  build-test-publish:
-    name: Build, Test & Publish
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Use Node.js 24.x
-        uses: actions/setup-node@v4
-        with:
-          node-version: '24.x'
-          registry-url: 'https://registry.npmjs.org/'
-
-      - name: Install PowerShell
-        uses: PSModule/Install-PowerShell@v1
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Build package (Debug Mode)
-        if: github.event.inputs.debug == 'true'
-        run: npm run build:debug
-
-      - name: Build package
-        if: github.event.inputs.debug == 'false'
-        run: npm run build
-
-      - name: Run unit tests
-        run: npm test
-
-      - name: Publish to NPM (Dry Run)
-        if: github.ref == 'refs/heads/main' && success() && github.event.inputs.dry_run == 'true'
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-        run: npm publish --access public --tag ${{ github.event.inputs.npm_tag }} --dry-run
-
-      - name: Publish to NPM
-        if: github.ref == 'refs/heads/main' && success() && github.event.inputs.dry_run == 'false'
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-        run: npm publish --access public --tag ${{ github.event.inputs.npm_tag }}
+  publish:
+    name: Publish NPM Package
+    uses: WJSoftware/cicd/.github/workflows/npm-publish.yml@v0.4
+    secrets: inherit
+    with:
+      node-version: ${{ inputs.node-version }}
+      npm-tag: ${{ inputs.npm-tag }}
+      dry-run: ${{ inputs.dry-run }}
