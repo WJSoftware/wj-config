@@ -52,7 +52,7 @@ jobs:
               }
               process {
                   if ($BackgroundColor) {
-                      $message = $template -f $colors[$BackgroundColor.value__] + 10, $message, 49
+                      $message = $template -f ($colors[$BackgroundColor.value__] + 10), $message, 49
                   }
                   if ($ForegroundColor) {
                       $message = $template -f $colors[$ForegroundColor.value__], $message, 39
