@@ -37,9 +37,32 @@ jobs:
       - name: GitHub Context (Table)
         shell: pwsh
         run: |
+          function Write-Line(
+              [Parameter(Mandatory = $true, ValueFromPipeline = $true)]
+              [string] $message,
+              [Parameter(Mandatory = $false)]
+              [System.ConsoleColor] $ForegroundColor,
+              [Parameter(Mandatory = $false)]
+              [System.ConsoleColor] $BackgroundColor
+          ) {
+              begin {
+                  $colors = @(30, 34, 32, 36, 31, 35, 33, 37, 90, 94, 92, 96, 91, 95, 93, 97)
+                  $escape = [char]27
+                  $template = "$escape[{0}m{1}$escape[{2}m"
+              }
+              process {
+                  if ($BackgroundColor) {
+                      $message = $template -f $colors[$BackgroundColor.value__] + 10, $message, 49
+                  }
+                  if ($ForegroundColor) {
+                      $message = $template -f $colors[$ForegroundColor.value__], $message, 39
+                  }
+                  [System.Console]::WriteLine($message)
+              }
+          }
           function Output-Object($obj, $title = 'Root Level (github)') {
-            Write-Host "$title"
-            Write-Host ("-" * $title.Length)
+            Write-Line "$title" -ForegroundColor Cyan -BackgroundColor DarkGray
+            Write-Line ("-" * $title.Length) -ForegroundColor Cyan -BackgroundColor DarkGray
             $props = $obj.PSObject.Properties
             if ($null -eq $obj -or $null -eq $props -or $props.Length -eq 0) {
               Write-Warning "No properties found in $title.`n"
