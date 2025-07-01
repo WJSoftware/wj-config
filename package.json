@@ -61,7 +61,7 @@
     "dist/index.*"
   ],
   "devDependencies": {
-    "@rollup/plugin-typescript": "^12.1.2",
+    "@rollup/plugin-typescript": "^12.1.4",
     "@types/chai": "^5.2.2",
     "chai": "^5.1.2",
     "mocha": "^11.5.0",
