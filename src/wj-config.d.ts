@@ -369,13 +369,13 @@ export interface IEnvAwareBuilder<TEnvironments extends string, T extends Record
      * @param value Value of the property.
      * @param hierarchySeparator Optional hierarchy separator.  If not specified, colon (:) is assumed.
      */
-    addSingleValue<TKey extends string, TValue extends ConfigurationValue, TSep extends string = ':'>(path: string, value?: ConfigurationValue, hierarchySeparator?: string): IEnvAwareBuilder<TEnvironments, MergeResult<T, InflateKey<TKey, TValue, TSep>>>;
+    addSingleValue<TKey extends string, TValue extends ConfigurationValue, TSep extends string = ':'>(path: TKey, value?: ConfigurationValue, hierarchySeparator?: string): IEnvAwareBuilder<TEnvironments, MergeResult<T, InflateKey<TKey, TValue, TSep>>>;
     /**
      * Adds a single value to the collection of data sources that will be used to build the configuration object.
      * @param dataFn Function that returns the [key, value] tuple that needs to be added.
      * @param hierarchySeparator Optional hierarchy separator.  If not specified, colon (:) is assumed.
      */
-    addSingleValue<TKey extends string, TValue extends ConfigurationValue, TSep extends string = ':'>(dataFn: () => Promise<[string, ConfigurationValue]>, hierarchySeparator?: string): IEnvAwareBuilder<TEnvironments, MergeResult<T, InflateKey<TKey, TValue, TSep>>>;
+    addSingleValue<TKey extends string, TValue extends ConfigurationValue, TSep extends string = ':'>(dataFn: () => Promise<[TKey, ConfigurationValue]>, hierarchySeparator?: string): IEnvAwareBuilder<TEnvironments, MergeResult<T, InflateKey<TKey, TValue, TSep>>>;
     /**
      * Sets the data source name of the last data source added to the builder.
      * @param name Name for the data source.
