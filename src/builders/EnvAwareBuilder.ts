@@ -39,7 +39,17 @@ export class EnvAwareBuilder<TEnvironments extends string, T extends Record<stri
     }
 
     addEnvironment<TDic extends Record<string, ConfigurationValue>, TPrefix extends string = 'OPT_'>(env: Record<string, ConfigurationValue> | (() => Promise<Record<string, ConfigurationValue>>), prefix: string = 'OPT_') {
-        return this.add<MergeResult<T, InflateDictionary<TDic, '__', TPrefix>>>(new EnvironmentDataSource(env, prefix));
+        /*
+        InflateDictionary is a utility type that does generate a type that is assignable to Record<string, any>, but in 
+        a way that TypeScript does not understand.  It uses a trick to merge individually-inflated keys in individual, 
+        single-property Record's into one record.
+
+        So ignoring TS2344 for the time being.  Maybe it is my TypeScript's lack of ability, or maybe not.
+        
+        Time will tell.
+        */
+        // @ts-expect-error ts2344
+        return this.add<InflateDictionary<TDic, '__', TPrefix>>(new EnvironmentDataSource(env, prefix));
     }
 
     addFetched<NewT extends Record<string, any>>(input: URL | RequestInfo | (() => Promise<URL | RequestInfo>), required: boolean = true, init?: RequestInit, procesFn?: ProcessFetchResponse<NewT>) {
@@ -51,7 +61,7 @@ export class EnvAwareBuilder<TEnvironments extends string, T extends Record<stri
     }
 
     addSingleValue<TKey extends string, TValue extends ConfigurationValue, TSep extends string = ':'>(path: TKey | (() => Promise<[TKey, TValue]>), valueOrHierarchySeparator?: TValue | TSep, hierarchySeparator?: TSep) {
-        return this.add(new SingleValueDataSource<MergeResult<T, InflateKey<TKey, TValue, TSep>>>(path, valueOrHierarchySeparator, typeof path === 'function' ? valueOrHierarchySeparator as string : hierarchySeparator));
+        return this.add(new SingleValueDataSource<InflateKey<TKey, TValue, TSep>>(path, valueOrHierarchySeparator, typeof path === 'function' ? valueOrHierarchySeparator as string : hierarchySeparator));
     }
 
     postMerge<U extends Record<string, any> = T>(fn: (config: T) => U | Promise<U>): IEnvAwareBuilder<TEnvironments, U> {
