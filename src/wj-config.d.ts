@@ -37,7 +37,7 @@ export type InflateKey<TKey extends string, TValue extends ConfigurationValue, T
     } :
     {
         [K in FullKey]: TValue;
-    } : never;
+    } : {};
 
 /**
  * Inflates entire dictionaries into their corresponding final objects.

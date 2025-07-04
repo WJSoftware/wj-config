@@ -35,7 +35,7 @@ export class BuilderImpl {
         this.#postMergeFns.push(fn);
     }
 
-    add(dataSource: IDataSource<Record<string, any>>) {
+    add(dataSource: IDataSource) {
         this.#dsDefs.push({
             dataSource: dataSource
         });
