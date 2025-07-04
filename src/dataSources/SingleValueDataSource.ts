@@ -12,7 +12,7 @@ function buildDictionary(key: string | (() => Promise<[string, ConfigurationValu
     };
     if (typeof key === 'function') {
         return async () => {
-            const [k, v] = await (key as (() => Promise<[string, ConfigurationValue]>))();
+            const [k, v] = await key();
             return dicFn(k, v);
         };
     }
