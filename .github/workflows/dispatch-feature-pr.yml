@@ -13,28 +13,19 @@ on:
           - '22'
           - '24'
         default: '24'
-      debug:
-        description: Enable debug logging.
+      log-context:
+        description: Log GitHub context.
         required: false
-        type: choice
-        default: 'false'
-        options:
-          - 'true'
-          - 'false'
+        type: boolean
+        default: false
 
 jobs:
   log-context:
     name: Log GitHub Context
     runs-on: ubuntu-latest
-    if: ${{ inputs.debug == 'true' }}
+    if: ${{ inputs.log-context }}
     steps:
-      - name: GitHub Context JSON
-        shell: pwsh
-        run: |
-          $json = '${{ toJSON(github) }}'
-          Write-Host "GitHub Context`n`n$($json)" -BackgroundColor DarkYellow -foregroundColor Black
-      
-      - name: GitHub Context (Table)
+      - name: GitHub Context
         shell: pwsh
         run: |
           function Write-Line(
@@ -61,8 +52,8 @@ jobs:
               }
           }
           function Output-Object($obj, $title = 'Root Level (github)') {
-            Write-Line "$title" -ForegroundColor Cyan -BackgroundColor DarkGray
-            Write-Line ("-" * $title.Length) -ForegroundColor Cyan -BackgroundColor DarkGray
+            Write-Line "$title" -ForegroundColor Black -BackgroundColor DarkYellow
+            Write-Line ("-" * $title.Length) -ForegroundColor Black -BackgroundColor DarkYellow
             $props = $obj.PSObject.Properties
             if ($null -eq $obj -or $null -eq $props -or $props.Length -eq 0) {
               Write-Warning "No properties found in $title.`n"
@@ -90,4 +81,5 @@ jobs:
     secrets: inherit
     with:
       node-version: ${{ inputs.node-version }}
-      build-script: ${{ inputs.debug == 'true' && 'build:debug' || 'build' }}
+      build: false
+      pwsh: false

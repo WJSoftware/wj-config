@@ -1,9 +1,8 @@
-import 'chai/register-expect.js';
 import { describe, it } from 'mocha';
-import { BuilderImpl } from '../../out/builders/BuilderImpl.js';
-import { ObjectDataSource } from '../../out/dataSources/ObjectDataSource.js';
-import { spy, mock } from 'sinon';
-import { assert } from 'chai';
+import { BuilderImpl } from '../../src/builders/BuilderImpl.js';
+import { ObjectDataSource } from '../../src/dataSources/ObjectDataSource.js';
+import { spy } from 'sinon';
+import { expect } from 'chai';
 
 describe('BuilderImpl', () => {
     describe('build', () => {
@@ -18,7 +17,7 @@ describe('BuilderImpl', () => {
             dataSources.forEach(ds => builder.add(new ObjectDataSource(ds)));
 
             // Act.
-            const result = await builder.build();
+            const result = await builder.build(false, () => false);
 
             // Assert.
             expect(result).to.deep.equal({
@@ -51,7 +50,7 @@ describe('BuilderImpl', () => {
             });
 
             // Act.
-            const result = await builder.build();
+            const result = await builder.build(false, () => false);
 
             // Assert.
             expect(result).to.deep.equal({
@@ -70,7 +69,7 @@ describe('BuilderImpl', () => {
             builder.createUrlFunctions('api');
 
             // Act.
-            const result = await builder.build();
+            const result = await builder.build(false, () => false);
 
             // Assert.
             expect(result.api.buildUrl).to.be.a('function');
@@ -86,7 +85,7 @@ describe('BuilderImpl', () => {
             builder.add(dataSource);
 
             // Act.
-            const result = await builder.build(true);
+            const result = await builder.build(true, () => false);
 
             // Assert.
             expect(result._qualifiedDs).to.be.an('array');

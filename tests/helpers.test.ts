@@ -1,9 +1,9 @@
-import 'chai/register-expect.js';
-import { attemptParse, forEachProperty, isArray, isConfigNode, isFunction } from '../out/helpers.js';
+import { attemptParse, forEachProperty, isArray, isConfigNode, isFunction } from '../src/helpers.js';
+import { expect } from 'chai';
 
 describe('helpers', () => {
     describe('isArray', () => {
-        const testFn = (testObj, expectedResult) => {
+        const testFn = (testObj: unknown, expectedResult: boolean) => {
             // Act.
             const result = isArray(testObj);
 
@@ -24,7 +24,7 @@ describe('helpers', () => {
         it('Should return false if the given object is an object.', () => testFn({ a: 'b' }, false));
     });
     describe('isConfigNode', () => {
-        const testFn = (testObj, expectedResult) => {
+        const testFn = (testObj: unknown, expectedResult: boolean) => {
             // Act.
             const result = isConfigNode(testObj);
 
@@ -45,7 +45,7 @@ describe('helpers', () => {
         it('Should return true if the given object is an object.', () => testFn({ a: 'b' }, true));
     });
     describe('isFunction', () => {
-        const testFn = (testObj, expectedResult) => {
+        const testFn = (testObj: unknown, expectedResult: boolean) => {
             // Act.
             const result = isFunction(testObj);
 
@@ -66,15 +66,16 @@ describe('helpers', () => {
         it('Should return false if the given object is an object.', () => testFn({ a: 'b' }, false));
     });
     describe('forEachProperty', () => {
-        function TestObj() {
+        function TestObj(this: { a: string, b: string, c: string }): void {
             this.a = 'A';
             this.b = 'B';
             this.c = 'C';
         }
         TestObj.prototype.protoProperty = true;
-        const testObj = new TestObj();
+        const testObj = new (TestObj as any)() as ThisParameterType<typeof TestObj>;
         it('Should throw an error if the provided callback is not a function.', () => {
             // Act.
+            // @ts-expect-error TS2345 Invalid argument type.
             const act = () => forEachProperty(testObj, 1);
 
             // Assert.
@@ -90,7 +91,7 @@ describe('helpers', () => {
             // Assert.
             expect(counter).to.equal(3);
         });
-        const loopControlTestFn = (returnObj, expectedLoopCount) => {
+        const loopControlTestFn = (returnObj: any, expectedLoopCount: number) => {
             // Arrange.
             let counter = 0;
 
@@ -113,6 +114,7 @@ describe('helpers', () => {
     describe('attemptParse', () => {
         it('Should throw an error if the provided value is not a string.', () => {
             //Act.
+            // @ts-expect-error TS2345 Invalid argument type.
             const act = () => attemptParse(true);
 
             // Assert.
@@ -196,7 +198,7 @@ describe('helpers', () => {
                 type: 'Floating Point'
             }
         ];
-        const conversionTestFn = (value) => {
+        const conversionTestFn = (value: any) => {
             // Act.
             const result = attemptParse(value.toString());
 
@@ -237,7 +239,7 @@ describe('helpers', () => {
                 expected: 0xFFFFFFDDDDDDD
             },
         ]
-        const hexTestFn = (value, expectedValue) => {
+        const hexTestFn = (value: string, expectedValue: number) => {
             // Act.
             const result = attemptParse(value);
 
@@ -281,7 +283,7 @@ describe('helpers', () => {
                 name: 'an anonymous function'
             }
         ];
-        const stringTestFn = (value) => {
+        const stringTestFn = (value: any) => {
             // Act.
             const result = attemptParse(value);
 

@@ -162,7 +162,7 @@ export interface IBuilder<T extends Record<string, any> = {}> {
      * @param predicate Optional predicate function that is called for every property in the dictionary.  Only when 
      * the return value of the predicate is true the property is included in configuration.
      */
-    addDictionary<TDic extends Record<string, ConfigurationValue>, TSep extends string = ':'>(dictionary: TDic | (() => Promise<TDic>), hierarchySeparator?: TSep, predicate?: Predicate<string>): IBuilder<MergeResult<T, InflateDictionary<TDic, TSep>>>;
+    addDictionary<TDic extends Record<string, ConfigurationValue>, TSep extends string = ':'>(dictionary: TDic | (() => Promise<TDic>), hierarchySeparator?: TSep, predicate?: Predicate<string | number>): IBuilder<MergeResult<T, InflateDictionary<TDic, TSep>>>;
     /**
      * Adds the qualifying environment variables to the collection of data sources that will be used to build the 
      * configuration object.

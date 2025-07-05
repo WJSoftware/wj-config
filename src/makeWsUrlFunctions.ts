@@ -99,7 +99,7 @@ function makeWsUrlFunctions(ws: UrlRoot | ConfigurationNode, routeValuesRegExp: 
     if (!isConfigNode(ws)) {
         throw new Error(`Cannot operate on a non-object value (provided value is of type ${typeof ws}).`);
     }
-    const shouldConvert = (name: string) => {
+    const shouldConvert = (name: string | number) => {
         // Any property in this list or whose name starts with underscore (_) are skipped.
         const exceptions = [
             'host',
@@ -108,7 +108,7 @@ function makeWsUrlFunctions(ws: UrlRoot | ConfigurationNode, routeValuesRegExp: 
             'rootPath',
             'buildUrl'
         ];
-        return !name.startsWith('_') && !exceptions.includes(name);
+        return !name.toString().startsWith('_') && !exceptions.includes(name.toString());
     };
     const isUrlRoot = (obj: object): obj is UrlRoot => {
         // An object is a root object if it has host or rootPath, or if code is running in a browser, an object is a

@@ -1,8 +1,14 @@
-import 'chai/register-expect.js';
-import { forEachProperty, isConfigNode } from '../out/helpers.js';
-import makeWsUrlFunctions from '../out/makeWsUrlFunctions.js';
+import { expect } from 'chai';
+import { forEachProperty, isConfigNode } from '../src/helpers.js';
+import makeWsUrlFunctions from '../src/makeWsUrlFunctions.js';
+import { BuildUrlFn, RouteReplacementArg, UrlBuilderFn } from '../src/wj-config.js';
 
-const propertyInHierarchy = (obj, propertyName, result, resultKey) => {
+const propertyInHierarchy = (
+    obj: Record<string, any>,
+    propertyName: string,
+    result?: Record<string, any>,
+    resultKey?: string
+) => {
     if (!result) {
         result = {};
     }
@@ -17,9 +23,9 @@ const propertyInHierarchy = (obj, propertyName, result, resultKey) => {
 };
 
 describe('makeWsUrlFunctions', () => {
-    const incorrectTypeTestFn = (obj, shouldThrow) => {
+    const incorrectTypeTestFn = (obj: Record<string, any>, shouldThrow: boolean) => {
         // Act.
-        const act = () => makeWsUrlFunctions(obj);
+        const act = () => makeWsUrlFunctions(obj, /.*/, false);
 
         // Assert.
         if (shouldThrow) {
@@ -29,12 +35,15 @@ describe('makeWsUrlFunctions', () => {
             expect(act).to.not.throw();
         }
     }
+    // @ts-expect-error TS2345 Testing with a non-object.
     it('Should not throw an error if given null as object.', () => incorrectTypeTestFn(null, false));
+    // @ts-expect-error TS2345 Testing with a non-object.
     it('Should not throw an error if given undefined as object.', () => incorrectTypeTestFn(undefined, false));
+    // @ts-expect-error TS2345 Testing with a non-object.
     it('Should throw an error if given a non-object.', () => incorrectTypeTestFn(123, true));
-    const hasBuildUrlTestFn = (config, expectedResult) => {
+    const hasBuildUrlTestFn = (config: Record<string, any>, expectedResult: Record<string, any>) => {
         // Act.
-        makeWsUrlFunctions(config);
+        makeWsUrlFunctions(config, /.*/, false);
 
         // Assert.
         const pih = propertyInHierarchy(config, 'buildUrl');
@@ -133,7 +142,7 @@ describe('makeWsUrlFunctions', () => {
         };
 
         // Act.
-        makeWsUrlFunctions(config);
+        makeWsUrlFunctions(config, /.*/, false);
 
         // Assert.
         expect(config.ws.timeout).to.be.a('number');
@@ -149,7 +158,7 @@ describe('makeWsUrlFunctions', () => {
         };
 
         // Act.
-        makeWsUrlFunctions(config);
+        makeWsUrlFunctions(config, /.*/, false);
 
         // Assert.
         expect(config.ws._type).to.be.a('string');
@@ -166,7 +175,7 @@ describe('makeWsUrlFunctions', () => {
         };
 
         // Act.
-        makeWsUrlFunctions(config);
+        makeWsUrlFunctions(config, /.*/, false);
 
         // Assert.
         expect(config.ws.host).to.be.a('string');
@@ -186,7 +195,7 @@ describe('makeWsUrlFunctions', () => {
         };
 
         // Act.
-        makeWsUrlFunctions(config);
+        makeWsUrlFunctions(config, /.*/, false);
 
         // Assert.
         expect(config.ws.login).to.be.a('function');
@@ -207,7 +216,7 @@ describe('makeWsUrlFunctions', () => {
         };
 
         // Act.
-        makeWsUrlFunctions(config);
+        makeWsUrlFunctions(config, /.*/, false);
 
         // Assert.
         expect(config.ws.general.login).to.be.a('function');
@@ -215,9 +224,9 @@ describe('makeWsUrlFunctions', () => {
         expect(config.ws.general.status).to.be.a('function');
     });
     describe('buildUrl', () => {
-        const urlPartsTestFn = (config, expectedUrl) => {
+        const urlPartsTestFn = (config: Record<string, any>, expectedUrl: string) => {
             // Arrange.
-            makeWsUrlFunctions(config);
+            makeWsUrlFunctions(config, /.*/, false);
 
             // Act.
             const url = config.ws.testUrl();
@@ -268,15 +277,15 @@ describe('makeWsUrlFunctions', () => {
                     }
                 }
             };
-            makeWsUrlFunctions(config);
+            makeWsUrlFunctions(config, /.*/, false);
 
             // Act.
-            const url = config.ws.gateway.security.users.getAll();
+            const url = (config.ws.gateway.security.users.getAll as unknown as UrlBuilderFn)();
 
             // Assert.
             expect(url).to.equal('/api/sec/users');
         });
-        const routeReplacementTestFn = (routeValues, expectedResult) => {
+        const routeReplacementTestFn = (routeValues: RouteReplacementArg | undefined, expectedResult: string) => {
             // Arrange.
             const config = {
                 ws: {
@@ -292,10 +301,10 @@ describe('makeWsUrlFunctions', () => {
                     }
                 }
             };
-            makeWsUrlFunctions(config, /\{(\w+)\}/g);
+            makeWsUrlFunctions(config, /\{(\w+)\}/g, false);
 
             // Act.
-            const url = config.ws.gateway.security.users.get(routeValues);
+            const url = (config.ws.gateway.security.users.get as unknown as UrlBuilderFn)(routeValues);
 
             // Assert.
             expect(url).to.equal(expectedResult);

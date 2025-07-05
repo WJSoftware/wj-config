@@ -1,6 +1,6 @@
-import 'chai/register-expect.js';
-import { Builder } from '../out/builders/Builder.js';
-import * as allExports from '../out/index.js';
+import { Builder } from '../src/builders/Builder.js';
+import * as allExports from '../src/index.js';
+import { expect } from 'chai';
 
 describe('All Exports', () => {
     it('Should export buildEnvironment function.', () => {
@@ -25,4 +25,4 @@ describe('wjConfig', () => {
         // Assert.
         expect(result).to.be.instanceOf(Builder);
     });
-})
+});
