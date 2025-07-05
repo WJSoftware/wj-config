@@ -1,5 +1,6 @@
-import 'chai/register-expect.js';
-import { DictionaryDataSource } from '../out/dataSources/DictionaryDataSource.js';
+import { expect } from 'chai';
+import { DictionaryDataSource } from '../../src/dataSources/DictionaryDataSource.js';
+import type { Dictionary, Predicate } from '../../src/wj-config.js';
 
 describe('DictionaryDataSource', () => {
     it('Should name itself as "Dictionary" upon construction.', () => {
@@ -9,7 +10,7 @@ describe('DictionaryDataSource', () => {
         // Assert.
         expect(ds.name).to.equal('Dictionary');
     });
-    const failedConstructionTest = (dic, sep) => {
+    const failedConstructionTest = (dic: Dictionary, sep: string) => {
         // Act.
         const act = () => new DictionaryDataSource(dic, sep);
 
@@ -127,6 +128,7 @@ describe('DictionaryDataSource', () => {
         },
     ];
     failedConstructionTests.forEach(t => {
+        // @ts-expect-error TS2345 Testing all wrong arguments.
         it(`Should throw an error if constructed with ${t.text} for ${t.target}.`, () => failedConstructionTest(t.dic, t.sep));
     });
     const successfulConstructionTests = [
@@ -161,7 +163,7 @@ describe('DictionaryDataSource', () => {
             target: 'hierarchy separator',
         },
     ];
-    const successfulConstructionTest = (dic, sep) => {
+    const successfulConstructionTest = (dic: Dictionary, sep: string) => {
         // Act.
         const dds = new DictionaryDataSource(dic, sep);
 
@@ -177,7 +179,7 @@ describe('DictionaryDataSource', () => {
             succeeds: true,
         },
         {
-            prefix: (n) => !!n,
+            prefix: (n: any) => !!n,
             text: 'a function',
             succeeds: true,
         },
@@ -219,7 +221,7 @@ describe('DictionaryDataSource', () => {
             succeeds: false,
         },
     ];
-    const prefixTest = (prefix, succeeds) => {
+    const prefixTest = (prefix: string, succeeds: boolean) => {
         // Act.
         const act = () => new DictionaryDataSource({ a: 1 }, ':', prefix);
 
@@ -231,6 +233,7 @@ describe('DictionaryDataSource', () => {
         expectation.to.throw();
     };
     prefixTests.forEach(t => {
+        // @ts-expect-error TS2345 Testing some wrong arguments.
         it(`Should ${t.succeeds ? 'succeed' : 'fail'} when trying to construct the data source with "${t.text ?? t.prefix}" as prefix.`, () => prefixTest(t.prefix, t.succeeds));
     });
     const validationWithPrefixTests = [
@@ -240,11 +243,11 @@ describe('DictionaryDataSource', () => {
         },
         {
             dic: { a: 1, b: 2, invalid: { c_p: true } },
-            prefix: (n) => n !== 'invalid',
+            prefix: (n: string) => n !== 'invalid',
             text: 'a function'
         },
     ];
-    const validationWithPrefixTest = (dic, prefix) => {
+    const validationWithPrefixTest = (dic: Dictionary, prefix: string | Predicate<string | number>) => {
         // Act.
         const act = () => new DictionaryDataSource(dic, ':', prefix);
 
@@ -252,6 +255,7 @@ describe('DictionaryDataSource', () => {
         expect(act).not.to.throw();
     };
     validationWithPrefixTests.forEach(t => {
+        // @ts-expect-error TS2345 Testing with invalid dictionaries.
         it(`Should validate the dictionary using "${t.text ?? t.prefix}" as prefix.`, () => validationWithPrefixTest(t.dic, t.prefix));
     });
     describe('getObject', () => {
@@ -262,7 +266,8 @@ describe('DictionaryDataSource', () => {
                     prop3: 'abc'
                 }
             };
-            const ds = new DictionaryDataSource(() => dic, ':');
+            // @ts-expect-error TS2345 Testing with a non-flat object.
+            const ds = new DictionaryDataSource(() => Promise.resolve(dic), ':');
             let didThrow = false;
 
             // Act.
@@ -276,7 +281,7 @@ describe('DictionaryDataSource', () => {
             // Assert.
             expect(didThrow).to.equal(true);
         });
-        const successfulResultsTest = async (dic, expectedResult, prefix) => {
+        const successfulResultsTest = async (dic: Dictionary, expectedResult: object, prefix: string) => {
             // Arrange.
             const ds = new DictionaryDataSource(dic, ':', prefix);
 

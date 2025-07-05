@@ -19,15 +19,15 @@ const ensurePropertyValue = (obj: ConfigurationNode, name: string) => {
 export class DictionaryDataSource<T extends Record<string, any>> extends DataSource implements IDataSource<T> {
     #dictionary: Record<string, ConfigurationValue> | (() => Promise<Record<string, ConfigurationValue>>);
     #hierarchySeparator: string;
-    #prefixOrPredicate?: string | Predicate<string>;
+    #prefixOrPredicate?: string | Predicate<string | number>;
 
-    #buildPredicate(): [Predicate<string>, string] {
-        let predicateFn: Predicate<string> = _ => true;
+    #buildPredicate(): [Predicate<string | number>, string] {
+        let predicateFn: Predicate<string | number> = _ => true;
         let prefix: string = '';
         if (this.#prefixOrPredicate) {
             if (typeof this.#prefixOrPredicate === "string") {
                 prefix = this.#prefixOrPredicate;
-                predicateFn = name => name.startsWith(prefix);
+                predicateFn = name => name.toString().startsWith(prefix);
             }
             else {
                 predicateFn = this.#prefixOrPredicate;
@@ -89,7 +89,7 @@ export class DictionaryDataSource<T extends Record<string, any>> extends DataSou
         return result;
     }
 
-    constructor(dictionary: Dictionary | (() => Promise<Dictionary>), hierarchySeparator: string, prefixOrPredicate?: string | Predicate<string>) {
+    constructor(dictionary: Dictionary | (() => Promise<Dictionary>), hierarchySeparator: string, prefixOrPredicate?: string | Predicate<string | number>) {
         super('Dictionary');
         if (!hierarchySeparator) {
             throw new Error('Dictionaries must specify a hierarchy separator.');

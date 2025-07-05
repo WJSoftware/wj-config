@@ -1,15 +1,16 @@
-import 'chai/register-expect.js';
-import { buildEnvironment } from '../out/buildEnvironment.js';
-import { forEachProperty, isConfigNode, isFunction } from '../out/helpers.js';
+import { buildEnvironment } from '../src/buildEnvironment.js';
+import { forEachProperty, isConfigNode, isFunction } from '../src/helpers.js';
+import { expect } from 'chai';
+import { IEnvironmentDefinition, Trait, Traits } from '../src/wj-config.js';
 
 const testEnvNames = [
     'Dev',
     'Test',
     'Prod'
-];
+] as const;
 
 describe('buildEnvironment', () => {
-    const testErrorFn = (envNames) => {
+    const testErrorFn = (envNames: string[]) => {
         // Arrange.
         const envName = 'Dev';
 
@@ -20,8 +21,11 @@ describe('buildEnvironment', () => {
         expect(act).to.throw(Error);
     }
     it('Should throw an error if the environment names array is empty.', () => testErrorFn([]));
+    // @ts-expect-error TS2345 Invalid argument type.
     it('Should throw an error if the environment names array is not an array.', () => testErrorFn({}));
+    // @ts-expect-error TS2345 Invalid argument type.
     it('Should throw an error if the environment names array is null.', () => testErrorFn(null));
+    // @ts-expect-error TS2345 Invalid argument type.
     it('Should throw an error if the environment names array is undefined.', () => testErrorFn(undefined));
     it('Should create an IEnvironmentDefinition object if only given the current environment name.', () => {
         // Arrange.
@@ -52,7 +56,7 @@ describe('buildEnvironment', () => {
         const env = buildEnvironment(testEnvNames, envName);
 
         // Assert.
-        const foundFns = [];
+        const foundFns: string[] = [];
         forEachProperty(env, (key, value) => {
             if (key.startsWith('is') && isFunction(value)) {
                 foundFns.push(key);
@@ -61,17 +65,19 @@ describe('buildEnvironment', () => {
         expect(foundFns.length).to.equal(testEnvNames.length);
         expect(foundFns).to.have.same.members(testEnvNames.map(x => `is${x}`));
     });
-    const missingEnvNameTest = (envDef) => {
+    const missingEnvNameTest = (envDef: typeof testEnvNames[number] | IEnvironmentDefinition<typeof testEnvNames[number]>) => {
         // Act.
         const act = () => buildEnvironment(testEnvNames, envDef);
 
         // Assert.
         expect(act).to.throw(Error);
     };
+    // @ts-expect-error TS2345 Invalid argument type.
     it('Should throw an error if the provided environment name is not part of the list of environment names (name only).', () => missingEnvNameTest('MyDev'));
-    it('Should throw an error if the provided environment name is not part of the list of environment names (IEnivironmentDefinition).', () => missingEnvNameTest({ name: 'MyDev' }));
+    // @ts-expect-error TS2820 Invalid argument type.
+    it('Should throw an error if the provided environment name is not part of the list of environment names (IEnvironmentDefinition).', () => missingEnvNameTest({ name: 'MyDev' }));
     describe('hasTraits', () => {
-        const traitMismatchTest = (envDef, testTraits) => {
+        const traitMismatchTest = (envDef: IEnvironmentDefinition<typeof testEnvNames[number]>, testTraits: any) => {
             // Arrange.
             const env = buildEnvironment(testEnvNames, envDef);
 
@@ -84,7 +90,7 @@ describe('buildEnvironment', () => {
         it('Should throw if given a numeric test trait when the current environment traits are of the string kind.', () => traitMismatchTest({ name: 'Dev', traits: ['abc', 'def'] }, 3));
         it('Should throw if given a string test trait when the current environment traits are of the numeric kind.', () => traitMismatchTest({ name: 'Dev', traits: 3 }, 'def'));
         it('Should throw if given an array of string test traits when the current environment traits are of the numeric kind.', () => traitMismatchTest({ name: 'Dev', traits: 3 }, ['abc', 'def']));
-        const runTestFn = (envDef, testTraits, expectedResult) => {
+        const runTestFn = (envDef: IEnvironmentDefinition<typeof testEnvNames[number]>, testTraits: Traits, expectedResult: boolean) => {
             // Arrange.
             const env = buildEnvironment(testEnvNames, envDef);
 
@@ -95,18 +101,18 @@ describe('buildEnvironment', () => {
             expect(result).to.equal(expectedResult);
         };
         describe('Numeric Traits', () => {
-            it('Should return true if the test traits match the entirety of the current enviroment\'s traits.', () => runTestFn({ name: 'Dev', traits: 7 }, 7, true));
+            it('Should return true if the test traits match the entirety of the current environment\'s traits.', () => runTestFn({ name: 'Dev', traits: 7 }, 7, true));
             it('Should return true if the test traits match a subset of the current environment\'s traits.', () => runTestFn({ name: 'Dev', traits: 7 }, 5, true));
             it('Should return false if one of the test traits is not found in the current environment\'s traits.', () => runTestFn({ name: 'Dev', traits: 7 }, 9, false));
         });
         describe('String Traits', () => {
-            it('Should return true if the test traits match the entirety of the current enviroment\'s traits.', () => runTestFn({ name: 'Dev', traits: ['abc', 'def', 'ghi'] }, ['ghi', 'abc', 'def'], true));
+            it('Should return true if the test traits match the entirety of the current environment\'s traits.', () => runTestFn({ name: 'Dev', traits: ['abc', 'def', 'ghi'] }, ['ghi', 'abc', 'def'], true));
             it('Should return true if the test traits match a subset of the current environment\'s traits.', () => runTestFn({ name: 'Dev', traits: ['abc', 'def', 'ghi'] }, ['abc', 'ghi'], true));
             it('Should return false if one of the test traits is not found in the current environment\'s traits.', () => runTestFn({ name: 'Dev', traits: ['abc', 'def', 'ghi'] }, ['abc', 'jkl'], false));
         });
     });
     describe('hasAnyTrait', () => {
-        const traitMismatchTest = (envDef, testTraits) => {
+        const traitMismatchTest = (envDef: IEnvironmentDefinition<typeof testEnvNames[number]>, testTraits: Traits) => {
             // Arrange.
             const env = buildEnvironment(testEnvNames, envDef);
 
@@ -118,7 +124,7 @@ describe('buildEnvironment', () => {
         }
         it('Should throw if given a numeric test trait when the current environment traits are of the string kind.', () => traitMismatchTest({ name: 'Dev', traits: ['abc', 'def'] }, 3));
         it('Should throw if given a string test trait when the current environment traits are of the numeric kind.', () => traitMismatchTest({ name: 'Dev', traits: 3 }, ['abc', 'def']));
-        const runTestFn = (envDef, testTraits, expectedResult) => {
+        const runTestFn = (envDef: IEnvironmentDefinition<typeof testEnvNames[number]>, testTraits: Traits, expectedResult: boolean) => {
             // Arrange.
             const env = buildEnvironment(testEnvNames, envDef);
 
@@ -129,13 +135,13 @@ describe('buildEnvironment', () => {
             expect(result).to.equal(expectedResult);
         };
         describe('Numeric Traits', () => {
-            it('Should return true if the test traits match the entirety of the current enviroment\'s traits.', () => runTestFn({ name: 'Dev', traits: 7 }, 7, true));
+            it('Should return true if the test traits match the entirety of the current environment\'s traits.', () => runTestFn({ name: 'Dev', traits: 7 }, 7, true));
             it('Should return true if the test traits match a subset of the current environment\'s traits.', () => runTestFn({ name: 'Dev', traits: 7 }, 5, true));
             it('Should return true if at least one the test traits is found in the current environment\'s traits.', () => runTestFn({ name: 'Dev', traits: 7 }, 9, true));
             it('Should return false if none of the test traits are found in the current environment\'s traits.', () => runTestFn({ name: 'Dev', traits: 7 }, 24, false));
         });
         describe('String Traits', () => {
-            it('Should return true if the test traits match the entirety of the current enviroment\'s traits.', () => runTestFn({ name: 'Dev', traits: ['abc', 'def', 'ghi'] }, ['ghi', 'abc', 'def'], true));
+            it('Should return true if the test traits match the entirety of the current environment\'s traits.', () => runTestFn({ name: 'Dev', traits: ['abc', 'def', 'ghi'] }, ['ghi', 'abc', 'def'], true));
             it('Should return true if the test traits match a subset of the current environment\'s traits.', () => runTestFn({ name: 'Dev', traits: ['abc', 'def', 'ghi'] }, ['abc', 'ghi'], true));
             it('Should return true if at least one the test traits is found in the current environment\'s traits.', () => runTestFn({ name: 'Dev', traits: ['abc', 'def', 'ghi'] }, ['abc', 'jkl'], true));
             it('Should return false if none of the test traits are found in the current environment\'s traits.', () => runTestFn({ name: 'Dev', traits: ['abc', 'def', 'ghi'] }, ['jkl', 'mno'], false));

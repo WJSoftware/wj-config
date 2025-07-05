@@ -4,7 +4,19 @@ import { FetchedDataSource } from "../dataSources/FetchedDataSource.js";
 import { JsonDataSource } from "../dataSources/JsonDataSource.js";
 import { ObjectDataSource } from "../dataSources/ObjectDataSource.js";
 import { SingleValueDataSource } from "../dataSources/SingleValueDataSource.js";
-import type { ConfigurationValue, IBuilder, IDataSource, IEnvironment, IncludeEnvironment, InflateDictionary, InflateKey, MergeResult, Predicate, ProcessFetchResponse, UrlBuilderSectionWithCheck } from "../wj-config.js";
+import type {
+    ConfigurationValue,
+    IBuilder,
+    IDataSource,
+    IEnvironment,
+    IncludeEnvironment,
+    InflateDictionary,
+    InflateKey,
+    MergeResult,
+    Predicate,
+    ProcessFetchResponse,
+    UrlBuilderSectionWithCheck
+} from "../wj-config.js";
 import { BuilderImpl } from "./BuilderImpl.js";
 import { EnvAwareBuilder, type IEnvironmentSource } from "./EnvAwareBuilder.js";
 
@@ -19,7 +31,7 @@ export class Builder<T extends Record<string, any> = {}> implements IBuilder<T> 
         return this.add(new ObjectDataSource(obj));
     }
 
-    addDictionary<TDic extends Record<string, ConfigurationValue>, TSep extends string = ':'>(dictionary: TDic | (() => Promise<TDic>), hierarchySeparator?: TSep, prefixOrPredicate?: string | Predicate<string>) {
+    addDictionary<TDic extends Record<string, ConfigurationValue>, TSep extends string = ':'>(dictionary: TDic | (() => Promise<TDic>), hierarchySeparator?: TSep, prefixOrPredicate?: string | Predicate<string | number>) {
         return this.add<Exclude<InflateDictionary<TDic, TSep>, unknown>>(new DictionaryDataSource(dictionary, hierarchySeparator ?? ':', prefixOrPredicate));
     }
 

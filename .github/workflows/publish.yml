@@ -19,7 +19,7 @@ on:
         type: string
         default: latest
       dry-run:
-        description: Performs a dry run of the publish.
+        description: Just dry-run the publish process.
         required: false
         type: boolean
         default: false
