@@ -51,7 +51,7 @@
   "scripts": {
     "build": "pwsh ./build-npm.ps1 && publint",
     "build:debug": "pwsh ./build-npm.ps1 -Verbose && publint",
-    "test": "ts-mocha -n loader=ts-node/esm -p ./tsconfig.json ./tests/**/*.test.ts"
+    "test": "ts-mocha -n loader=ts-node/esm -p ./tsconfig.json \"./tests/**/*.test.ts\""
   },
   "engines": {
     "node": ">=16.9.0"
