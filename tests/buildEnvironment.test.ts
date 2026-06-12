@@ -1,7 +1,8 @@
+import { describe, it } from 'mocha';
 import { buildEnvironment } from '../src/buildEnvironment.js';
 import { forEachProperty, isConfigNode, isFunction } from '../src/helpers.js';
 import { expect } from 'chai';
-import { IEnvironmentDefinition, Trait, Traits } from '../src/wj-config.js';
+import { IEnvironmentDefinition, Traits } from '../src/wj-config.js';
 
 const testEnvNames = [
     'Dev',
