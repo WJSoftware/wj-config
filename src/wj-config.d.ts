@@ -22,8 +22,8 @@ export type MergeResult<T extends Record<string, any>, NewT> = (Omit<T, keyof Ne
     [K in keyof NewT]-?: K extends keyof T ?
     (
         T[K] extends Record<string, any> ?
-        (NewT[K] extends Record<string, any> ? MergeResult<T[K], NewT[K]> : never) :
-        (NewT[K] extends Record<string, any> ? never : T[K] | NewT[K])
+        (NewT[K] extends Record<string, any> ? MergeResult<T[K], NewT[K]> : T[K] | NewT[K]) :
+        T[K] | NewT[K]
     ) : NewT[K]
 }) extends infer R ? { [K in keyof R]: R[K] } : never;
 

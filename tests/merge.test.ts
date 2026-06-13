@@ -1,3 +1,4 @@
+import { describe, it } from 'mocha';
 import { expect } from 'chai';
 import { forEachProperty } from '../src/helpers.js';
 import merge from '../src/merge.js';
@@ -42,58 +43,6 @@ describe('merge', () => {
         // Assert.
         expect(act).to.throw(Error);
     };
-    it('Should throw an error if the value of a property in object 1 is an object but in object 2 is a scalar value.', () => propertyMismatchTestFn({
-        p1: 'Set A',
-        p2: {
-            p2_p1: true
-        },
-        p3: 123
-    }, {
-        p1: 'Set B',
-        p2: false,
-        p3: 456
-    }));
-    it('Should throw an error if the value of a property in object 1 is an object but in object 2 is an array.', () => propertyMismatchTestFn({
-        p1: 'Set A',
-        p2: {
-            p2_p1: true
-        },
-        p3: 123
-    }, {
-        p1: 'Set B',
-        p2: [true, false],
-        p3: 456
-    }));
-    it('Should throw an error if the value of a property in object 1 is a scalar value but in object 2 is an object.', () => propertyMismatchTestFn({
-        p1: 'Set A',
-        p2: {
-            p2_p1: true
-        },
-        p3: 123
-    }, {
-        p1: {
-            p1_p1: 'Set B'
-        },
-        p2: {
-            p2_p1: false
-        },
-        p3: 456
-    }));
-    it('Should throw an error if the value of a property in object 1 is an array value but in object 2 is an object.', () => propertyMismatchTestFn({
-        p1: 'Set A',
-        p2: {
-            p2_p1: true
-        },
-        p3: [123]
-    }, {
-        p1: 'Set B',
-        p2: {
-            p2_p1: false
-        },
-        p3: {
-            p3_p1: [456]
-        }
-    }));
     it('Should create a result that has all the properties defined in objects 1 and 2.', () => {
         // Arrange.
         const config1 = {
