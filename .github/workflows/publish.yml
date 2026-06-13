@@ -31,7 +31,7 @@ permissions:
 jobs:
   publish:
     name: Publish NPM Package
-    uses: WJSoftware/cicd/.github/workflows/npm-publish.yml@v0.4
+    uses: WJSoftware/cicd/.github/workflows/npm-publish.yml@v0.5
     secrets: inherit
     with:
       node-version: ${{ inputs.node-version }}
