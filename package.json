@@ -65,7 +65,7 @@
     "@types/chai": "^5.2.2",
     "@types/mocha": "^10.0.10",
     "@types/node": "^25.9.3",
-    "@types/sinon": "^21.0.1",
+    "@types/sinon": "^22.0.0",
     "chai": "^6.2.0",
     "mocha": "^11.7.5",
     "publint": "^0.3.9",
