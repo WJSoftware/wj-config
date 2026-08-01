@@ -10,10 +10,8 @@
 > naming convention.
 
 > [!IMPORTANT]
-> ## v3.0.0
-> 
-> Version 3.0.0 is a full re-write on the TypeScript side of the package.  Its Intellisense is now fully accurate for 
-> almost everything and anything.  Read all about it in [the TypeScript Wiki page](https://github.com/WJSoftware/wj-config/wiki/English__Theory__TypeScript-and-wj-config).
+>
+> v4 is coming with a breaking change:  Scalar values can replace objects and vice versa.  This allows the construction of configuration values with types like `boolean | Config`.  If you need the object protection, remain on v3.
 
 This JavaScript configuration library works everywhere and has zero dependencies.  Use it in Node, Deno, Bun or the 
 browser equally.  One configuration package for all your JavaScript/TypeScript needs.

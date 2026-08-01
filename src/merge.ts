@@ -1,5 +1,5 @@
 import { forEachProperty, isArray, isConfigNode } from "./helpers.js";
-import type { ConfigurationNode, IDataSource, Trace } from "./wj-config.js";
+import type { ConfigurationNode, IDataSource, Trace } from "./types.js";
 
 
 type TraceRequest = {

@@ -1,4 +1,4 @@
-import type { ProcessFetchResponse } from "../wj-config.js";
+import type { ProcessFetchResponse } from "../types.js";
 import { DataSource } from "./DataSource.js";
 
 export class FetchedDataSource<T extends Record<string, any>> extends DataSource {

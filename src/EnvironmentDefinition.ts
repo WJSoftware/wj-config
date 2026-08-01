@@ -1,4 +1,4 @@
-import type { IEnvironmentDefinition, Traits } from "./wj-config.js";
+import type { IEnvironmentDefinition, Traits } from "./types.js";
 
 /**
  * Environment definition class used to specify the current environment as an object.

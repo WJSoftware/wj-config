@@ -77,7 +77,7 @@ jobs:
 
   test:
     name: Unit Testing
-    uses: WJSoftware/cicd/.github/workflows/npm-test.yml@v0.4
+    uses: WJSoftware/cicd/.github/workflows/npm-test.yml@v0.5
     secrets: inherit
     with:
       node-version: ${{ inputs.node-version }}

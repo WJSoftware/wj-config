@@ -1,4 +1,4 @@
-import type { Dictionary } from "../wj-config.js";
+import type { Dictionary } from "../types.js";
 import { DictionaryDataSource } from "./DictionaryDataSource.js";
 
 export class EnvironmentDataSource<T extends Record<string, any>> extends DictionaryDataSource<T> {

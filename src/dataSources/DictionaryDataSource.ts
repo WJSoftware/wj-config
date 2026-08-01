@@ -1,5 +1,5 @@
 import { attemptParse, forEachProperty, isConfigNode } from "../helpers.js";
-import type { ConfigurationNode, ConfigurationValue, Dictionary, IDataSource, Predicate } from "../wj-config.js";
+import type { ConfigurationNode, ConfigurationValue, Dictionary, IDataSource, Predicate } from "../types.js";
 import { DataSource } from "./DataSource.js";
 
 const processKey = (key: string, hierarchySeparator: string, prefix?: string) => {

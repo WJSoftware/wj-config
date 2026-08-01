@@ -35,23 +35,18 @@
   },
   "license": "MIT-open-group",
   "homepage": "https://github.com/WJSoftware/wj-config#readme",
-  "main": "./out/index.js",
-  "types": "./out/wj-config.d.ts",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "exports": {
     ".": {
-      "types": "./out/index.d.ts",
-      "import": "./out/index.js",
-      "default": "./out/index.js"
-    },
-    "./dist": {
       "types": "./dist/index.d.ts",
-      "import": "./dist/index.min.js",
-      "default": "./dist/index.min.js"
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
     }
   },
   "scripts": {
-    "build": "pwsh ./build-npm.ps1 && publint",
-    "build:debug": "pwsh ./build-npm.ps1 -Verbose && publint",
+    "clean": "rimraf dist",
+    "build": "npm run clean && vite build && publint",
     "test": "vitest run",
     "test:watch": "vitest"
   },
@@ -59,15 +54,16 @@
     "node": ">=16.9.0"
   },
   "files": [
-    "out",
     "dist"
   ],
   "devDependencies": {
-    "@rollup/plugin-typescript": "^12.1.4",
+    "@microsoft/api-extractor": "^7.58.12",
     "@types/node": "^26.1.2",
     "publint": "^0.3.9",
-    "rolldown": "^1.2.1",
+    "rimraf": "^6.1.3",
     "typescript": "^6.0.3",
+    "vite": "^8.2.0",
+    "vite-plugin-dts": "^5.0.3",
     "vitest": "^4.1.10"
   }
 }

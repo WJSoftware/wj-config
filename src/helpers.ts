@@ -1,6 +1,6 @@
 'use strict';
 
-import { ConfigurationNode, Dictionary } from "./wj-config.js";
+import type { ConfigurationNode, Dictionary } from "./types.js";
 
 /**
  * Tests the provided object to determine if it is an array.

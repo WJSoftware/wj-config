@@ -1,4 +1,4 @@
-import type { ConfigurationValue, Dictionary } from "../wj-config.js";
+import type { ConfigurationValue, Dictionary } from "../types.js";
 import { DictionaryDataSource } from "./DictionaryDataSource.js";
 
 function buildDictionary(key: string | (() => Promise<[string, ConfigurationValue]>), value?: ConfigurationValue) {

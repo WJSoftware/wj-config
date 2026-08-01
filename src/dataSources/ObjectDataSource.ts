@@ -1,5 +1,5 @@
 import { isConfigNode } from "../helpers.js";
-import type { IDataSource } from "../wj-config.js";
+import type { IDataSource } from "../types.js";
 import { DataSource } from "./DataSource.js";
 
 /**
