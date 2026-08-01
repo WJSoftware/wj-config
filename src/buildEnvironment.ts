@@ -1,7 +1,7 @@
 import { InvalidEnvNameError } from "./EnvConfigError.js";
 import { EnvironmentDefinition } from "./EnvironmentDefinition.js";
 import { isArray } from "./helpers.js";
-import type { EnvironmentTestFn, IEnvironment, IEnvironmentDefinition, Trait, Traits } from "./wj-config.js";
+import type { EnvironmentTestFn, IEnvironment, IEnvironmentDefinition, Trait, Traits } from "./types.js";
 
 function ensureEnvDefinition<TEnvironments extends string>(env: string | IEnvironmentDefinition<TEnvironments>): IEnvironmentDefinition<TEnvironments> {
     if (typeof env === 'string') {

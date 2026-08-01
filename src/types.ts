@@ -52,12 +52,6 @@ export type InflateDictionary<TDic extends Record<string, ConfigurationValue>, T
 export type Dictionary = Record<string, ConfigurationValue>;
 
 /**
- * WJ-Config module's entry point.  Creates a builder object that is used to specify the various configuration 
- * sources and settings.
- */
-export default function wjConfig(): IBuilder;
-
-/**
  * Predicate function that evaluates an arbitrary number of criteria against the data and returns a judgment in terms 
  * of a Boolean value.
  */

@@ -1,4 +1,4 @@
-import type { IDataSourceInfo } from "../wj-config.js";
+import type { IDataSourceInfo } from "../types.js";
 
 export class DataSource {
     name: string;

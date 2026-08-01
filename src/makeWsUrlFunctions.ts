@@ -1,5 +1,5 @@
 import { forEachProperty, isArray, isConfigNode } from "./helpers.js";
-import type { ConfigurationNode, QueryStringArg, RouteReplacementArg, RouteValuesFn, UrlNode, UrlRoot } from "./wj-config.js";
+import type { ConfigurationNode, QueryStringArg, RouteReplacementArg, RouteValuesFn, UrlNode, UrlRoot } from "./types.js";
 
 const noop = (x?: any) => '';
 

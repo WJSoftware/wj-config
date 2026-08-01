@@ -16,7 +16,7 @@ import type {
     Predicate,
     ProcessFetchResponse,
     UrlBuilderSectionWithCheck
-} from "../wj-config.js";
+} from "../types.js";
 import { BuilderImpl } from "./BuilderImpl.js";
 import { EnvAwareBuilder, type IEnvironmentSource } from "./EnvAwareBuilder.js";
 
