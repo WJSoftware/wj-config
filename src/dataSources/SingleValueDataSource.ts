@@ -1,7 +1,7 @@
 import type { ConfigurationValue, Dictionary } from "../types.js";
 import { DictionaryDataSource } from "./DictionaryDataSource.js";
 
-function buildDictionary(key: string | (() => Promise<[string, ConfigurationValue]>), value?: ConfigurationValue) {
+function buildDictionary(key: string | (() => Promise<readonly [string, ConfigurationValue]>), value?: ConfigurationValue) {
     if (!key) {
         throw new Error('No valid path was provided.');
     }
@@ -21,7 +21,7 @@ function buildDictionary(key: string | (() => Promise<[string, ConfigurationValu
 
 export class SingleValueDataSource<T extends Record<string, any>> extends DictionaryDataSource<T> {
     constructor(
-        path: string | (() => Promise<[string, ConfigurationValue]>),
+        path: string | (() => Promise<readonly [string, ConfigurationValue]>),
         value?: ConfigurationValue,
         hierarchySeparator: string = ':'
     ) {
