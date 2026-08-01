@@ -1,7 +1,6 @@
-import { describe, it } from 'mocha';
+import { describe, it, expect } from 'vitest';
 import { buildEnvironment } from '../src/buildEnvironment.js';
 import { forEachProperty, isConfigNode, isFunction } from '../src/helpers.js';
-import { expect } from 'chai';
 import { IEnvironmentDefinition, Traits } from '../src/wj-config.js';
 
 const testEnvNames = [
@@ -19,7 +18,7 @@ describe('buildEnvironment', () => {
         const act = () => buildEnvironment(envNames, envName);
 
         // Assert.
-        expect(act).to.throw(Error);
+        expect(act).toThrow(Error);
     }
     it('Should throw an error if the environment names array is empty.', () => testErrorFn([]));
     // @ts-expect-error TS2345 Invalid argument type.
@@ -36,8 +35,8 @@ describe('buildEnvironment', () => {
         const env = buildEnvironment(testEnvNames, envName);
 
         // Assert.
-        expect(isConfigNode(env.current)).to.be.true;
-        expect(env.current.name).to.equal(envName);
+        expect(isConfigNode(env.current)).toBe(true);
+        expect(env.current.name).toBe(envName);
     });
     it('Should save the provided environment names in the all property.', () => {
         // Arrange.
@@ -47,7 +46,7 @@ describe('buildEnvironment', () => {
         const env = buildEnvironment(testEnvNames, envName);
 
         // Assert.
-        expect(env.all).to.have.same.members(testEnvNames);
+        expect(env.all).toEqual(expect.arrayContaining(testEnvNames as unknown as string[]));
     });
     it('Should create one environment check function for each environment name.', () => {
         // Arrange.
@@ -63,15 +62,15 @@ describe('buildEnvironment', () => {
                 foundFns.push(key);
             }
         });
-        expect(foundFns.length).to.equal(testEnvNames.length);
-        expect(foundFns).to.have.same.members(testEnvNames.map(x => `is${x}`));
+        expect(foundFns.length).toBe(testEnvNames.length);
+        expect(foundFns).toEqual(expect.arrayContaining(testEnvNames.map(x => `is${x}`)));
     });
     const missingEnvNameTest = (envDef: typeof testEnvNames[number] | IEnvironmentDefinition<typeof testEnvNames[number]>) => {
         // Act.
         const act = () => buildEnvironment(testEnvNames, envDef);
 
         // Assert.
-        expect(act).to.throw(Error);
+        expect(act).toThrow(Error);
     };
     // @ts-expect-error TS2345 Invalid argument type.
     it('Should throw an error if the provided environment name is not part of the list of environment names (name only).', () => missingEnvNameTest('MyDev'));
@@ -86,7 +85,7 @@ describe('buildEnvironment', () => {
             const act = () => env.hasTraits(testTraits);
 
             // Assert.
-            expect(act).to.throw(TypeError);
+            expect(act).toThrow(TypeError);
         };
         it('Should throw if given a numeric test trait when the current environment traits are of the string kind.', () => traitMismatchTest({ name: 'Dev', traits: ['abc', 'def'] }, 3));
         it('Should throw if given a string test trait when the current environment traits are of the numeric kind.', () => traitMismatchTest({ name: 'Dev', traits: 3 }, 'def'));
@@ -99,7 +98,7 @@ describe('buildEnvironment', () => {
             const result = env.hasTraits(testTraits);
 
             // Assert.
-            expect(result).to.equal(expectedResult);
+            expect(result).toBe(expectedResult);
         };
         describe('Numeric Traits', () => {
             it('Should return true if the test traits match the entirety of the current environment\'s traits.', () => runTestFn({ name: 'Dev', traits: 7 }, 7, true));
@@ -121,7 +120,7 @@ describe('buildEnvironment', () => {
             const act = () => env.hasAnyTrait(testTraits);
 
             // Assert.
-            expect(act).to.throw();
+            expect(act).toThrow();
         }
         it('Should throw if given a numeric test trait when the current environment traits are of the string kind.', () => traitMismatchTest({ name: 'Dev', traits: ['abc', 'def'] }, 3));
         it('Should throw if given a string test trait when the current environment traits are of the numeric kind.', () => traitMismatchTest({ name: 'Dev', traits: 3 }, ['abc', 'def']));
@@ -133,7 +132,7 @@ describe('buildEnvironment', () => {
             const result = env.hasAnyTrait(testTraits);
 
             // Assert.
-            expect(result).to.equal(expectedResult);
+            expect(result).toBe(expectedResult);
         };
         describe('Numeric Traits', () => {
             it('Should return true if the test traits match the entirety of the current environment\'s traits.', () => runTestFn({ name: 'Dev', traits: 7 }, 7, true));

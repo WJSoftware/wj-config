@@ -1,20 +1,20 @@
+import { describe, it, expect } from 'vitest';
 import { Builder } from '../src/builders/Builder.js';
 import * as allExports from '../src/index.js';
-import { expect } from 'chai';
 
 describe('All Exports', () => {
     it('Should export buildEnvironment function.', () => {
         // Assert.
-        expect(allExports.buildEnvironment).to.exist;
+        expect(allExports.buildEnvironment).toBeDefined();
     });
     it('Should export the EnvironmentDefinition class.', () => {
         // Assert.
-        expect(allExports.EnvironmentDefinition).to.exist;
+        expect(allExports.EnvironmentDefinition).toBeDefined();
     });
     it('Should export the entry function as default.', () => {
         // Assert.
-        expect(allExports.default).to.exist;
-        expect(allExports.default).to.be.a('function');
+        expect(allExports.default).toBeDefined();
+        expect(typeof allExports.default).toBe('function');
     });
 });
 describe('wjConfig', () => {
@@ -23,6 +23,6 @@ describe('wjConfig', () => {
         const result = allExports.default();
 
         // Assert.
-        expect(result).to.be.instanceOf(Builder);
+        expect(result).toBeInstanceOf(Builder);
     });
 });

@@ -1,5 +1,5 @@
+import { describe, it, expect } from 'vitest';
 import { attemptParse, forEachProperty, isArray, isConfigNode, isFunction } from '../src/helpers.js';
-import { expect } from 'chai';
 
 describe('helpers', () => {
     describe('isArray', () => {
@@ -8,7 +8,7 @@ describe('helpers', () => {
             const result = isArray(testObj);
 
             // Assert.
-            expect(result).to.equal(expectedResult);
+            expect(result).toBe(expectedResult);
         };
         it('Should return true if the given object is an empty array.', () => testFn([], true));
         it('Should return true if the given object is an array.', () => testFn([1, 'A'], true));
@@ -29,7 +29,7 @@ describe('helpers', () => {
             const result = isConfigNode(testObj);
 
             // Assert.
-            expect(result).to.equal(expectedResult);
+            expect(result).toBe(expectedResult);
         };
         it('Should return false if the given object is an empty array.', () => testFn([], false));
         it('Should return false if the given object is an array.', () => testFn([1, 'A'], false));
@@ -50,7 +50,7 @@ describe('helpers', () => {
             const result = isFunction(testObj);
 
             // Assert.
-            expect(result).to.equal(expectedResult);
+            expect(result).toBe(expectedResult);
         };
         it('Should return false if the given object is an empty array.', () => testFn([], false));
         it('Should return false if the given object is an array.', () => testFn([1, 'A'], false));
@@ -79,7 +79,7 @@ describe('helpers', () => {
             const act = () => forEachProperty(testObj, 1);
 
             // Assert.
-            expect(act).to.throw(Error);
+            expect(act).toThrow(Error);
         });
         it('Should only enumerate the direct properties of an object.', () => {
             // Arrange.
@@ -89,7 +89,7 @@ describe('helpers', () => {
             forEachProperty(testObj, () => { ++counter; });
 
             // Assert.
-            expect(counter).to.equal(3);
+            expect(counter).toBe(3);
         });
         const loopControlTestFn = (returnObj: any, expectedLoopCount: number) => {
             // Arrange.
@@ -99,7 +99,7 @@ describe('helpers', () => {
             forEachProperty(testObj, () => { ++counter; return returnObj; })
 
             // Assert.
-            expect(counter).to.equal(expectedLoopCount);
+            expect(counter).toBe(expectedLoopCount);
         };
         it('Should break the loop if the callback function returns true.', () => loopControlTestFn(true, 1));
         it('Should break the loop if the callback function returns a non-empty string.', () => loopControlTestFn('A', 1));
@@ -118,7 +118,7 @@ describe('helpers', () => {
             const act = () => attemptParse(true);
 
             // Assert.
-            expect(act).to.throw(Error);
+            expect(act).toThrow(Error);
         });
         const conversionTestCases = [
             {
@@ -203,8 +203,8 @@ describe('helpers', () => {
             const result = attemptParse(value.toString());
 
             // Assert.
-            expect(result).to.be.a(typeof value);
-            expect(result).to.equal(value);
+            expect(typeof result).toBe(typeof value);
+            expect(result).toBe(value);
         }
         conversionTestCases.forEach((testCase) => {
             it(`Should convert the ${testCase.type} value ${testCase.value} to its native data type.`, () => conversionTestFn(testCase.value));
@@ -244,7 +244,7 @@ describe('helpers', () => {
             const result = attemptParse(value);
 
             // Assert.
-            expect(result).to.equal(expectedValue);
+            expect(result).toBe(expectedValue);
         };
         hexTestCases.forEach(testCase => {
             it(`Should convert the hexadecimal value ${testCase.value} to its decimal value ${testCase.expected}.`, () => hexTestFn(testCase.value, testCase.expected));
@@ -288,8 +288,8 @@ describe('helpers', () => {
             const result = attemptParse(value);
 
             // Assert.
-            expect(result).to.be.a('string');
-            expect(result).to.equal(value.toString());
+            expect(typeof result).toBe('string');
+            expect(result).toBe(value.toString());
         }
         stringTestCases.forEach(testCase => {
             it(`Should return the string representation of ${testCase.name}.`, () => stringTestFn(testCase.value.toString()));

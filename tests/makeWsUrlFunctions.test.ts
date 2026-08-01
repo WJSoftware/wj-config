@@ -1,4 +1,4 @@
-import { expect } from 'chai';
+import { describe, it, expect } from 'vitest';
 import { forEachProperty, isConfigNode } from '../src/helpers.js';
 import makeWsUrlFunctions from '../src/makeWsUrlFunctions.js';
 import { BuildUrlFn, RouteReplacementArg, UrlBuilderFn } from '../src/wj-config.js';
@@ -29,10 +29,10 @@ describe('makeWsUrlFunctions', () => {
 
         // Assert.
         if (shouldThrow) {
-            expect(act).to.throw(Error);
+            expect(act).toThrow(Error);
         }
         else {
-            expect(act).to.not.throw();
+            expect(act).not.toThrow();
         }
     }
     // @ts-expect-error TS2345 Testing with a non-object.
@@ -47,7 +47,7 @@ describe('makeWsUrlFunctions', () => {
 
         // Assert.
         const pih = propertyInHierarchy(config, 'buildUrl');
-        expect(pih).to.deep.equal(expectedResult);
+        expect(pih).toEqual(expectedResult);
     };
     it('Should identify the first object with rootPath as the root object.', () => hasBuildUrlTestFn({
         ws: {
@@ -145,7 +145,7 @@ describe('makeWsUrlFunctions', () => {
         makeWsUrlFunctions(config, /.*/, false);
 
         // Assert.
-        expect(config.ws.timeout).to.be.a('number');
+        expect(typeof config.ws.timeout).toBe('number');
     });
     it('Should not convert any string properties whose name start with an underscore.', () => {
         // Arrange.
@@ -161,7 +161,7 @@ describe('makeWsUrlFunctions', () => {
         makeWsUrlFunctions(config, /.*/, false);
 
         // Assert.
-        expect(config.ws._type).to.be.a('string');
+        expect(typeof config.ws._type).toBe('string');
     });
     it('Should not convert the reserved properties host, scheme, port and rootPath.', () => {
         // Arrange.
@@ -178,10 +178,10 @@ describe('makeWsUrlFunctions', () => {
         makeWsUrlFunctions(config, /.*/, false);
 
         // Assert.
-        expect(config.ws.host).to.be.a('string');
-        expect(config.ws.scheme).to.be.a('string');
-        expect(config.ws.port).to.be.a('number');
-        expect(config.ws.rootPath).to.be.a('string');
+        expect(typeof config.ws.host).toBe('string');
+        expect(typeof config.ws.scheme).toBe('string');
+        expect(typeof config.ws.port).toBe('number');
+        expect(typeof config.ws.rootPath).toBe('string');
     });
     it('Should convert any properties in the root object whose name is not reserved and does not start with underscore.', () => {
         // Arrange.
@@ -198,9 +198,9 @@ describe('makeWsUrlFunctions', () => {
         makeWsUrlFunctions(config, /.*/, false);
 
         // Assert.
-        expect(config.ws.login).to.be.a('function');
-        expect(config.ws.ping).to.be.a('function');
-        expect(config.ws.status).to.be.a('function');
+        expect(typeof config.ws.login).toBe('function');
+        expect(typeof config.ws.ping).toBe('function');
+        expect(typeof config.ws.status).toBe('function');
     });
     it('Should convert any properties in child objects of a root object whose name is not reserved and does not start with underscore.', () => {
         // Arrange.
@@ -219,9 +219,9 @@ describe('makeWsUrlFunctions', () => {
         makeWsUrlFunctions(config, /.*/, false);
 
         // Assert.
-        expect(config.ws.general.login).to.be.a('function');
-        expect(config.ws.general.ping).to.be.a('function');
-        expect(config.ws.general.status).to.be.a('function');
+        expect(typeof config.ws.general.login).toBe('function');
+        expect(typeof config.ws.general.ping).toBe('function');
+        expect(typeof config.ws.general.status).toBe('function');
     });
     describe('buildUrl', () => {
         const urlPartsTestFn = (config: Record<string, any>, expectedUrl: string) => {
@@ -232,7 +232,7 @@ describe('makeWsUrlFunctions', () => {
             const url = config.ws.testUrl();
 
             // Assert.
-            expect(url).to.equal(expectedUrl);
+            expect(url).toBe(expectedUrl);
         };
         it('Should build a relative path if no host is provided.', () => urlPartsTestFn({
             ws: {
@@ -283,7 +283,7 @@ describe('makeWsUrlFunctions', () => {
             const url = (config.ws.gateway.security.users.getAll as unknown as UrlBuilderFn)();
 
             // Assert.
-            expect(url).to.equal('/api/sec/users');
+            expect(url).toBe('/api/sec/users');
         });
         const routeReplacementTestFn = (routeValues: RouteReplacementArg | undefined, expectedResult: string) => {
             // Arrange.
@@ -307,7 +307,7 @@ describe('makeWsUrlFunctions', () => {
             const url = (config.ws.gateway.security.users.get as unknown as UrlBuilderFn)(routeValues);
 
             // Assert.
-            expect(url).to.equal(expectedResult);
+            expect(url).toBe(expectedResult);
         };
         it('Should build a URL with no route replacements if no replacement object, function or array is provided.', () => routeReplacementTestFn(undefined, '/api/sec/users/{id}'));
         it('Should build a URL with replaceable route values replaced if a replacement object is provided.', () => routeReplacementTestFn({ id: 123 }, '/api/sec/users/123'));

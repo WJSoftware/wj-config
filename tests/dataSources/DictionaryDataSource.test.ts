@@ -1,4 +1,4 @@
-import { expect } from 'chai';
+import { describe, it, expect } from 'vitest';
 import { DictionaryDataSource } from '../../src/dataSources/DictionaryDataSource.js';
 import type { Dictionary, Predicate } from '../../src/wj-config.js';
 
@@ -8,14 +8,14 @@ describe('DictionaryDataSource', () => {
         const ds = new DictionaryDataSource({}, ':');
 
         // Assert.
-        expect(ds.name).to.equal('Dictionary');
+        expect(ds.name).toBe('Dictionary');
     });
     const failedConstructionTest = (dic: Dictionary, sep: string) => {
         // Act.
         const act = () => new DictionaryDataSource(dic, sep);
 
         // Assert.
-        expect(act).to.throw(Error);
+        expect(act).toThrow(Error);
     };
     const failedConstructionTests = [
         {
@@ -168,7 +168,7 @@ describe('DictionaryDataSource', () => {
         const dds = new DictionaryDataSource(dic, sep);
 
         // Assert.
-        expect(!!dds).to.be.true;
+        expect(!!dds).toBe(true);
     };
     successfulConstructionTests.forEach(t => {
         it(`Should successfully construct with ${t.text} for ${t.target}.`, () => successfulConstructionTest(t.dic, t.sep));
@@ -230,7 +230,7 @@ describe('DictionaryDataSource', () => {
         if (succeeds) {
             expectation = expectation.not;
         }
-        expectation.to.throw();
+        expectation.toThrow();
     };
     prefixTests.forEach(t => {
         // @ts-expect-error TS2345 Testing some wrong arguments.
@@ -252,7 +252,7 @@ describe('DictionaryDataSource', () => {
         const act = () => new DictionaryDataSource(dic, ':', prefix);
 
         // Assert.
-        expect(act).not.to.throw();
+        expect(act).not.toThrow();
     };
     validationWithPrefixTests.forEach(t => {
         // @ts-expect-error TS2345 Testing with invalid dictionaries.
@@ -279,7 +279,7 @@ describe('DictionaryDataSource', () => {
             }
 
             // Assert.
-            expect(didThrow).to.equal(true);
+            expect(didThrow).toBe(true);
         });
         const successfulResultsTest = async (dic: Dictionary, expectedResult: object, prefix: string) => {
             // Arrange.
@@ -289,7 +289,7 @@ describe('DictionaryDataSource', () => {
             const result = await ds.getObject();
 
             // Assert.
-            expect(result).to.be.deep.equal(expectedResult);
+            expect(result).toEqual(expectedResult);
         };
         const successfulResultsTests = [
             {
