@@ -174,7 +174,7 @@ export interface IBuilder<T extends Record<string, any> = {}> {
      * @param init Optional fetch init data.  Refer to the fecth() documentation for information.
      * @param processFn Optional processing function that must return the configuration data as an object.
      */
-    addFetched<NewT extends Record<string, any>>(url: URL | (() => Promise<URL>), required?: boolean, init?: RequestInit, processFn?: ProcessFetchResponse<NewT>): IBuilder<MergeResult<T, NewT>>;
+    addFetched<NewT extends {}>(url: URL | (() => Promise<URL>), required?: boolean, init?: RequestInit, processFn?: ProcessFetchResponse<NewT>): IBuilder<MergeResult<T, NewT>>;
     /**
      * Adds a fetch operation to the collection of data sources that will be used to build the configuration 
      * object.
@@ -183,7 +183,7 @@ export interface IBuilder<T extends Record<string, any> = {}> {
      * @param init Optional fetch init data.  Refer to the fecth() documentation for information.
      * @param processFn Optional processing function that must return the configuration data as an object.
      */
-    addFetched<NewT extends Record<string, any>>(request: RequestInfo | (() => Promise<RequestInfo>), required?: boolean, init?: RequestInit, processFn?: ProcessFetchResponse<NewT>): IBuilder<MergeResult<T, NewT>>;
+    addFetched<NewT extends {}>(request: RequestInfo | (() => Promise<RequestInfo>), required?: boolean, init?: RequestInit, processFn?: ProcessFetchResponse<NewT>): IBuilder<MergeResult<T, NewT>>;
     /**
      * Adds the specified JSON string to the collection of data sources that will be used to build the 
      * configuration object.
@@ -191,7 +191,7 @@ export interface IBuilder<T extends Record<string, any> = {}> {
      * @param jsonParser Optional JSON parser.  If not specified, the built-in JSON object will be used.
      * @param reviver Optional reviver function.  For more information see the JSON.parse() documentation.
      */
-    addJson<NewT extends Record<string, any>>(json: string | (() => Promise<string>), jsonParser?: IJsonParser<NewT>, reviver?: (this: any, key: string, value: any) => any): IBuilder<MergeResult<T, NewT>>;
+    addJson<NewT extends {}>(json: string | (() => Promise<string>), jsonParser?: IJsonParser<NewT>, reviver?: (this: any, key: string, value: any) => any): IBuilder<MergeResult<T, NewT>>;
     /**
      * Adds a single value to the collection of data sources that will be used to build the configuration object.
      * @param path Key comprised of names that determine the hierarchy of the value.
@@ -339,7 +339,7 @@ export interface IEnvAwareBuilder<TEnvironments extends string, T extends Record
      * @param init Optional fetch init data.  Refer to the fecth() documentation for information.
      * @param processFn Optional processing function that must return the configuration data as an object.
      */
-    addFetched<NewT extends Record<string, any>>(url: URL | (() => Promise<URL>), required?: boolean, init?: RequestInit, processFn?: ProcessFetchResponse<NewT>): IEnvAwareBuilder<TEnvironments, MergeResult<T, NewT>>;
+    addFetched<NewT extends {}>(url: URL | (() => Promise<URL>), required?: boolean, init?: RequestInit, processFn?: ProcessFetchResponse<NewT>): IEnvAwareBuilder<TEnvironments, MergeResult<T, NewT>>;
     /**
      * Adds a fetch operation to the collection of data sources that will be used to build the configuration 
      * object.
@@ -348,7 +348,7 @@ export interface IEnvAwareBuilder<TEnvironments extends string, T extends Record
      * @param init Optional fetch init data.  Refer to the fecth() documentation for information.
      * @param processFn Optional processing function that must return the configuration data as an object.
      */
-    addFetched<NewT extends Record<string, any>>(request: RequestInfo | (() => Promise<RequestInfo>), required?: boolean, init?: RequestInit, processFn?: ProcessFetchResponse<NewT>): IEnvAwareBuilder<TEnvironments, MergeResult<T, NewT>>;
+    addFetched<NewT extends {}>(request: RequestInfo | (() => Promise<RequestInfo>), required?: boolean, init?: RequestInit, processFn?: ProcessFetchResponse<NewT>): IEnvAwareBuilder<TEnvironments, MergeResult<T, NewT>>;
     /**
      * Adds the specified JSON string to the collection of data sources that will be used to build the 
      * configuration object.
@@ -356,20 +356,20 @@ export interface IEnvAwareBuilder<TEnvironments extends string, T extends Record
      * @param jsonParser Optional JSON parser.  If not specified, the built-in JSON object will be used.
      * @param reviver Optional reviver function.  For more information see the JSON.parse() documentation.
      */
-    addJson<NewT extends Record<string, any>>(json: string | (() => Promise<string>), jsonParser?: IJsonParser<NewT>, reviver?: (this: any, key: string, value: any) => any): IEnvAwareBuilder<TEnvironments, MergeResult<T, NewT>>;
+    addJson<NewT extends {}>(json: string | (() => Promise<string>), jsonParser?: IJsonParser<NewT>, reviver?: (this: any, key: string, value: any) => any): IEnvAwareBuilder<TEnvironments, MergeResult<T, NewT>>;
     /**
      * Adds a single value to the collection of data sources that will be used to build the configuration object.
      * @param path Key comprised of names that determine the hierarchy of the value.
      * @param value Value of the property.
      * @param hierarchySeparator Optional hierarchy separator.  If not specified, colon (:) is assumed.
      */
-    addSingleValue<TKey extends string, TValue extends ConfigurationValue, TSep extends string = ':'>(path: TKey, value?: TValue, hierarchySeparator?: string): IEnvAwareBuilder<TEnvironments, MergeResult<T, InflateKey<TKey, TValue, TSep>>>;
+    addSingleValue<TKey extends string, TValue extends ConfigurationValue, TSep extends string = ':'>(path: TKey, value?: TValue, hierarchySeparator?: TSep): IEnvAwareBuilder<TEnvironments, MergeResult<T, InflateKey<TKey, TValue, TSep>>>;
     /**
      * Adds a single value to the collection of data sources that will be used to build the configuration object.
      * @param dataFn Function that returns the [key, value] tuple that needs to be added.
      * @param hierarchySeparator Optional hierarchy separator.  If not specified, colon (:) is assumed.
      */
-    addSingleValue<TKey extends string, TValue extends ConfigurationValue, TSep extends string = ':'>(dataFn: () => Promise<[TKey, TValue]>, hierarchySeparator?: string): IEnvAwareBuilder<TEnvironments, MergeResult<T, InflateKey<TKey, TValue, TSep>>>;
+    addSingleValue<TKey extends string, TValue extends ConfigurationValue, TSep extends string = ':'>(dataFn: () => Promise<readonly [TKey, TValue]>, hierarchySeparator?: TSep): IEnvAwareBuilder<TEnvironments, MergeResult<T, InflateKey<TKey, TValue, TSep>>>;
     /**
      * Sets the data source name of the last data source added to the builder.
      * @param name Name for the data source.

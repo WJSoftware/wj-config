@@ -46,7 +46,8 @@
   },
   "scripts": {
     "clean": "rimraf dist",
-    "build": "npm run clean && vite build && publint",
+    "check": "tsc --noEmit",
+    "build": "npm run check && npm run clean && vite build && publint",
     "test": "vitest run",
     "test:watch": "vitest"
   },
