@@ -1,8 +1,6 @@
-import { describe, it } from 'mocha';
+import { describe, it, expect, vi } from 'vitest';
 import { BuilderImpl } from '../../src/builders/BuilderImpl.js';
 import { ObjectDataSource } from '../../src/dataSources/ObjectDataSource.js';
-import { spy } from 'sinon';
-import { expect } from 'chai';
 
 describe('BuilderImpl', () => {
     describe('build', () => {
@@ -20,7 +18,7 @@ describe('BuilderImpl', () => {
             const result = await builder.build(false, () => false);
 
             // Assert.
-            expect(result).to.deep.equal({
+            expect(result).toEqual({
                 id1: 'a',
                 value1: 'value-a',
                 id2: 'b',
@@ -32,20 +30,20 @@ describe('BuilderImpl', () => {
         it("Should run every post-merge function in the correct order.", async () => {
             // Arrange.
             const builder = new BuilderImpl();
-            const spyCount = spy();
+            const spyCount = vi.fn();
             builder.postMerge(config => {
                 spyCount(config);
-                expect(spyCount.callCount).to.equal(1);
+                expect(spyCount).toHaveBeenCalledTimes(1);
                 return { ...config, additional: "value" };
             });
             builder.postMerge(config => {
                 spyCount(config);
-                expect(spyCount.callCount).to.equal(2);
+                expect(spyCount).toHaveBeenCalledTimes(2);
                 return { ...config, test: "test" };
             });
             builder.postMerge(config => {
                 spyCount(config);
-                expect(spyCount.callCount).to.equal(3);
+                expect(spyCount).toHaveBeenCalledTimes(3);
                 return { ...config, additional: "value modified" };
             });
 
@@ -53,7 +51,7 @@ describe('BuilderImpl', () => {
             const result = await builder.build(false, () => false);
 
             // Assert.
-            expect(result).to.deep.equal({
+            expect(result).toEqual({
                 additional: 'value modified',
                 test: 'test'
             });
@@ -72,7 +70,7 @@ describe('BuilderImpl', () => {
             const result = await builder.build(false, () => false);
 
             // Assert.
-            expect(result.api.buildUrl).to.be.a('function');
+            expect(typeof result.api.buildUrl).toBe('function');
         });
         it("Should add tracing data when requested.", async () => {
             // Arrange.

@@ -1,5 +1,4 @@
-import { describe, it } from 'mocha';
-import { expect } from 'chai';
+import { describe, it, expect } from 'vitest';
 import { forEachProperty } from '../src/helpers.js';
 import merge from '../src/merge.js';
 import type { ConfigurationNode } from '../src/wj-config.js';
@@ -10,7 +9,7 @@ describe('merge', () => {
         const act = () => merge(arg);
 
         // Assert.
-        expect(act).to.throw(Error);
+        expect(act).toThrow(Error);
     };
     // @ts-expect-error TS2322 Testing invalid argument type.
     it('Should throw if the first array element is null.', () => testValidationArg1Fn([null]));
@@ -24,10 +23,10 @@ describe('merge', () => {
 
         // Assert.
         if (shouldThrow) {
-            expect(act).to.throw(Error);
+            expect(act).toThrow(Error);
         }
         else {
-            expect(act).to.not.throw();
+            expect(act).not.toThrow();
         }
     };
     // @ts-expect-error TS2345 Testing invalid types.
@@ -41,7 +40,7 @@ describe('merge', () => {
         const act = () => merge([config1, config2]);
 
         // Assert.
-        expect(act).to.throw(Error);
+        expect(act).toThrow(Error);
     };
     it('Should create a result that has all the properties defined in objects 1 and 2.', () => {
         // Arrange.
@@ -72,7 +71,7 @@ describe('merge', () => {
         // Assert.
         const resultProps: string[] = [];
         forEachProperty(result, key => { resultProps.push(key.toString()); });
-        expect(resultProps).to.have.same.members(allProps);
+        expect(resultProps).toEqual(expect.arrayContaining(allProps));
     });
     it('Should create a result whose property values are from object 2 properties whenever they exist, and if not, from object 1 properties.', () => {
         // Arrange.
@@ -96,10 +95,10 @@ describe('merge', () => {
         // Assert.
         forEachProperty(result, (key, value) => {
             if (config2[key]) {
-                expect(value).to.equal(config2[key]);
+                expect(value).toBe(config2[key]);
             }
             else {
-                expect(value).to.equal(config1[key]);
+                expect(value).toBe(config1[key]);
             }
         });
     });
